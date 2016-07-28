@@ -1,0 +1,533 @@
+package ru.kolotnev.codoma;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
+
+/**
+ * New editor.
+ */
+public class NewEditorActivity extends AppCompatActivity implements
+		TextFileFragment.OnFragmentInteractionListener,
+		LoadTextFileTask.LoadTextFileListener,
+		TextFile.PageSystemListener,
+		FileOptionsDialogFragment.Callbacks,
+		RecentFilesDialogFragment.Callbacks,
+		SharedPreferences.OnSharedPreferenceChangeListener {
+
+	private static final String TAG = "Codoma";
+	private static final int
+			REQUEST_CODE_CREATE = 43,
+			REQUEST_CODE_SELECT_FILE = 121,
+			REQUEST_CODE_SELECT_FOLDER = 122,
+			REQUEST_CODE_SELECT_FILE_AS = 143;
+	private ActionBar actionBar;
+	private ViewPager viewPager;
+	private ScreenSlidePagerAdapter pagerAdapter;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.activity_main_new);
+
+		RecentFilesProvider.loadFromPersistentStore(this);
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+		actionBar = getSupportActionBar();
+
+		viewPager = (ViewPager) findViewById(R.id.view_pager);
+		pagerAdapter = new ScreenSlidePagerAdapter();
+		viewPager.setAdapter(pagerAdapter);
+
+		if (TextFileProvider.size() == 0) {
+			textFileFromText("welcome to Codoma!");
+		}
+
+		// Bind the tabs to the ViewPager
+		TabLayout tabs = (TabLayout) findViewById(android.R.id.tabs);
+		tabs.setupWithViewPager(viewPager);
+
+		updateTitle();
+
+		Log.e(TAG, "onCreated activity with " + TextFileProvider.size() + " files, current item " + viewPager.getCurrentItem());
+
+		// Parse the intent
+		parseIntent(getIntent());
+
+		PreferenceManager
+				.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		RecentFilesProvider.save(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_new_editor_activity, menu);
+
+		onPrepareOptionsMenu(menu);
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		TextFile textFile = TextFileProvider.get(viewPager.getCurrentItem());
+		boolean isTextFileOpened = textFile != null;
+
+		menu.setGroupVisible(R.id.menu_group_file, isTextFileOpened);
+		menu.setGroupVisible(R.id.menu_group_file_page, textFile != null && textFile.pageSystemEnabled);
+		if (isTextFileOpened) {
+			menu.findItem(R.id.action_save).setEnabled(textFile.isModified());
+			menu.findItem(R.id.action_undo).setEnabled(textFile.getCanUndo());
+			menu.findItem(R.id.action_redo).setEnabled(textFile.getCanRedo());
+			menu.findItem(R.id.action_page_previous).setEnabled(textFile.canReadPrevPage());
+			menu.findItem(R.id.action_page_next).setEnabled(textFile.canReadNextPage());
+		}
+		Log.d(TAG, "onPrepareOptionsMenu");
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.recent_files:
+				new RecentFilesDialogFragment()
+						.show(getSupportFragmentManager(), RecentFilesDialogFragment.TAG);
+				return true;
+			case R.id.new_file:
+				createFile();
+				return true;
+			case R.id.action_open:
+				openFile(false);
+				return true;
+			case R.id.action_open_as:
+				openFile(true);
+				return true;
+			case R.id.action_save:
+				saveFile();
+				return true;
+			case R.id.action_save_as:
+				saveFileAs();
+				return true;
+			case R.id.action_close:
+				closeFile();
+				return true;
+			case R.id.action_undo:
+				undo();
+				return true;
+			case R.id.action_redo:
+				redo();
+				return true;
+			case R.id.go_to_line:
+				goToLine();
+				return true;
+			case R.id.statistics:
+				FileInfoDialog.newInstance(viewPager.getCurrentItem())
+						.show(getSupportFragmentManager(), FileInfoDialog.TAG);
+				return true;
+			case R.id.settings:
+				Intent i = new Intent(this, CodomaPreferenceActivity.class);
+				startActivity(i);
+				return true;
+
+
+			// Pages
+			case R.id.action_page_previous:
+				goToPagePrevious();
+				return true;
+			case R.id.action_page_next:
+				goToPageNext();
+				return true;
+			case R.id.action_page_go:
+				goToPage();
+				return true;
+
+			case R.id.change_input_method:
+				InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				im.showInputMethodPicker();
+				return true;
+
+			case R.id.about:
+				new AboutDialogFragment()
+						.show(getSupportFragmentManager(), AboutDialogFragment.TAG);
+				return true;
+
+			case R.id.help:
+				//Intent h = new Intent(this, TextWarriorHelp.class);
+				//startActivity(h);
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (resultCode == RESULT_OK) {
+			final Uri uri = intent.getData();
+			if (Device.hasKitKatApi() && PreferenceHelper.getUseStorageAccessFramework(this)) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+					final int takeFlags = intent.getFlags()
+							& (Intent.FLAG_GRANT_READ_URI_PERMISSION
+							| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+					// Check for the freshest data
+					//noinspection ResourceType
+					getContentResolver().takePersistableUriPermission(uri, takeFlags);
+				}
+			}
+			switch (requestCode) {
+				case REQUEST_CODE_CREATE:
+				case REQUEST_CODE_SELECT_FILE:
+					textFileByUri(uri, null, null);
+					break;
+				case REQUEST_CODE_SELECT_FILE_AS:
+					FileOptionsDialogFragment.newInstance(uri,
+							PreferenceHelper.getEncoding(this),
+							PreferenceHelper.getLineEnding(this))
+							.show(getSupportFragmentManager(), "FileOptions");
+					break;
+				case REQUEST_CODE_SELECT_FOLDER:
+					GreatUri greatUri = new GreatUri(uri, AccessStorageApi.getPath(this, uri));
+					Log.v(TAG, "result of selecting folder = " + greatUri.toString());
+					break;
+			}
+		}
+	}
+
+	@Override
+	public void onTextChanged(TextFileFragment fragment) {
+
+	}
+
+	@Override
+	public void onClose(TextFile textFile) {
+		TextFileProvider.remove(textFile);
+		pagerAdapter.notifyDataSetChanged();
+
+		//viewPager.setCurrentItem(0);
+
+		updateTitle();
+	}
+
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		parseIntent(intent);
+	}
+
+
+	/**
+	 * Parses the intent
+	 */
+	private void parseIntent(Intent intent) {
+		final String action = intent.getAction();
+		final String type = intent.getType();
+
+		Log.e(TAG, "parsing intent " + action + " type " + type);
+		if (type != null
+				&& Intent.ACTION_VIEW.equals(action)
+				|| Intent.ACTION_EDIT.equals(action)
+				|| Intent.ACTION_PICK.equals(action)) {
+			// Post event
+			//newFileToOpen(new File(intent.getData().getPath()), "");
+			Uri uri = intent.getData();
+			textFileByUri(uri, null, null);
+		} else if (Intent.ACTION_SEND.equals(action) && type != null) {
+			if ("text/plain".equals(type)) {
+				textFileFromText(intent.getStringExtra(Intent.EXTRA_TEXT));
+			}
+		}
+
+		/*if (action.equals(Intent.ACTION_VIEW) || action.equals(Intent.ACTION_EDIT)) {
+			setIntent(intent);
+
+			if (_editField.isEdited()) {
+				_saveFinishedCallback = SAVE_CALLBACK_SINGLE_TASK_OPEN;
+				onPromptSave();
+			} else {
+				open(intent.getData().getPath());
+			}
+		}*/
+
+	}
+
+	//region Calls from the layout
+	public void openFile(boolean openAs) {
+		Intent intent;
+		if (Device.hasKitKatApi() && PreferenceHelper.getUseStorageAccessFramework(this)) {
+			// ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser.
+			intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+			// Filter to only show results that can be "opened", such as a
+			// file (as opposed to a list of contacts or timezones)
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+			intent.setType("*/*");
+		} else {
+			intent = new Intent(this, SelectFileActivity.class);
+			intent.putExtra("action", SelectFileActivity.Actions.SelectFile);
+		}
+		startActivityForResult(intent,
+				openAs ? REQUEST_CODE_SELECT_FILE_AS : REQUEST_CODE_SELECT_FILE);
+	}
+
+	private void createFile() {
+		if (Device.hasKitKatApi() && PreferenceHelper.getUseStorageAccessFramework(this)) {
+			Log.e(TAG, "open file with request code create");
+			Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+			intent.setType("*/*");
+			intent.putExtra(Intent.EXTRA_TITLE, ".txt");
+			startActivityForResult(intent, REQUEST_CODE_CREATE);
+		} else {
+			textFileFromText("");
+		}
+	}
+
+	private void saveFile() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).save();
+	}
+
+	private void saveFileAs() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).saveAs();
+	}
+
+	private void closeFile() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).close();
+	}
+
+	private void undo() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).undo();
+	}
+
+	private void redo() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).redo();
+	}
+
+	private void goToLine() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).goToLine();
+	}
+
+	private void goToPagePrevious() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).gotoPrevPage();
+	}
+
+	private void goToPageNext() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).gotoNextPage();
+	}
+
+	private void goToPage() {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).gotoPage();
+	}
+
+	private void textFileByUri(Uri uri, LineReader.LineEnding lineEnding, String encoding) {
+		if (uri == Uri.EMPTY) {
+			TextFile textFile = new TextFile();
+			textFile.encoding = encoding;
+			textFile.eol = lineEnding;
+			onFileLoaded(textFile);
+		} else {
+			// If opening file, check already opened files
+			if (encoding != null && lineEnding != null) {
+				// TODO: add ability to reload file with new options
+			} else {
+				for (int i = 0; i < TextFileProvider.size(); ++i) {
+					TextFile textFile = TextFileProvider.get(i);
+					if (textFile != null
+							&& textFile.greatUri != null
+							&& textFile.greatUri.getUri().equals(uri)) {
+						//viewPager.setCurrentItem(i);
+						//return;
+					}
+				}
+			}
+			// File was never opened, open file
+			TextFile textFile = new TextFile();
+			textFile.encoding = encoding;
+			textFile.eol = lineEnding;
+			textFile.greatUri = new GreatUri(uri, AccessStorageApi.getPath(this, uri));
+			Log.e(TAG, uri.toString());
+			new LoadTextFileTask(this).execute(textFile);
+		}
+	}
+
+	private void textFileFromText(final String text) {
+		TextFile textFile = new TextFile();
+		textFile.encoding = PreferenceHelper.getEncoding(this);
+		textFile.eol = PreferenceHelper.getLineEnding(this);
+		textFile.text = text;
+		onFileLoaded(textFile);
+	}
+
+	@Override
+	public void onFileLoaded(TextFile... textFiles) {
+		for (TextFile textFile : textFiles) {
+			textFile.setupPageSystem(PreferenceHelper.getSplitText(this), this);
+
+			int position = TextFileProvider.add(textFile);
+
+			pagerAdapter.notifyDataSetChanged();
+			viewPager.setCurrentItem(position);
+
+			updateTitle();
+
+			if (textFile.greatUri != null && !textFile.greatUri.getFilePath().isEmpty()) {
+				RecentFilesProvider.addRecentFile(textFile.greatUri.getUri().toString());
+			}
+		}
+	}
+
+	@Override
+	public void onFileLoadError(String message) {
+		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
+
+	/**
+	 * Update title of application and update menu.
+	 */
+	public void updateTitle() {
+		TextFile textFile = TextFileProvider.get(viewPager.getCurrentItem());
+		if (textFile == null)
+			actionBar.setTitle(R.string.app_name);
+		else
+			actionBar.setTitle(textFile.getTitle());
+		supportInvalidateOptionsMenu();
+		Log.e("Codoma", "update title");
+
+		//tabs.setVisibility(TextFileProvider.size() > 1 ? View.VISIBLE : View.GONE);
+	}
+
+	@Override
+	public void onPageChanged(int page) {
+		// TODO: rework search and replace
+		//pageSystemButtons.updateVisibility(false);
+		//searchResult = null;
+		TextFile textFile = TextFileProvider.get(viewPager.getCurrentItem());
+		if (textFile != null) {
+			textFile.clearHistory();
+		}
+		supportInvalidateOptionsMenu();
+		closeKeyBoard();
+	}
+
+
+	/**
+	 * Closes the soft keyboard.
+	 *
+	 * @throws NullPointerException
+	 */
+	private void closeKeyBoard() {
+		// Central system API to the overall input method framework (IMF) architecture
+		InputMethodManager inputManager =
+				(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		// Base interface for a remote object
+		View focusedView = getCurrentFocus();
+		if (focusedView == null) return;
+		IBinder windowToken = focusedView.getWindowToken();
+
+		// Hide type
+		int hideType = InputMethodManager.HIDE_NOT_ALWAYS;
+
+		// Hide the KeyBoard
+		inputManager.hideSoftInputFromWindow(windowToken, hideType);
+	}
+
+	@Override
+	public void onSelectFileOptions(Uri uri, LineReader.LineEnding eol, String encoding) {
+		textFileByUri(uri, eol, encoding);
+	}
+
+	@Override
+	public void onRecentFileSelected(Uri uri) {
+		textFileByUri(uri, null, null);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		for (int i = 0; i < pagerAdapter.getCount(); ++i) {
+			pagerAdapter.getRegisteredFragment(i).preferencesChanged();
+		}
+	}
+
+	/**
+	 * Adapter for pages with opened files.
+	 */
+	public class ScreenSlidePagerAdapter extends SmartFragmentPagerAdapter<TextFileFragment> {
+		public ScreenSlidePagerAdapter() {
+			super(getSupportFragmentManager(), TextFileFragment.class);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			Log.d(TAG, "Creating page for position " + position);
+			Fragment fragment = getRegisteredFragment(position);
+			if (fragment == null)
+				fragment = TextFileFragment.newInstance(position);
+			return fragment;
+			//return TextFileFragment.newInstance(position);
+		}
+
+		@Override
+		public int getCount() {
+			return TextFileProvider.size();
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			TextFile textFile = TextFileProvider.get(position);
+			return textFile == null ? "(empty)" : textFile.getTitle();
+		}
+
+		@Override
+		public int getItemPosition(Object object) {
+			/*TextFileFragment frag = (TextFileFragment) object;
+			int pos = TextFileProvider.indexOf(frag.getTextFile());
+			if (pos == -1) return POSITION_NONE;
+			return pos;
+			SparseArrayCompat<TextFileFragment> sparseArray = getListOfRegisteredFragments();
+			for (int i = 0; i < sparseArray.size(); ++i) {
+				int key = sparseArray.keyAt(i);
+				// get the object by the key.
+				TextFileFragment obj = sparseArray.get(key);
+				if (obj == object)
+					return key;
+			}*/
+			return POSITION_NONE;
+		}
+	}
+
+}

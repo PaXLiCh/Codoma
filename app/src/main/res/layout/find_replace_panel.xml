@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:visibility="gone">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<CheckBox
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Replace"
+			android:id="@+id/find_panel_replace_bar_toggle"
+			android:layout_centerVertical="true"
+			android:layout_alignParentStart="true"
+			android:layout_alignBaseline="@+id/find_panel_search_text"/>
+
+		<!-- TODO subclass EditText to intercept imeAction and do a find action
+				android:imeActionLabel="@string/find_panel_find_label"
+				android:imeActionId="@id/find_panel_search_text" -->
+		<EditText
+			android:id="@+id/find_panel_search_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@+id/find_panel_find_prev"
+			android:hint="@string/find_panel_find_label"
+			android:imeOptions="actionDone|flagNoExtractUi"
+			android:singleLine="true"
+			android:layout_toRightOf="@+id/find_panel_replace_bar_toggle"/>
+
+		<ImageButton
+			android:id="@+id/find_panel_find_next"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			android:contentDescription="Next"
+			android:src="@drawable/find_forwards"/>
+
+		<ImageButton
+			android:id="@+id/find_panel_find_prev"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_toStartOf="@+id/find_panel_find_next"
+			android:contentDescription="Prev"
+			android:src="@drawable/find_backwards"/>
+
+	</RelativeLayout>
+
+
+	<RelativeLayout
+		android:id="@+id/find_panel_replace_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<ImageButton
+			android:id="@+id/find_panel_settings"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			android:contentDescription="Opts"
+			android:src="@drawable/ic_action_settings"
+			/>
+		<!-- TODO subclass EditText to intercept imeAction and do a replace action
+				android:imeActionLabel="@string/find_panel_replace_label"
+				android:imeActionId="@id/find_panel_replace_text" -->
+		<EditText
+			android:id="@+id/find_panel_replace_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@+id/find_panel_replace"
+			android:layout_toRightOf="@+id/find_panel_settings"
+			android:hint="@string/find_panel_replace_label"
+			android:imeOptions="actionDone|flagNoExtractUi"
+			android:singleLine="true"
+			android:layout_alignBottom="@+id/find_panel_settings"
+			android:layout_alignTop="@+id/find_panel_settings"/>
+
+		<ImageButton
+			android:id="@+id/find_panel_replace"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_toStartOf="@+id/find_panel_replace_all"
+			android:contentDescription="Replace"
+			android:src="@drawable/replace"/>
+
+		<ImageButton
+			android:id="@+id/find_panel_replace_all"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			android:contentDescription="Replace all"
+			android:src="@drawable/replace_all"/>
+	</RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/settings_group_view">
+		<SwitchPreference
+			android:defaultValue="@bool/settings_view_syntax_highlight_default"
+			android:key="@string/settings_view_syntax_highlight_key"
+			android:summary="@string/settings_view_syntax_highlight_summary"
+			android:title="@string/settings_view_syntax_highlight_title"/>
+		<SwitchPreference
+			android:defaultValue="@bool/settings_view_line_numbers_default"
+			android:key="@string/settings_view_line_numbers_key"
+			android:summary="@string/settings_view_line_numbers_summary"
+			android:title="@string/settings_view_line_numbers_title"/>
+		<SwitchPreference
+			android:defaultValue="@bool/settings_view_wordwrap_default"
+			android:key="@string/settings_view_wordwrap_key"
+			android:summary="@string/settings_view_wordwrap_summary"
+			android:title="@string/settings_view_wordwrap_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_view_font_default"
+			android:key="@string/settings_view_font_key"
+			android:summary="@string/settings_view_font_summary"
+			android:title="@string/settings_view_font_title"/>
+		<ru.kolotnev.codoma.FontSizeDialogPreference
+			android:defaultValue="@integer/settings_view_font_size_default"
+			android:dialogLayout="@layout/dialog_font_size"
+			android:key="@string/settings_view_font_size_key"
+			android:summary="@string/settings_view_font_size_summary"
+			android:title="@string/settings_view_font_size_title"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/settings_group_io">
+		<SwitchPreference
+			android:defaultValue="@bool/settings_file_page_default"
+			android:key="@string/settings_file_page_key"
+			android:summary="@string/settings_file_page_summary"
+			android:title="@string/settings_file_page_title"/>
+		<SwitchPreference
+			android:defaultValue="@bool/settings_file_saf_default"
+			android:key="@string/settings_file_saf_key"
+			android:summary="@string/settings_file_saf_summary"
+			android:title="@string/settings_file_saf_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_file_encoding_default"
+			android:key="@string/settings_file_encoding_key"
+			android:summary="@string/settings_file_encoding_summary"
+			android:title="@string/settings_file_encoding_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_file_encoding_fallback_default"
+			android:key="@string/settings_file_encoding_fallback_key"
+			android:summary="@string/settings_file_encoding_fallback_summary"
+			android:title="@string/settings_file_encoding_fallback_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_file_line_endings_default"
+			android:entries="@array/settings_file_line_endings_entries"
+			android:entryValues="@array/settings_file_line_endings_entry_values"
+			android:key="@string/settings_file_line_endings_key"
+			android:summary="@string/settings_file_line_endings_summary"
+			android:title="@string/settings_file_line_endings_title"/>
+	</PreferenceCategory>
+
+</PreferenceScreen>

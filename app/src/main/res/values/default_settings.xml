@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<bool name="settings_auto_backup_default">true</bool>
+	<bool name="settings_auto_close_clipboard_default">true</bool>
+	<bool name="settings_auto_display_keyboard_default">true</bool>
+	<bool name="settings_auto_indent_default">true</bool>
+	<bool name="settings_auto_open_clipboard_default">true</bool>
+	<bool name="settings_drag_select_default">true</bool>
+	<bool name="settings_highlight_current_row_default">false</bool>
+	<bool name="settings_long_press_capitalize_default">false</bool>
+	<bool name="settings_show_nonprinting_default">false</bool>
+	<bool name="settings_show_row_number_default">false</bool>
+	<bool name="settings_word_wrap_default">true</bool>
+
+	<bool name="settings_view_wordwrap_default">true</bool>
+	<bool name="settings_view_syntax_highlight_default">true</bool>
+	<bool name="settings_view_line_numbers_default">true</bool>
+
+	<integer name="settings_view_font_size_default">16</integer>
+
+	<bool name="settings_file_page_default">false</bool>
+	<bool name="settings_file_saf_default">false</bool>
+	<string name="settings_file_line_endings_default" translatable="false">LF</string>
+	<string name="settings_file_encoding_default" translatable="false">UTF-8</string>
+	<string name="settings_file_encoding_fallback_default" translatable="false">UTF-8</string>
+</resources>

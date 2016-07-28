@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:activity=".NewEditorActivity">
+
+	<group android:id="@+id/menu_group_file">
+		<item
+			android:id="@+id/action_save"
+			android:icon="@drawable/ic_action_content_save"
+			android:title="@string/action_save"/>
+		<item
+			android:id="@+id/action_save_as"
+			android:icon="@drawable/ic_action_content_save"
+			android:title="@string/action_save_as"/>
+		<item
+			android:id="@+id/action_close"
+			android:icon="@drawable/ic_action_close"
+			android:title="@string/action_close"
+			app:showAsAction="ifRoom"/>
+		<item
+			android:id="@+id/action_undo"
+			android:icon="@drawable/ic_action_undo"
+			android:title="@string/menu_undo"
+			app:showAsAction="ifRoom"/>
+		<item
+			android:id="@+id/action_redo"
+			android:icon="@drawable/ic_action_redo"
+			android:title="@string/menu_redo"
+			app:showAsAction="ifRoom"/>
+		<item
+			android:id="@+id/find_panel_toggle"
+			android:icon="@drawable/ic_action_search"
+			android:title="@string/menu_find_panel_toggle"/>
+		<item
+			android:id="@+id/go_to_line"
+			android:title="@string/menu_go_to_line"/>
+		<item
+			android:id="@+id/statistics"
+			android:title="@string/menu_statistics"/>
+	</group>
+
+	<group android:id="@+id/menu_group_file_page">
+		<item
+			android:id="@+id/action_page_previous"
+			android:title="Previous page"/>
+		<item
+			android:id="@+id/action_page_next"
+			android:title="Next page"/>
+		<item
+			android:id="@+id/action_page_go"
+			android:title="Go to page..."/>
+	</group>
+
+	<item
+		android:id="@+id/recent_files"
+		android:icon="@drawable/ic_action_history"
+		android:title="@string/menu_recent_files"/>
+	<item
+		android:id="@+id/new_file"
+		android:icon="@drawable/ic_action_file"
+		android:title="@string/menu_new"/>
+	<item
+		android:id="@+id/action_open"
+		android:icon="@drawable/ic_action_file_folder_open"
+		android:title="@string/menu_open"/>
+	<item
+		android:id="@+id/action_open_as"
+		android:icon="@drawable/ic_action_file_folder_open"
+		android:title="@string/menu_open_as"/>
+	<item
+		android:id="@+id/settings"
+		android:icon="@drawable/ic_action_settings"
+		android:title="@string/menu_settings"/>
+	<item
+		android:id="@+id/change_input_method"
+		android:icon="@drawable/ic_action_hardware_keyboard"
+		android:title="@string/menu_change_input_method"/>
+	<item
+		android:id="@+id/help"
+		android:icon="@drawable/ic_action_help"
+		android:title="@string/menu_help"/>
+	<item
+		android:id="@+id/about"
+		android:icon="@drawable/ic_action_paypal"
+		android:title="@string/menu_about"/>
+
+</menu>

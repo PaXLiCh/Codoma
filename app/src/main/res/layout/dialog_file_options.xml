@@ -1,0 +1,31 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp"
+	tools:context=".FileOptionsDialogFragment">
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Line endings"/>
+
+	<Spinner
+		android:id="@+id/spinner_eols"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="Encoding"/>
+
+	<Spinner
+		android:id="@+id/spinner_encodings"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:spinnerMode="dialog"/>
+
+</LinearLayout>

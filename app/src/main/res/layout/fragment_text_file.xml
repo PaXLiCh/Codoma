@@ -1,0 +1,62 @@
+<FrameLayout
+	android:id="@+id/view_editor"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:activity=".TextFileFragment">
+
+	<ru.kolotnev.codoma.GoodScrollView
+		android:id="@+id/scroll_vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@null"
+		android:fillViewport="true"
+		android:scrollbars="vertical">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:descendantFocusability="beforeDescendants"
+			android:focusable="true"
+			android:focusableInTouchMode="true"
+			android:orientation="horizontal">
+
+			<TextView
+				android:id="@+id/edit_text_line_numbers"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:gravity="right"
+				android:text="1\n2\n3\n199\n201"
+				android:paddingTop="5dp"
+				android:paddingBottom="5dp"/>
+
+			<HorizontalScrollView
+				android:id="@+id/scroll_horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@null"
+				android:fillViewport="true"
+				android:scrollbars="horizontal">
+
+				<view
+					android:id="@+id/edit_text_colored"
+					class="ru.kolotnev.codoma.ColoredEditText"
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:background="@null"
+					android:bufferType="spannable"
+					android:cursorVisible="true"
+					android:gravity="top|start"
+					android:imeOptions="flagNoExtractUi"
+					android:singleLine="false"
+					android:textCursorDrawable="@null"
+					android:textIsSelectable="true"
+					android:paddingTop="5dp"
+					android:paddingBottom="5dp"
+					android:paddingLeft="5dp"/>
+			</HorizontalScrollView>
+		</LinearLayout>
+
+	</ru.kolotnev.codoma.GoodScrollView>
+</FrameLayout>
