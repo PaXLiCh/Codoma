@@ -17,6 +17,11 @@
 	<bool name="settings_view_line_numbers_default">true</bool>
 
 	<integer name="settings_view_font_size_default">16</integer>
+	<string name="settings_view_whitespace_default">NO</string>
+	<string name="settings_view_update_delay_default">1000</string>
+	<string name="settings_view_tab_width_default">4</string>
+	<bool name="settings_edit_tab_to_spaces_default">false</bool>
+	<bool name="settings_edit_indent_default">true</bool>
 
 	<bool name="settings_file_page_default">false</bool>
 	<bool name="settings_file_saf_default">false</bool>

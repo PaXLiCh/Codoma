@@ -6,26 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import ru.kolotnev.codoma.TextSyntax.CSSTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.CppTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.CsharpTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.GLSLTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.HTMLTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.JavaTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.LUATextSyntax;
-import ru.kolotnev.codoma.TextSyntax.PHPTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.PlainTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.PythonTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.SQLTextSyntax;
-import ru.kolotnev.codoma.TextSyntax.TextSyntax;
 
 /**
  * Container for new or opened text file.
@@ -42,7 +27,6 @@ public class TextFile implements TextWatcher {
 	public String encoding = PreferenceHelper.DEFAULT_ENCODING;
 	public LineReader.LineEnding eol = LineReader.LineEnding.LF;
 	public boolean pageSystemEnabled;
-	public TextSyntax textSyntax;
 
 	/**
 	 * Is undo/redo being performed? This member
@@ -286,43 +270,6 @@ public class TextFile implements TextWatcher {
 		return mEditHistory.mmPosition != -1;
 	}
 
-
-	public void detectSyntax() {
-		String fileExtension = greatUri == null ? "" : greatUri.getFileExtension();
-		if (TextUtils.isEmpty(fileExtension))
-			fileExtension = "";
-
-		if (fileExtension.contains("htm") || fileExtension.contains("xml")) {
-			textSyntax = new HTMLTextSyntax();
-		} else if (fileExtension.equals("css")) {
-			textSyntax = new CSSTextSyntax();
-		} else if (fileExtension.equals("lua")) {
-			textSyntax = new LUATextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("py")) {
-			textSyntax = new PythonTextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("php")) {
-			textSyntax = new PHPTextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("sql")) {
-			textSyntax = new SQLTextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("cpp")
-				|| fileExtension.equalsIgnoreCase("c")
-				|| fileExtension.equalsIgnoreCase("hpp")
-				|| fileExtension.equalsIgnoreCase("h")) {
-			textSyntax = new CppTextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("java")) {
-			textSyntax = new JavaTextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("cs")) {
-			textSyntax = new CsharpTextSyntax();
-		} else if (fileExtension.equalsIgnoreCase("glsl")) {
-			textSyntax = new GLSLTextSyntax();
-		} else if (fileExtension.equals("prop") || fileExtension.contains("conf") ||
-				(Arrays.asList(MimeTypes.MIME_MARKDOWN).contains(fileExtension))) {
-			textSyntax = new PlainTextSyntax();
-		} else {
-			textSyntax = new PlainTextSyntax();
-		}
-	}
-
 	/**
 	 * Class that listens to changes in the text.
 	 */
@@ -395,8 +342,6 @@ public class TextFile implements TextWatcher {
 		setStartingLines();
 
 		this.pageSystemEnabled = pageSystemEnabled && pages.size() > 1;
-
-		detectSyntax();
 	}
 
 	public int getStartingLine() {

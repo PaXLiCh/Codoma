@@ -15,7 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -41,10 +41,10 @@ public class SelectFileActivity extends AppCompatActivity implements
 	private static final String ROOT_DIR = "/";
 	private static final String PATH_SEPARATOR = "/";
 	private final FileInfoAdapter adapter = new FileInfoAdapter();
-	private String sdCardPath = "";
 	private String currentFolder;
 	private MenuItem mSearchViewMenuItem;
 	private SearchView searchView;
+	private HorizontalScrollView scrollBreadcrumbs;
 	private LinearLayout viewBreadcrumbs;
 	private Actions action;
 	private View textViewEmpty;
@@ -55,8 +55,6 @@ public class SelectFileActivity extends AppCompatActivity implements
 		super.onCreate(savedInstanceState);
 
 		currentFolder = PreferenceHelper.defaultFolder(this);
-
-		getSdCardPath();
 
 		setContentView(R.layout.activity_select_file);
 
@@ -76,7 +74,8 @@ public class SelectFileActivity extends AppCompatActivity implements
 		listView.setAdapter(adapter);
 		textViewEmpty = findViewById(R.id.empty_text);
 
-		viewBreadcrumbs = (LinearLayout) findViewById(R.id.view_breadcrumbs);
+		scrollBreadcrumbs = (HorizontalScrollView) findViewById(R.id.scroll_breadcrumbs);
+		viewBreadcrumbs = (LinearLayout) scrollBreadcrumbs.findViewById(R.id.view_breadcrumbs);
 
 		FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.menu_item_create_file);
 		mFab.setOnClickListener(new View.OnClickListener() {
@@ -114,9 +113,6 @@ public class SelectFileActivity extends AppCompatActivity implements
 
 	@Override
 	public boolean onQueryTextChange(String newText) {
-		if (adapter == null)
-			return true;
-
 		adapter.filter(newText);
 		return true;
 	}
@@ -278,63 +274,35 @@ public class SelectFileActivity extends AppCompatActivity implements
 	}
 
 	private void setDirectoryButtons() {
-		String[] parts = currentFolder.split(PATH_SEPARATOR);
-
 		viewBreadcrumbs.removeAllViews();
 
-		int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
-		int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
+		// Adding buttons
 
-		// Add home button separately
-		ImageButton ib = new ImageButton(this);
-		ib.setImageResource(R.drawable.ic_device_tablet);
-		ib.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
-		ib.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				new UpdateList().execute(ROOT_DIR);
-			}
-		});
-		viewBreadcrumbs.addView(ib);
-
-		// Add other buttons
-
+		String[] parts = currentFolder.split(PATH_SEPARATOR);
 		String dir = "";
 
-		for (int i = 1; i < parts.length; ++i) {
-			dir += PATH_SEPARATOR + parts[i];
-			if (dir.equalsIgnoreCase(sdCardPath)) {
-				// Add SD card button
-				ib = new ImageButton(this);
-				ib.setImageResource(R.drawable.ic_device_sd_storage);
-				ib.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, MATCH_PARENT));
-				ib.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						new UpdateList().execute(sdCardPath);
-					}
-				});
-				viewBreadcrumbs.addView(ib);
-			} else {
-				Button b = new Button(this);
-				b.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, MATCH_PARENT));
-				b.setText(parts[i]);
-				b.setTag(dir);
-				b.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						String dir = (String) view.getTag();
-						new UpdateList().execute(dir);
-					}
-				});
-				viewBreadcrumbs.addView(b);
-			}
+		for (String part : parts) {
+			dir += PATH_SEPARATOR + part;
+			View buttonView = View.inflate(this, R.layout.breadcrumbs, null);
+			Button b = (Button) buttonView;
+			b.setText((part.isEmpty() ? PATH_SEPARATOR : part) + "   >");
+			b.setTag(dir);
+			b.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					String dir = (String) view.getTag();
+					new UpdateList().execute(dir);
+				}
+			});
+			viewBreadcrumbs.addView(b);
 		}
-	}
 
-	private void getSdCardPath() {
-		sdCardPath = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-		//Log.e("Codoma", "sdcard path = " + sdCardPath);
+		scrollBreadcrumbs.post(new Runnable() {
+			@Override
+			public void run() {
+				scrollBreadcrumbs.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+			}
+		});
 	}
 
 	public enum Actions {
@@ -414,7 +382,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 									""));
 						} else if (f.isFile()
 								&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
-								&& org.apache.commons.io.FileUtils.sizeOf(f) <= Build.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
+								&& org.apache.commons.io.FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
 							final long fileSize = f.length();
 							DateFormat format = DateFormat.getDateTimeInstance();
 							String date = format.format(f.lastModified());

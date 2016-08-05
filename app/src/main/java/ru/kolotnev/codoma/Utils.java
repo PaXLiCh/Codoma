@@ -3,7 +3,6 @@ package ru.kolotnev.codoma;
 import android.support.annotation.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Couple of helpers.

@@ -64,7 +64,7 @@ public class FileInfoDialog extends DialogFragment {
 		 */
 		@Override
 		protected Void doInBackground(Void... params) {
-			TextFile textFile = TextFileProvider.get(getArguments().getInt(ARG_TEXT_FILE_INDEX));
+			TextFile textFile = CodomaApplication.get(getArguments().getInt(ARG_TEXT_FILE_INDEX));
 			if (textFile == null) return null;
 
 			linesInfo.add(new Pair<>("Encoding", textFile.encoding));

@@ -81,13 +81,11 @@
 	<string name="settings_desc_drag_select">Выделять текст при перемещении курсора</string>
 	<string name="settings_label_file_input_format">Кодировка открываемых файлов</string>
 	<string name="settings_label_file_output_format">Кодировка сохраняемых файлов</string>
-	<string name="settings_label_tab_spaces">Ширина табуляции</string>
 	<string name="find_panel_case_sensitive">С учётом регистра</string>
 	<string name="file_picker_title_pick_file">Выберите файл для открытия</string>
 	<string name="settings_desc_show_nonprinting">Показывает пробелы, табуляцию, концы строк как видимые символы</string>
 	<string name="settings_desc_tab_spaces">Количество пробелов в табуляции</string>
-	<string name="settings_desc_word_wrap">Продолжает тест на следующей строке, если он слишком длинный</string>
-	<string name="settings_desc_show_row_number">Показывает номер текущей строки в статусной строке</string>
+	<string name="settings_desc_word_wrap">Продолжает текст на следующей строке, если он слишком длинный</string>
 	<string name="settings_desc_navigation_method">Различные способы, как можно перемещать курсор</string>
 	<string name="settings_label_auto_backup">Резервные копии</string>
 	<string name="settings_label_auto_close_clipboard">Автозакрытие буффера</string>
@@ -97,7 +95,6 @@
 	<string name="settings_label_show_nonprinting">Непечатаемые символы</string>
 	<string name="settings_label_word_wrap">Перенос слов</string>
 	<string name="settings_label_zoom_size">Масштаб \u0025</string>
-	<string name="settings_label_show_row_number">Номер текущей строки</string>
 	<string name="settings_label_line_terminator_style">Концы строк</string>
 	<string name="settings_desc_long_press_capitalize">Делать букву заглавной при долгом удержании клавиши на аппаратной клавиатуре</string>
 	<string name="settings_label_navigation_method">Управление курсором</string>
@@ -105,7 +102,6 @@
 	<string name="settings_desc_file_input_format">Кодировка по-умолчанию для открываемых файлов</string>
 	<string name="settings_desc_file_output_format">Кодировка по-умолчанию для сохраняемых файлов</string>
 	<string name="settings_label_long_press_capitalize">Заглавные при удержании</string>
-	<string name="settings_label_chirality">Левша/Правша</string>
 	<string name="settings_label_drag_select">Выделять перемещением</string>
 	<string name="settings_desc_auto_open_clipboard">Автоматически открывает панель буфера обмена при выделении текста</string>
 	<string name="settings_desc_color_scheme">Наборы цветов для оформления текста</string>
@@ -113,7 +109,6 @@
 	<string name="settings_desc_auto_backup">Помогает восстанавливать несохранённые файлы, но уменьшает производительность</string>
 	<string name="settings_desc_auto_close_clipboard">Скрывать панель буфера обмена после снятия выделения с текста</string>
 	<string name="settings_desc_auto_display_keyboard">Показывать виртуальную клавиатуру при касании экрана</string>
-	<string name="settings_desc_chirality">Влияет на то, как будет работать навигация по тексту</string>
 	<string name="dialog_replace_no_selection">Нет выбранного текста для замены</string>
 	<string name="dialog_sorry_backup_disabled">Возможно, что некоторые несохранённые изменения были потеряны, На будущее, убедитесь, что включена опция резервного копирования.</string>
 	<string name="settings_common_option_auto_label">Автовыбор</string>
@@ -122,7 +117,7 @@
 	<string name="action_set_as_working_folder">Сделать рабочей папкой</string>
 	<string name="action_is_working_folder">Это рабочая папка</string>
 	<string name="action_search">Найти</string>
-	<string name="file_saved_with_success">Файл сохранён</string>
+	<string name="file_saved_with_success">Файл %s сохранён</string>
 	<string name="match_case">С учётом регистра</string>
 	<string name="regular_expression">Регулярное выражение</string>
 	<string name="rename">Переименовать</string>
@@ -147,8 +142,8 @@
 	<string name="settings_view_tab_use_spaces_title">Пробелы вместо табуляции</string>
 	<string name="settings_view_tab_use_spaces_summary">Вместо символов табуляции будут вставляться пробелы в указанном количестве</string>
 
-	<string name="settings_view_tab_size_title">Ширина табуляции</string>
-	<string name="settings_view_tab_size_summary">Ширина символа табуляции в количестве пробелов</string>
+	<string name="settings_view_tab_width_title">Ширина табуляции</string>
+	<string name="settings_view_tab_width_summary">Ширина символа табуляции в количестве пробелов</string>
 
 	<string name="settings_view_wordwrap_title">Перенос строк</string>
 	<string name="settings_view_wordwrap_summary">Переносить строки</string>
@@ -158,6 +153,15 @@
 
 	<string name="settings_view_font_size_title">Размер шрифта в редаторе</string>
 	<string name="settings_view_font_size_summary">Размер шрифта, используемого в редакторе. Учитываются системные настройки размера текста</string>
+
+	<string name="settings_view_update_delay_title">Задержка отрисовки</string>
+	<string name="settings_view_update_delay_summary">Задержка перед перерисовкой текста после послденего изменения</string>
+
+	<string name="settings_edit_tab_to_spaces_title">Заменять табуляцию пробелами</string>
+	<string name="settings_edit_tab_to_spaces_summary">Вместо табуляции отступы будут сделаны пробелам.</string>
+
+	<string name="settings_edit_indent_title">Автоотступы</string>
+	<string name="settings_edit_indent_summary">Автоматически добавлять пробелы/табуляцию при переходе на новую строку</string>
 
 	<string name="settings_file_encoding_title">Кодировка</string>
 	<string name="settings_file_encoding_summary">Набор символов, с которым будет сохранён созданный новый файл</string>
@@ -170,15 +174,34 @@
 
 	<string name="settings_file_line_endings_title">Концы строк</string>
 	<string name="settings_file_line_endings_summary">Концы строк, с которыми будет сохранён созданный новый файл</string>
-	<string-array name="settings_file_line_endings_entries">
-		<item>LF — Unix и Mac OS X (\\n)</item>
-		<item>CRLF — Windows (\\r\\n)</item>
-		<item>CR — Mac OS 9 (\\r)</item>
+
+	<string-array name="settings_view_whitespace_entries">
+		<item>Не показывать</item>
+		<item>В выделении</item>
+		<item>По всему тексту</item>
 	</string-array>
-	<string-array name="settings_file_line_endings_entry_values">
-		<item>LF</item>
-		<item>CRLF</item>
-		<item>CR</item>
+
+	<string-array name="settings_view_tab_width_entries">
+		<item>Не трогать табуляцию</item>
+		<item>1 пробел</item>
+		<item>2 пробела</item>
+		<item>4 пробела</item>
+		<item>8 пробела</item>
+	</string-array>
+
+	<string-array name="settings_view_update_delay_entries">
+		<item>0,5 секунды</item>
+		<item>1,0 секунда</item>
+		<item>1,5 секунды</item>
+		<item>2,0 секунды</item>
+		<item>3,0 секунды</item>
+		<item>5,0 секунд</item>
+	</string-array>
+
+	<string-array name="settings_file_line_endings_entries">
+		<item>LF — Unix и macOS</item>
+		<item>CRLF — Windows</item>
+		<item>CR — Mac OS 9</item>
 	</string-array>
 	<string name="settings_file_page_summary">Загружать и редактировать большие файлы постранично</string>
 	<string name="settings_file_page_title">Постранично</string>

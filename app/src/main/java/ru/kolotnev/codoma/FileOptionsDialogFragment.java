@@ -26,7 +26,9 @@ import java.util.Arrays;
  * Use the {@link FileOptionsDialogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FileOptionsDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class FileOptionsDialogFragment
+		extends DialogFragment
+		implements DialogInterface.OnClickListener {
 	public static final String TAG = "FileOptionsDialog";
 	private static final String ARG_URI = "uri";
 	private static final String ARG_ENCODING = "encoding";
@@ -85,7 +87,7 @@ public class FileOptionsDialogFragment extends DialogFragment implements DialogI
 
 		Resources res = getResources();
 		final String[] valuesEndings = res
-				.getStringArray(R.array.settings_file_line_endings_entry_values);
+				.getStringArray(R.array.settings_file_line_endings_values);
 		ArrayAdapter<String> adapterEndings = new ArrayAdapter<>(context,
 				android.R.layout.simple_spinner_dropdown_item,
 				res.getStringArray(R.array.settings_file_line_endings_entries));

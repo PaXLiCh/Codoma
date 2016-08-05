@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
-	Copyright (c) 2013 Tah Wei Hoon.
-	All rights reserved. This program and the accompanying materials
-	are made available under the terms of the Apache License Version 2.0,
-	with full text available at http://www.apache.org/licenses/LICENSE-2.0.html
-
-	This software is provided "as is". Use at your own risk.
- -->
-
 <resources>
 	<string name="settings_key_auto_backup" translatable="false">auto_backup</string>
 	<string name="settings_key_auto_close_clipboard" translatable="false">auto_close_clipboard</string>
@@ -35,6 +26,11 @@
 	<string name="settings_view_wordwrap_key" translatable="false">view_wordwrap</string>
 	<string name="settings_view_font_key" translatable="false">view_font</string>
 	<string name="settings_view_font_size_key" translatable="false">view_font_size</string>
+	<string name="settings_view_whitespace_key" translatable="false">view_whitespace</string>
+	<string name="settings_view_tab_width_key" translatable="false">view_tab_width</string>
+	<string name="settings_view_update_delay_key" translatable="false">view_update_delay</string>
+	<string name="settings_edit_tab_to_spaces_key" translatable="false">edit_tab_to_spaces</string>
+	<string name="settings_edit_indent_key" translatable="false">edit_indent</string>
 	<string name="settings_file_page_key" translatable="false">file_page</string>
 	<string name="settings_file_saf_key" translatable="false">file_saf</string>
 	<string name="settings_file_line_endings_key" translatable="false">file_line_endings</string>
@@ -101,24 +97,33 @@
 		<item>@string/settings_syntax_ruby</item>
 	</string-array>
 
-	<string-array
-		name="settings_entry_values_tab_spaces">
+	<string-array name="settings_view_whitespace_values">
+		<item>NO</item>
+		<item>SELECTION</item>
+		<item>ALL</item>
+	</string-array>
+
+	<string-array name="settings_view_tab_width_values">
+		<item>0</item>
 		<item>1</item>
 		<item>2</item>
 		<item>4</item>
 		<item>8</item>
-		<item>16</item>
 	</string-array>
 
-	<string-array
-		name="settings_entry_values_zoom_size">
-		<item>50</item>
-		<item>75</item>
-		<item>100</item>
-		<item>125</item>
-		<item>150</item>
-		<item>200</item>
-		<item>400</item>
+	<string-array name="settings_view_update_delay_values">
+		<item>500</item>
+		<item>1000</item>
+		<item>1500</item>
+		<item>2000</item>
+		<item>3000</item>
+		<item>5000</item>
+	</string-array>
+
+	<string-array name="settings_file_line_endings_values">
+		<item>LF</item>
+		<item>CRLF</item>
+		<item>CR</item>
 	</string-array>
 
 	<!-- Other setting entry values are in EncodingScheme.java -->

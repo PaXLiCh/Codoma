@@ -11,13 +11,14 @@
 		android:layout_height="wrap_content">
 
 		<CheckBox
+			android:id="@+id/find_panel_replace_bar_toggle"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Replace"
-			android:id="@+id/find_panel_replace_bar_toggle"
-			android:layout_centerVertical="true"
+			android:layout_alignBaseline="@+id/find_panel_search_text"
+			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
-			android:layout_alignBaseline="@+id/find_panel_search_text"/>
+			android:layout_centerVertical="true"
+			android:text="Replace"/>
 
 		<!-- TODO subclass EditText to intercept imeAction and do a find action
 				android:imeActionLabel="@string/find_panel_find_label"
@@ -26,11 +27,13 @@
 			android:id="@+id/find_panel_search_text"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_toEndOf="@+id/find_panel_replace_bar_toggle"
 			android:layout_toLeftOf="@+id/find_panel_find_prev"
+			android:layout_toRightOf="@+id/find_panel_replace_bar_toggle"
+			android:layout_toStartOf="@+id/find_panel_find_prev"
 			android:hint="@string/find_panel_find_label"
 			android:imeOptions="actionDone|flagNoExtractUi"
-			android:singleLine="true"
-			android:layout_toRightOf="@+id/find_panel_replace_bar_toggle"/>
+			android:singleLine="true"/>
 
 		<ImageButton
 			android:id="@+id/find_panel_find_next"
@@ -38,6 +41,8 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentEnd="true"
 			android:layout_alignParentLeft="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentStart="true"
 			android:layout_alignParentTop="true"
 			android:contentDescription="Next"
 			android:src="@drawable/find_forwards"/>
@@ -47,6 +52,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
+			android:layout_toLeftOf="@+id/find_panel_find_next"
 			android:layout_toStartOf="@+id/find_panel_find_next"
 			android:contentDescription="Prev"
 			android:src="@drawable/find_backwards"/>
@@ -64,6 +70,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
 			android:layout_alignParentTop="true"
 			android:contentDescription="Opts"
 			android:src="@drawable/ic_action_settings"
@@ -75,19 +82,22 @@
 			android:id="@+id/find_panel_replace_text"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignBottom="@+id/find_panel_settings"
+			android:layout_alignTop="@+id/find_panel_settings"
+			android:layout_toEndOf="@+id/find_panel_settings"
 			android:layout_toLeftOf="@+id/find_panel_replace"
 			android:layout_toRightOf="@+id/find_panel_settings"
+			android:layout_toStartOf="@+id/find_panel_replace"
 			android:hint="@string/find_panel_replace_label"
 			android:imeOptions="actionDone|flagNoExtractUi"
-			android:singleLine="true"
-			android:layout_alignBottom="@+id/find_panel_settings"
-			android:layout_alignTop="@+id/find_panel_settings"/>
+			android:singleLine="true"/>
 
 		<ImageButton
 			android:id="@+id/find_panel_replace"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
+			android:layout_toLeftOf="@+id/find_panel_replace_all"
 			android:layout_toStartOf="@+id/find_panel_replace_all"
 			android:contentDescription="Replace"
 			android:src="@drawable/replace"/>
@@ -98,6 +108,8 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentEnd="true"
 			android:layout_alignParentLeft="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentStart="true"
 			android:layout_alignParentTop="true"
 			android:contentDescription="Replace all"
 			android:src="@drawable/replace_all"/>

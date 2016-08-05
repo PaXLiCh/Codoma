@@ -8,20 +8,18 @@
  */
 package ru.kolotnev.codoma.common;
 
-import java.util.Vector;
-
 
 /**
  * Worker thread to carry our find and replaceAll operations.
  * The find thread should not be reused after it has completed. Create a new one
  * for another operation.
  */
-public class FindThread extends Thread implements ProgressSource {
+public class FindThread extends Thread {
 	/** Reported progress will be scaled from 0 to MAX_PROGRESS */
-	private final static int MAX_PROGRESS = 100;
+	/*private final static int MAX_PROGRESS = 100;
 	final private SearchStrategy FINDER = new LinearSearchStrategy();
 	protected int _requestCode;
-	protected DocumentProvider _src;
+	protected TextFile _src;
 	protected Vector<ProgressObserver> _progressObservers = new Vector<>();
 	protected String _searchText;
 	protected String _replacementText;
@@ -32,7 +30,7 @@ public class FindThread extends Thread implements ProgressSource {
 	protected FindResults _results;
 	private int _docSize = 0; // size, in chars, of the document to search
 
-	private FindThread(int requestCode, DocumentProvider src,
+	private FindThread(int requestCode, TextFile src,
 			String searchText, int start,
 			boolean isCaseSensitive, boolean isWholeWord) {
 		_requestCode = requestCode;
@@ -44,7 +42,7 @@ public class FindThread extends Thread implements ProgressSource {
 		_docSize = src.docLength();
 	}
 
-	private FindThread(int requestCode, DocumentProvider src,
+	private FindThread(int requestCode, TextFile src,
 			String searchText, String replacementText, int start,
 			boolean isCaseSensitive, boolean isWholeWord) {
 		_requestCode = requestCode;
@@ -57,7 +55,7 @@ public class FindThread extends Thread implements ProgressSource {
 		_docSize = src.docLength();
 	}
 
-	static public FindThread createFindThread(DocumentProvider src,
+	static public FindThread createFindThread(TextFile src,
 			String searchText, int start, boolean isForwardSearch,
 			boolean isCaseSensitive, boolean isWholeWord) {
 
@@ -65,7 +63,7 @@ public class FindThread extends Thread implements ProgressSource {
 		return new FindThread(requestCode, src, searchText, start, isCaseSensitive, isWholeWord);
 	}
 
-	static public FindThread createReplaceAllThread(DocumentProvider src,
+	static public FindThread createReplaceAllThread(TextFile src,
 			String searchText, String replacementText, int start,
 			boolean isCaseSensitive, boolean isWholeWord) {
 		return new FindThread(
@@ -181,6 +179,6 @@ public class FindThread extends Thread implements ProgressSource {
 		public FindResults(int searchLength) {
 			searchTextLength = searchLength;
 		}
-	}
+	}*/
 
 }

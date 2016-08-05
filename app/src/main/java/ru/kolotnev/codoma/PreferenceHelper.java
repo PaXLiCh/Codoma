@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import java.io.File;
 
@@ -22,36 +23,44 @@ public final class PreferenceHelper {
 	private PreferenceHelper() {
 	}
 
-	private static SharedPreferences getPrefs(final Context context) {
+	private static SharedPreferences getPrefs(@NonNull final Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
-	private static SharedPreferences.Editor getEditor(final Context context) {
+	private static SharedPreferences.Editor getEditor(@NonNull final Context context) {
 		return getPrefs(context).edit();
 	}
 
 	// Getter Methods
 
-	private static boolean getBoolean(final Context context,
+	private static boolean getBoolean(@NonNull final Context context,
 			final int resIdKey, final int resIdDefault) {
 		Resources r = context.getResources();
 		return getPrefs(context).getBoolean(r.getString(resIdKey), r.getBoolean(resIdDefault));
 	}
 
-	private static String getString(final Context context,
+	private static String getString(@NonNull final Context context,
 			final int resIdKey, final int resIdDefault) {
 		Resources r = context.getResources();
 		return getPrefs(context).getString(r.getString(resIdKey), r.getString(resIdDefault));
 	}
 
-	private static int getInt(final Context context, final int resIdKey, final int resIdDefault) {
+	private static int getInt(@NonNull final Context context, @StringRes final int resIdKey, final int resIdDefault) {
 		Resources r = context.getResources();
 		return getPrefs(context).getInt(r.getString(resIdKey), r.getInteger(resIdDefault));
 	}
 
-	// VIEW
+	//region View
 
-	public static boolean getLineNumbers(final Context context) {
+	/**
+	 * Show line numbers on gutter.
+	 *
+	 * @param context
+	 * 		Context for getting preference.
+	 *
+	 * @return Is line numbers must be shown on gutter.
+	 */
+	public static boolean getLineNumbers(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_line_numbers_key,
 				R.bool.settings_view_line_numbers_default);
@@ -65,7 +74,7 @@ public final class PreferenceHelper {
 	 *
 	 * @return Enable or disable paging system.
 	 */
-	public static boolean getSplitText(Context context) {
+	public static boolean getSplitText(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_file_page_key,
 				R.bool.settings_file_page_default);
@@ -79,76 +88,108 @@ public final class PreferenceHelper {
 	 *
 	 * @return Enabled or disabled syntax coloring.
 	 */
-	public static boolean getSyntaxHighlight(final Context context) {
+	public static boolean getSyntaxHighlight(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_syntax_highlight_key,
 				R.bool.settings_view_syntax_highlight_default);
 	}
 
-	public static boolean getWrapContent(final Context context) {
+	public static boolean getWrapContent(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_wordwrap_key,
 				R.bool.settings_view_wordwrap_default);
 	}
 
-	public static int getFontSize(Context context) {
+	public static int getFontSize(@NonNull final Context context) {
 		return getInt(context,
 				R.string.settings_view_font_size_key,
 				R.integer.settings_view_font_size_default);
 	}
 
-	public static boolean getUseMonospace(final Context context) {
+	public static int getTabWidth(@NonNull final Context context) {
+		return Integer.parseInt(getString(context,
+				R.string.settings_view_tab_width_key,
+				R.string.settings_view_tab_width_default));
+	}
+
+	public static int getUpdateDelay(@NonNull final Context context) {
+		return Integer.parseInt(getString(context,
+				R.string.settings_view_update_delay_key,
+				R.string.settings_view_update_delay_default));
+	}
+
+	// endregion
+
+	// region Editing
+
+	public static boolean getTabToSpaces(@NonNull final Context context) {
+		return getBoolean(context,
+				R.string.settings_edit_tab_to_spaces_key,
+				R.bool.settings_edit_tab_to_spaces_default);
+	}
+
+	public static boolean getAutoIndent(@NonNull final Context context) {
+		return getBoolean(context,
+				R.string.settings_edit_indent_key,
+				R.bool.settings_edit_indent_default);
+	}
+
+	// endregion
+
+	public static boolean getUseMonospace(@NonNull final Context context) {
 		return true;//getPrefs(context).getBoolean("use_monospace", false);
 	}
 
-	public static boolean getUseAccessoryView(final Context context) {
+	public static boolean getUseAccessoryView(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("accessory_view", true);
 	}
 
-	public static int getTheme(final Context context) {
+	public static int getTheme(@NonNull final Context context) {
 		return getPrefs(context).getInt("theme", 0);
 	}
 
-	public static boolean isDarkTheme(final Context context) {
+	public static boolean isDarkTheme(@NonNull final Context context) {
 		return getPrefs(context).getInt("theme", 0) == 0;
 	}
 
-	public static boolean isLightTheme(final Context context) {
+	public static boolean isLightTheme(@NonNull final Context context) {
 		return getPrefs(context).getInt("theme", 0) == 1;
 	}
 
-	// FILE IO
+	// region FILE IO
 
-	public static LineReader.LineEnding getLineEnding(final Context context) {
+	public static LineReader.LineEnding getLineEnding(@NonNull final Context context) {
 		String lineEndingString = getString(context,
 				R.string.settings_file_line_endings_key,
 				R.string.settings_file_line_endings_default);
 		return LineReader.LineEnding.valueOf(lineEndingString);
 	}
 
-	public static boolean getUseStorageAccessFramework(final Context context) {
+	public static boolean getUseStorageAccessFramework(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_file_saf_key,
 				R.bool.settings_file_saf_default);
 	}
 
-	public static boolean getSuggestionActive(final Context context) {
+	public static boolean getSuggestionActive(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("suggestion_active", false);
 	}
 
-	public static String getEncoding(Context context) {
+	public static String getEncoding(@NonNull final Context context) {
 		return getString(context,
 				R.string.settings_file_encoding_key,
 				R.string.settings_file_encoding_default);
 	}
 
-	public static String getEncodingFallback(Context context) {
+	public static String getEncodingFallback(@NonNull final Context context) {
 		return getString(context,
 				R.string.settings_file_encoding_fallback_key,
 				R.string.settings_file_encoding_fallback_default);
 	}
 
-	public static String defaultFolder(Context context) {
+	// endregion
+
+	public static String defaultFolder(@NonNull final Context context) {
 		String folder;
 		File externalFolder = context.getExternalFilesDir(null);
 
@@ -163,7 +204,7 @@ public final class PreferenceHelper {
 		return folder;
 	}
 
-	public static String getWorkingFolder(Context context) {
+	public static String getWorkingFolder(@NonNull final Context context) {
 		return getPrefs(context).getString("working_folder2", defaultFolder(context));
 	}
 
@@ -201,7 +242,7 @@ public final class PreferenceHelper {
 
 
 	@Nullable
-	public static Typeface getFont(Context context) {
+	public static Typeface getFont(@NonNull final Context context) {
 		String font = getString(context,
 				R.string.settings_view_font_key,
 				R.string.settings_view_font_default);
@@ -223,34 +264,34 @@ public final class PreferenceHelper {
 	}
 
 	@NonNull
-	public static String[] getSavedPaths(Context context) {
+	public static String[] getSavedPaths(@NonNull final Context context) {
 		return getPrefs(context).getString("savedPaths2", "").split(",");
 	}
 
-	public static boolean getPageSystemButtonsPopupShown(Context context) {
+	public static boolean getPageSystemButtonsPopupShown(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("page_system_button_popup_shown", false);
 	}
 
-	public static boolean getAutoSave(Context context) {
+	public static boolean getAutoSave(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("auto_save", false);
 	}
 
-	public static boolean getReadOnly(Context context) {
+	public static boolean getReadOnly(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("read_only", false);
 	}
 
-	public static boolean getIgnoreBackButton(Context context) {
+	public static boolean getIgnoreBackButton(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("ignore_back_button", false);
 	}
 
 
 	// Setter methods
 
-	public static void setUseMonospace(Context context, boolean value) {
+	public static void setUseMonospace(@NonNull final Context context, boolean value) {
 		getEditor(context).putBoolean("use_monospace", value).commit();
 	}
 
-	public static void setUseAccessoryView(Context context, boolean value) {
+	public static void setUseAccessoryView(@NonNull final Context context, boolean value) {
 		getEditor(context).putBoolean("accessory_view", value).commit();
 	}
 

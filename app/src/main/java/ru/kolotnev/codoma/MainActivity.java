@@ -5,22 +5,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
-		implements SharedPreferences.OnSharedPreferenceChangeListener
-//		, ProgressObserver, RowListener, SelectionModeListener,
-//		NumberPickerDialog.INumberPickerDialog,
-//RecentFilesDialogFragment.Callbacks
-{
+		implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-	static final String LOG_TAG = "TextWarrior";
-
-	//-----------------------------------------------------------------------
-	//--------------------- Creation and init methods -----------------------
 //	private static final int SAVE_CALLBACK_NEW = 1;
 //	private static final int SAVE_CALLBACK_OPEN = 2;
 //	private static final int SAVE_CALLBACK_OPEN_RECENT = 3;
@@ -32,25 +21,8 @@ public class MainActivity extends AppCompatActivity
 //	private final static String STATE_TEXT_UI = "textUiState";
 //	protected int _saveFinishedCallback = CALLBACK_NONE;
 //	protected FreeScrollingTextField _editField;
-	//-----------------------------------------------------------------------
-	//------------------------- Menu item callbacks -------------------------
-//	protected FindPanel _findPanel;
-//	protected ClipboardPanel _clipboardPanel;
-//	protected String _filename = null;
-//	protected String _dialogErrorMsg = "";
-//	private String _lastSelectedFile = null; // latest result from FilePicker; may not refer to a valid file
-//	private Document _inputingDoc; // used as a temp holder when reading in a file TODO investigate using local variable
-//	private Bundle _initBundle = null; // the bundle that was passed in onCreate
 //	private RecoveryManager _recoveryManager;
-//	/** word count, line count etc. Calculated on demand */
-//	private CharEncodingUtils.Statistics _statistics = new CharEncodingUtils.Statistics();
-//	private ReadThread _taskRead = null;
-//	private WriteThread _taskWrite = null;
 //	private FindThread _taskFind = null;
-//	private AnalyzeStatisticsThread _taskAnalyze = null;
-
-	//-----------------------------------------------------------------------
-	//--------------------------- Dialog methods ----------------------------
 
 	/*
 	 * 3 different scenarios are distinguished here.
@@ -137,45 +109,9 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-//	private void createClipboardPanel() {
-//		_clipboardPanel = (ClipboardPanel) findViewById(R.id.clipboard_drawer);
-//		_clipboardPanel.setInterpolator(new LinearInterpolator());
-//
-//		_clipboardPanel.setCutListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) { cut(); }
-//		});
-//
-//		_clipboardPanel.setCopyListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) { copy(); }
-//		});
-//
-//		_clipboardPanel.setPasteListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) { paste(); }
-//		});
-//	}
-
-	/**
-	 * Enable/disable cut/copy/paste buttons based on text selection state
-	 */
-//	private void updateClipboardButtons() {
-//		boolean isSelecting = _editField.isSelectText();
-//		ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-//		_clipboardPanel.setClipboardButtonState(
-//				isSelecting, isSelecting, cb.hasPrimaryClip());
-//	}
-
 //	private void createFindPanel() {
 //		_findPanel = (FindPanel) findViewById(R.id.find_panel);
 //		_findPanel.setCallback(this);
-//	}
-
-//	private void createTextField() {
-//		_editField = (FreeScrollingTextField) findViewById(R.id.work_area);
-//		_editField.setRowListener(this);
-//		_editField.setSelModeListener(this);
 //	}
 
 //	private void restorePersistentOptions() {
@@ -194,295 +130,7 @@ public class MainActivity extends AppCompatActivity
 //		setZoom(pref);
 //		setNonPrintingCharVisibility(pref);
 //	}
-//
-//	/*
-//	 * Dirty bit of _editField is cleared as a side-effect
-//	 */
-//	private void changeModel(Document doc) {
-//		_editField.setDocumentProvider(new DocumentProvider(doc));
-//		_editField.setEdited(false);
-//	}
-//
-//	/*
-//	 * Not private to allow access to RecoveryManager
-//	 */
-//	void updateFilename(String filename) {
-//		if (filename.length() == 0) {
-//			_filename = _lastSelectedFile = null;
-//		} else {
-//			_filename = _lastSelectedFile = filename;
-//		}
-//	}
-//
-//	private void updateTitle() {
-//		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-//		boolean showLineNumbers = pref.getBoolean(
-//				getString(R.string.settings_key_show_row_number),
-//				getResources().getBoolean(R.bool.settings_show_row_number_default));
-//
-//		String title;
-//		if (showLineNumbers) {
-//			title = createTitle(_editField.getCaretRow() + 1);
-//		} else {
-//			title = createTitle();
-//		}
-//
-//		setTitle(title);
-//	}
 
-	private String createTitle() {
-		String title;
-//		if (_filename != null) {
-//			title = (new File(_filename)).getName();
-//		} else {
-			title = getString(R.string.app_name);
-//		}
-		return title;
-	}
-
-	// API 7 Eclair does not support a Bundle argument for showDialog(), so
-	// the contents of the statistics dialog has to be saved in a member variable
-	// before showDialog() is called, and then accessed here when the dialog
-	// is being prepared to be shown.
-
-	private String createTitle(int rowIndex) { return "(" + rowIndex + ") " + createTitle(); }
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-
-		onPrepareOptionsMenu(menu);
-		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		//cut and paste options
-//		menu.setGroupVisible(R.id.menu_group_selection_actions, _editField.isSelectText());
-
-		//save option
-//		MenuItem saveMenuItem = menu.findItem(R.id.action_save);
-//		saveMenuItem.setEnabled(_editField.isEdited());
-
-		//paste option
-//		MenuItem pasteMenuItem = menu.findItem(R.id.paste);
-//		ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-//		pasteMenuItem.setVisible(cb.hasPrimaryClip());
-
-		//undo and redo options
-//		DocumentProvider doc = _editField.createDocumentProvider();
-//		MenuItem undoMenuItem = menu.findItem(R.id.undo);
-//		undoMenuItem.setEnabled(doc.canUndo());
-//		MenuItem redoMenuItem = menu.findItem(R.id.redo);
-//		redoMenuItem.setVisible(doc.canRedo());
-
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-//			case R.id.new_file:
-//				if (_editField.isEdited()) {
-//					_saveFinishedCallback = SAVE_CALLBACK_NEW;
-//					onPromptSave();
-//				} else {
-//					onNew();
-//				}
-//				break;
-//
-//			case R.id.recent_files:
-//				if (_editField.isEdited()) {
-//					_saveFinishedCallback = SAVE_CALLBACK_OPEN_RECENT;
-//					onPromptSave();
-//				} else {
-//					onOpenRecent();
-//				}
-//				break;
-//
-//			case R.id.action_open:
-//				if (_editField.isEdited()) {
-//					_saveFinishedCallback = SAVE_CALLBACK_OPEN;
-//					onPromptSave();
-//				} else {
-//					onOpen();
-//				}
-//				break;
-//
-//			case R.id.action_save:
-//				onSave();
-//				break;
-//
-//			case R.id.action_save_as:
-//				onSaveAs();
-//				break;
-//
-//			case R.id.undo:
-//				onUndo(true);
-//				break;
-//
-//			case R.id.redo:
-//				onUndo(false);
-//				break;
-//
-//			case R.id.find_panel_toggle:
-//				toggleFindPanel();
-//				break;
-//
-//			case R.id.go_to_line:
-//				showGoToLine();
-//				break;
-//
-//			case R.id.cut:
-//				cut();
-//				break;
-//
-//			case R.id.copy:
-//				copy();
-//				break;
-//
-//			case R.id.paste:
-//				paste();
-//				break;
-//
-//			case R.id.select_all:
-//				_editField.selectAll();
-//				break;
-//
-//			case R.id.statistics:
-//				analyzeTextProperties();
-//				break;
-
-			default:
-				return false;
-		}
-	}
-
-
-//	private void onPromptSave() {
-//		new promptSaveDialogFragment().show(getFragmentManager(), "prompt_save");
-//	}
-
-//	private void onConfirmOverwrite() {
-//		new confirmOverwriteDialogFragment().show(getFragmentManager(), "confirm_overwrite");
-//	}
-
-//	private void onOpenAgain() {
-//		new openAgainDialogFragment().show(getFragmentManager(), "open_again");
-//	}
-
-//	private void onSaveAgain() {
-//		new saveAgainDialogFragment().show(getFragmentManager(), "save_again");
-//	}
-
-//	private void onNew() {
-//		Document doc = new Document(_editField);
-//		doc.setWordWrap(isWordWrap());
-//		changeModel(doc);
-//		_filename = null;
-//		_lastSelectedFile = null;
-//		updateTitle();
-//	}
-
-//	private void onOpen() {
-//		Intent i = new Intent(this, SelectFileActivity.class);
-//		i.setAction(TextWarriorIntents.ACTION_PICK_FILE);
-//		i.putExtra(TextWarriorIntents.EXTRA_TITLE, getString(R.string.file_picker_title_pick_file));
-//		i.setData(getLastSelectedUri());
-//		startActivityForResult(i, TextWarriorIntents.REQUEST_PICK_FILE);
-//	}
-
-//	private void onOpenRecent() {
-//		new RecentFilesDialogFragment().show(getSupportFragmentManager(), RecentFilesDialogFragment.TAG);
-//	}
-
-	//-----------------------------------------------------------------------
-	//--------------------- Find and replace methods ------------------------
-
-//	private void onSave() {
-//		if (_filename == null) {
-//			onSaveAs(); // ask for a name for the untitled file
-//		} else {
-//			save(_filename, true);
-//		}
-//	}
-//
-//	private void onSaveAs() {
-//		Intent i = new Intent(this, SelectFileActivity.class);
-//		i.setAction(TextWarriorIntents.ACTION_PICK_FILENAME_FOR_SAVE);
-//		i.putExtra(TextWarriorIntents.EXTRA_TITLE, getString(R.string.file_picker_title_enter_filename));
-//		i.putExtra(TextWarriorIntents.EXTRA_BUTTON_TEXT, getString(R.string.file_picker_label_save));
-//		i.setData(getLastSelectedUri());
-//		startActivityForResult(i, TextWarriorIntents.REQUEST_PICK_FILENAME_FOR_SAVE);
-//	}
-//
-//	public void cut() {
-//		_editField.cut((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-//		updateClipboardButtons();
-//	}
-//
-//	public void copy() {
-//		_editField.copy((ClipboardManager) getSystemService(CLIPBOARD_SERVICE));
-//		updateClipboardButtons();
-//	}
-//
-//	public void paste() {
-//		ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-//		ClipData clip = cb.getPrimaryClip();
-//		// if you need text data only, use:
-//		String textToPaste = null;
-//		if (clip.getDescription().hasMimeType(android.content.ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-//			// WARNING: The item could contain URI that points to the text data.
-//			// In this case the getText() returns null and this code fails!
-//			CharSequence cs = clip.getItemAt(0).getText();
-//			if (cs != null) textToPaste = cs.toString();
-//		}
-//		if (textToPaste == null) {
-//			// or you may coerce the data to the text representation:
-//			textToPaste = clip.getItemAt(0).coerceToText(this).toString();
-//		}
-//		_editField.paste(textToPaste);
-//	}
-
-	//-----------------------------------------------------------------------
-	//----------------------- Open and save methods -------------------------
-
-	//if undo is false, a redo is done instead
-//	private void onUndo(boolean undo) {
-//		DocumentProvider doc = _editField.createDocumentProvider();
-//		int newPosition = undo ? doc.undo() : doc.redo();
-//
-//		if (newPosition >= 0) {
-//			//TODO _editField.setEdited(false); if reached original condition of file
-//			_editField.setEdited(true);
-//			_editField.respan();
-//			_editField.selectText(false);
-//			_editField.moveCaret(newPosition);
-//			_editField.invalidate();
-//		}
-//	}
-//
-//	private void showGoToLine() {
-//		DocumentProvider documentProvider = _editField.createDocumentProvider();
-//		int currentLine = _editField.getCaretRow() + 1;
-//		int totalLines = documentProvider.getRowCount();
-//		NumberPickerDialog.newInstance(NumberPickerDialog.Actions.GO_TO_LINE, 1, currentLine, totalLines).show(getSupportFragmentManager(), "dialog_fragment_seekbar");
-//	}
-//
-//	public void goToRow(int rowIndex) {
-//		DocumentProvider src = _editField.createDocumentProvider();
-//
-//		if (rowIndex < 0) {
-//			rowIndex = 0;
-//		} else if (rowIndex >= src.getRowCount()) {
-//			// clamp to last row
-//			rowIndex = src.getRowCount() - 1;
-//		}
-//
-//		int charOffset = src.getRowOffset(rowIndex);
-//		_editField.moveCaret(charOffset);
-//	}
-//
 //	private void showRecoveryFailedDialog() {
 //		new recoveryFailedDialogFragment().show(getFragmentManager(), "recovery_failed");
 //	}
@@ -515,20 +163,7 @@ public class MainActivity extends AppCompatActivity
 //			_findPanel.requestFocus();
 //		}
 //	}
-//
-//	@Override
-//	public void onNumberPickerDialogDismissed(NumberPickerDialog.Actions action, int value) {
-//		switch (action) {
-//			case GO_TO_LINE:
-//				if (value > 0) goToRow(value - 1);
-//				break;
-//			case GO_TO_PAGE:
-//				break;
-//			default:
-//				break;
-//		}
-//	}
-//
+
 //	private void prepareRecoveryFailedMessage() {
 //		String messageSummary = getString(R.string.dialog_sorry_force_resume);
 //		String messageDetails;
@@ -650,44 +285,6 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-//	private Uri getLastSelectedUri() {
-//		if (_lastSelectedFile == null) {
-//			return null;
-//		}
-//
-//		Uri.Builder ub = new Uri.Builder();
-//		ub.scheme("file://");
-//		ub.appendPath(_lastSelectedFile);
-//		return ub.build();
-//	}
-//
-//	public void open(String filename) {
-//		_lastSelectedFile = filename;
-//
-//		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//		String encoding = prefs.getString(
-//				getString(R.string.settings_key_file_input_format),
-//				getString(R.string.settings_file_input_format_default));
-//		String eolChar = prefs.getString(
-//				getString(R.string.settings_key_line_terminator_style),
-//				getString(R.string.settings_line_terminator_style_default));
-//
-//		File inputFile = new File(filename);
-//		_inputingDoc = new Document(_editField);
-//		_inputingDoc.setWordWrap(isWordWrap());
-//		_taskRead = new ReadThread(inputFile, _inputingDoc, encoding, eolChar);
-//		_taskRead.registerObserver(this); // so that readTask can notify TextWarriorApplication when done
-//
-//		PollingProgressDialog dialog = new PollingProgressDialog(this, _taskRead,
-//				getString(R.string.progress_dialog_open), true, true);
-//		dialog.startDelayedPollingDialog();
-//		_taskRead.start();
-//	}
-
-
-	//-----------------------------------------------------------------------
-	//------------------------- UI event handlers ---------------------------
-
 	/**
 	 * Preconditions:
 	 * 1. filename is not a directory
@@ -735,41 +332,6 @@ public class MainActivity extends AppCompatActivity
 //		dialog.startDelayedPollingDialog();
 //		_taskWrite.start();
 //	}
-//
-//	private void displayOpenError(String msg) {
-//		Log.e(LOG_TAG, msg);
-//		_dialogErrorMsg = getString(R.string.dialog_error_file_open) + msg;
-//		onOpenAgain();
-//	}
-//
-//	private void displaySaveError(String msg) {
-//		Log.e(LOG_TAG, msg);
-//		_dialogErrorMsg = getString(R.string.dialog_error_file_save) + msg;
-//		//TODO add hints on how to resolve error.
-//		//see R.string.dialog_msg_save_file_error_recovery_tips
-//		onSaveAgain();
-//	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-//			case TextWarriorIntents.REQUEST_PICK_FILE:
-//				if (resultCode == RESULT_OK) {
-//					open(data.getData().getPath());
-//				}
-//				break;
-//			case TextWarriorIntents.REQUEST_PICK_FILENAME_FOR_SAVE:
-//				if (resultCode == RESULT_OK) {
-//					save(data.getData().getPath(), false);
-//				} else {
-//					//save cancelled by user; remove pending callback
-//					_saveFinishedCallback = CALLBACK_NONE;
-//				}
-//				break;
-			default:
-				super.onActivityResult(requestCode, resultCode, data);
-		}
-	}
 
 //	@Override
 //	//This method is called by various worker threads
@@ -839,75 +401,6 @@ public class MainActivity extends AppCompatActivity
 //			}
 //		});
 //	}
-//
-//	@Override
-//	public void onError(final int requestCode, final int errorCode, final String message) {
-//		runOnUiThread(new Runnable() {
-//			@Override
-//			public void run() {
-//				switch (requestCode) {
-//					case ProgressSource.READ:
-//						_taskRead = null;
-//						displayOpenError(message);
-//						break;
-//					case ProgressSource.WRITE:
-//						_taskWrite = null;
-//						displaySaveError(message);
-//						break;
-//					case ProgressSource.FIND:
-//					case ProgressSource.FIND_BACKWARDS:
-//					case ProgressSource.REPLACE_ALL:
-//						_taskFind = null;
-//						break;
-//					case ProgressSource.ANALYZE_TEXT:
-//						_taskAnalyze = null;
-//						break;
-//				}
-//			}
-//		});
-//	}
-//
-//	@Override
-//	public void onCancel(int requestCode) {
-//		switch (requestCode) {
-//			case ProgressSource.READ:
-//				_taskRead = null;
-//				break;
-//			case ProgressSource.WRITE:
-//				_taskWrite = null;
-//				break;
-//			case ProgressSource.FIND:
-//			case ProgressSource.FIND_BACKWARDS:
-//			case ProgressSource.REPLACE_ALL:
-//				_taskFind = null;
-//				break;
-//			case ProgressSource.ANALYZE_TEXT:
-//				_taskAnalyze = null;
-//				break;
-//		}
-//	}
-//
-//	protected void saveFinishedCallback() {
-//		switch (_saveFinishedCallback) {
-//			case SAVE_CALLBACK_NEW:
-//				onNew();
-//				break;
-//			case SAVE_CALLBACK_OPEN_RECENT:
-//				onOpenRecent();
-//				break;
-//			case SAVE_CALLBACK_OPEN:
-//				onOpen();
-//				break;
-//			case SAVE_CALLBACK_EXIT:
-//				finish();
-//				break;
-//			case SAVE_CALLBACK_SINGLE_TASK_OPEN:
-//				open(getIntent().getData().getPath());
-//				break;
-//		}
-//		_saveFinishedCallback = CALLBACK_NONE;
-//	}
-//
 //	@Override
 //	public void onRowChange(int newRowIndex) {
 //		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -940,59 +433,6 @@ public class MainActivity extends AppCompatActivity
 //		}
 //		updateClipboardButtons();
 //	}
-
-	@Override
-	public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
-		boolean handled = false;
-
-		// Intercept keystroke shortcuts
-		if (KeysInterpreter.isSwitchPanel(event) &&
-				event.getAction() == KeyEvent.ACTION_DOWN) {
-			//the view gaining focus must be able to ignore the corresponding
-			//key up event sent to it when the key is released
-			//handled = togglePanelFocus();
-		}
-
-		if (!handled) {
-			handled = super.dispatchKeyEvent(event);
-		}
-		return handled;
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_SEARCH) {
-			// handle accidental touching of virtual hard keys as described in
-			// http://android-developers.blogspot.com/2009/12/back-and-other
-			// -hard-keys-three-stories.html
-			event.startTracking();
-			return true;
-		}
-
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_SEARCH &&
-				!event.isCanceled() &&
-				event.isTracking()) {
-//			toggleFindPanel();
-			return true;
-		}
-
-		return super.onKeyUp(keyCode, event);
-	}
-
-	@Override
-	public void onBackPressed() {
-//		if (_editField.isEdited()) {
-//			_saveFinishedCallback = SAVE_CALLBACK_EXIT;
-//			onPromptSave();
-//		} else {
-//			finish();
-//		}
-	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
@@ -1297,11 +737,6 @@ public class MainActivity extends AppCompatActivity
 //		}
 //	}
 
-//	@Override
-//	public void onRecentFileSelected(Uri uri) {
-//		open(uri.getPath());
-//	}
-//
 //	public static class promptSaveDialogFragment extends DialogFragment {
 //		@Override
 //		public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -1340,46 +775,7 @@ public class MainActivity extends AppCompatActivity
 //			((MainActivity) getActivity())._saveFinishedCallback = CALLBACK_NONE;
 //		}
 //	}
-//
-//	public static class confirmOverwriteDialogFragment extends DialogFragment {
-//		@Override
-//		public Dialog onCreateDialog(Bundle savedInstanceState) {
-//			final MainActivity context = (MainActivity) getActivity();
-//			AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//			builder.setMessage(R.string.dialog_confirm_overwrite);
-//			builder.setPositiveButton(R.string.dialog_button_overwrite,
-//					new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int id) {
-//							dialog.dismiss();
-//							context.save(context._lastSelectedFile, true);
-//						}
-//					});
-//			builder.setNeutralButton(R.string.dialog_button_go_back,
-//					new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int id) {
-//							dialog.dismiss();
-//							context.onSaveAs();
-//						}
-//					});
-//			builder.setNegativeButton(android.R.string.cancel,
-//					new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int id) {
-//							dialog.cancel();
-//						}
-//					});
-//			return builder.create();
-//		}
-//
-//		@Override
-//		public void onCancel(DialogInterface dialog) {
-//			//cancel pending callback
-//			((MainActivity) getActivity())._saveFinishedCallback = CALLBACK_NONE;
-//		}
-//	}
-//
+
 //	public static class openAgainDialogFragment extends DialogFragment {
 //		@Override
 //		public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -1468,87 +864,6 @@ public class MainActivity extends AppCompatActivity
 //					});
 //
 //			return builder.create();
-//		}
-//	}
-//
-//	public static class statisticsDialogFragment extends DialogFragment {
-//		@Override
-//		public Dialog onCreateDialog(Bundle savedInstanceState) {
-//			final MainActivity context = (MainActivity) getActivity();
-//			AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//			ViewGroup _statisticsLayout = (ScrollView) View.inflate(context, R.layout.statistics, null);
-//
-//			builder.setView(_statisticsLayout);
-//			builder.setIcon(android.R.drawable.ic_dialog_info);
-//			builder.setTitle(R.string.dialog_statistics);
-//			builder.setNeutralButton(android.R.string.ok,
-//					new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int id) {
-//							dialog.dismiss();
-//						}
-//					});
-//
-//			TextView t = (TextView) _statisticsLayout.findViewById(R.id.statistics_word_count);
-//			t.setText(Integer.toString(context._statistics.wordCount));
-//
-//			t = (TextView) _statisticsLayout.findViewById(R.id.statistics_char_count);
-//			t.setText(Integer.toString(context._statistics.charCount));
-//
-//			t = (TextView) _statisticsLayout.findViewById(R.id.statistics_char_no_whitespace_count);
-//			t.setText(Integer.toString(context._statistics.charCount - context._statistics.whitespaceCount));
-//
-//			t = (TextView) _statisticsLayout.findViewById(R.id.statistics_row_count);
-//			t.setText(Integer.toString(context._statistics.lineCount));
-//
-//			DocumentProvider doc = context._editField.createDocumentProvider();
-//
-//			t = (TextView) _statisticsLayout.findViewById(R.id.statistics_format);
-//			t.setText(doc.getEncodingScheme());
-//
-//			t = (TextView) _statisticsLayout.findViewById(R.id.statistics_line_terminator_style);
-//			t.setText(doc.getEOLType());
-//
-//			return builder.create();
-//		}
-//	}
-
-//	private static class AppUiState implements Parcelable {
-//		public static final Parcelable.Creator<AppUiState> CREATOR
-//				= new Parcelable.Creator<AppUiState>() {
-//			@Override
-//			public AppUiState createFromParcel(Parcel in) {
-//				return new AppUiState(in);
-//			}
-//
-//			@Override
-//			public AppUiState[] newArray(int size) {
-//				return new AppUiState[size];
-//			}
-//		};
-//		final int findPanelVisibility;
-//		final boolean clipboardOpen;
-//
-//		public AppUiState(MainActivity app) {
-//			findPanelVisibility = app._findPanel.getVisibility();
-//			clipboardOpen = app._clipboardPanel.isOpen();
-//
-//		}
-//
-//		private AppUiState(Parcel in) {
-//			findPanelVisibility = in.readInt();
-//			clipboardOpen = in.readInt() != 0;
-//		}
-//
-//		@Override
-//		public int describeContents() {
-//			return 0;
-//		}
-//
-//		@Override
-//		public void writeToParcel(Parcel out, int flags) {
-//			out.writeInt(findPanelVisibility);
-//			out.writeInt(clipboardOpen ? 1 : 0);
 //		}
 //	}
 }

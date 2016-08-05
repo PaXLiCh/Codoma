@@ -1,37 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
-    Copyright (c) 2013 Tah Wei Hoon.
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Apache License Version 2.0,
-    with full text available at http://www.apache.org/licenses/LICENSE-2.0.html
-
-    This software is provided "as is". Use at your own risk.
- -->
- 
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
+	android:paddingBottom="@dimen/activity_vertical_margin"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
-	android:paddingTop="@dimen/activity_vertical_margin"
-	android:paddingBottom="@dimen/activity_vertical_margin">
-	<CheckBox android:id="@+id/find_panel_case_sensitive"
-		android:text="@string/find_panel_case_sensitive"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:checked="false" />
-
-	<CheckBox android:id="@+id/find_panel_match_whole_word"
-		android:text="@string/find_panel_match_whole_word"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:checked="false" />
+	android:paddingTop="@dimen/activity_vertical_margin">
 
 	<CheckBox
+		android:id="@+id/find_panel_case_sensitive"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Regular expression"
-		android:id="@+id/find_panel_regex"/>
+		android:checked="false"
+		android:text="@string/find_panel_case_sensitive"/>
+
+	<CheckBox
+		android:id="@+id/find_panel_match_whole_word"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:checked="false"
+		android:text="@string/find_panel_match_whole_word"/>
+
+	<CheckBox
+		android:id="@+id/find_panel_regex"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Regular expression"/>
 </LinearLayout>

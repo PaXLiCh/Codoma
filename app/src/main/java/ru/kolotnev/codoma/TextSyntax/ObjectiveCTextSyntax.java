@@ -1,17 +1,9 @@
-/*
- * Copyright (c) 2013 Tah Wei Hoon.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Apache License Version 2.0,
- * with full text available at http://www.apache.org/licenses/LICENSE-2.0.html
- *
- * This software is provided "as is". Use at your own risk.
- */
-package ru.kolotnev.codoma.common;
+package ru.kolotnev.codoma.TextSyntax;
 
 /**
  * Singleton class containing the symbols and operators of the Objective-C language
  */
-public class LanguageObjectiveC extends Language {
+public class ObjectiveCTextSyntax extends TextSyntax {
 	private final static String[] keywords = {
 			"char", "double", "float", "int", "long", "short", "void",
 			"auto", "const", "extern", "register", "static", "volatile",
@@ -27,13 +19,4 @@ public class LanguageObjectiveC extends Language {
 			"in", "out", "inout", "bycopy", "byref", "oneway",
 			"getter", "setter", "readwrite", "readonly", "assign", "retain", "copy", "nonatomic"
 	};
-	private static Language _theOne = null;
-
-	private LanguageObjectiveC() { super.setKeywords(keywords); }
-
-	public static Language getInstance() {
-		if(_theOne == null) { _theOne = new LanguageObjectiveC(); }
-		return _theOne;
-	}
-
 }

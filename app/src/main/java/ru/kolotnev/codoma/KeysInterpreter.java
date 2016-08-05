@@ -2,13 +2,39 @@ package ru.kolotnev.codoma;
 
 import android.view.KeyEvent;
 
-import ru.kolotnev.codoma.common.Language;
-
 /**
  * Interprets shortcut key combinations and contains utility methods
  * to map Android keycodes to Unicode equivalents.
  */
-public class KeysInterpreter {
+public final class KeysInterpreter {
+	public final static char EOF = '\uFFFF';
+	public final static char NULL_CHAR = '\u0000';
+	public final static char NEWLINE = '\n';
+	public final static char BACKSPACE = '\b';
+	public final static char TAB = '\t';
+	public final static String GLYPH_NEWLINE = "\u21b5";
+	public final static String GLYPH_SPACE = "\u00b7";
+	public final static String GLYPH_TAB = "\u00bb";
+
+	public boolean isWhitespace(char c) {
+		return (c == ' ' || c == '\n' || c == '\t' ||
+				c == '\r' || c == '\f' || c == EOF);
+	}
+
+	public boolean isSentenceTerminator(char c) {
+		return (c == '.');
+	}
+
+	public boolean isEscapeChar(char c) {
+		return (c == '\\');
+	}
+
+	private final static char[] BASIC_C_OPERATORS = {
+			'(', ')', '{', '}', '.', ',', ';', '=', '+', '-',
+			'/', '*', '&', '!', '|', ':', '[', ']', '<', '>',
+			'?', '~', '%', '^'
+	};
+
 	public static boolean isSwitchPanel(KeyEvent event) {
 		return (event.isShiftPressed() &&
 				(event.getKeyCode() == KeyEvent.KEYCODE_ENTER));
@@ -18,48 +44,35 @@ public class KeysInterpreter {
 	 * Maps shortcut keys and Android keycodes to printable characters.
 	 * Note that whitespace is considered printable.
 	 *
-	 * @param event The KeyEvent to interpret
+	 * @param event
+	 * 		The KeyEvent to interpret
+	 *
 	 * @return The printable character the event represents,
 	 * or Language.NULL_CHAR if the event does not represent a printable char
 	 */
+	// TODO: fix this interpreter!
 	public static char keyEventToPrintableChar(KeyEvent event) {
-		char c = Language.NULL_CHAR;
+		char c = NULL_CHAR;
 
 		// convert tab, backspace, newline and space keycodes to standard ASCII values
-		if(isNewline(event)) {
-			c = Language.NEWLINE;
-		} else if(isBackspace(event)) {
-			c = Language.BACKSPACE;
+		if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+			c = NEWLINE;
+		} else if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+			c = BACKSPACE;
 		}
 		// This should be before the check for isSpace() because the
 		// shortcut for TAB uses the SPACE key.
-		else if(isTab(event)) {
-			c = Language.TAB;
-		} else if(isSpace(event)) {
+		else if ((event.isShiftPressed() &&
+				(event.getKeyCode() == KeyEvent.KEYCODE_SPACE)) ||
+				(event.getKeyCode() == KeyEvent.KEYCODE_TAB)) {
+			c = TAB;
+		} else if (event.getKeyCode() == KeyEvent.KEYCODE_SPACE) {
 			c = ' ';
-		} else if(event.isPrintingKey()) {
-			c = (char)event.getUnicodeChar(event.getMetaState());
+		} else if (event.isPrintingKey()) {
+			c = (char) event.getUnicodeChar(event.getMetaState());
 		}
 
 		return c;
-	}
-
-	private static boolean isTab(KeyEvent event) {
-		return (event.isShiftPressed() &&
-				(event.getKeyCode() == KeyEvent.KEYCODE_SPACE)) ||
-				(event.getKeyCode() == KeyEvent.KEYCODE_TAB);
-	}
-
-	private static boolean isBackspace(KeyEvent event) {
-		return (event.getKeyCode() == KeyEvent.KEYCODE_DEL);
-	}
-
-	private static boolean isNewline(KeyEvent event) {
-		return (event.getKeyCode() == KeyEvent.KEYCODE_ENTER);
-	}
-
-	private static boolean isSpace(KeyEvent event) {
-		return (event.getKeyCode() == KeyEvent.KEYCODE_SPACE);
 	}
 
 	public static boolean isNavigationKey(KeyEvent event) {

@@ -1,17 +1,9 @@
-/*
- * Copyright (c) 2013 Tah Wei Hoon.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Apache License Version 2.0,
- * with full text available at http://www.apache.org/licenses/LICENSE-2.0.html
- *
- * This software is provided "as is". Use at your own risk.
- */
-package ru.kolotnev.codoma.common;
+package ru.kolotnev.codoma.TextSyntax;
 
 /**
  * Singleton class containing the symbols and operators of the Ruby language
  */
-public class LanguageRuby extends Language {
+public class RubyTextSyntax extends TextSyntax {
 	private final static String[] keywords = {
 			"alias", "and", "BEGIN", "begin", "break", "case", "catch", "class", "def",
 			"defined?", "do", "else", "elsif", "END", "end", "ensure", "false",
@@ -20,14 +12,6 @@ public class LanguageRuby extends Language {
 			"super", "then", "throw", "true", "undef", "unless", "until", "when", "while",
 			"yield", "self", "nil", "true", "false", "TRUE", "FALSE", "NIL"
 	};
-	private static Language _theOne = null;
-
-	private LanguageRuby() { super.setKeywords(keywords); }
-
-	public static Language getInstance() {
-		if(_theOne == null) { _theOne = new LanguageRuby(); }
-		return _theOne;
-	}
 
 	@Override
 	public boolean isWordStart(char c) { return (c == '$'); }

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -15,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +34,6 @@ public class NewEditorActivity extends AppCompatActivity implements
 		RecentFilesDialogFragment.Callbacks,
 		SharedPreferences.OnSharedPreferenceChangeListener {
 
-	private static final String TAG = "Codoma";
 	private static final int
 			REQUEST_CODE_CREATE = 43,
 			REQUEST_CODE_SELECT_FILE = 121,
@@ -46,7 +47,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_main_new);
+		setContentView(R.layout.activity_main);
 
 		RecentFilesProvider.loadFromPersistentStore(this);
 
@@ -58,7 +59,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		pagerAdapter = new ScreenSlidePagerAdapter();
 		viewPager.setAdapter(pagerAdapter);
 
-		if (TextFileProvider.size() == 0) {
+		if (CodomaApplication.amountOfOpenedFiles() == 0) {
 			textFileFromText("welcome to Codoma!");
 		}
 
@@ -68,7 +69,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 		updateTitle();
 
-		Log.e(TAG, "onCreated activity with " + TextFileProvider.size() + " files, current item " + viewPager.getCurrentItem());
+		Log.e(CodomaApplication.TAG, "onCreated activity with " + CodomaApplication.amountOfOpenedFiles() + " files, current item " + viewPager.getCurrentItem());
 
 		// Parse the intent
 		parseIntent(getIntent());
@@ -96,7 +97,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_new_editor_activity, menu);
+		getMenuInflater().inflate(R.menu.menu_main, menu);
 
 		onPrepareOptionsMenu(menu);
 		return true;
@@ -104,7 +105,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		TextFile textFile = TextFileProvider.get(viewPager.getCurrentItem());
+		TextFile textFile = CodomaApplication.get(viewPager.getCurrentItem());
 		boolean isTextFileOpened = textFile != null;
 
 		menu.setGroupVisible(R.id.menu_group_file, isTextFileOpened);
@@ -116,7 +117,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 			menu.findItem(R.id.action_page_previous).setEnabled(textFile.canReadPrevPage());
 			menu.findItem(R.id.action_page_next).setEnabled(textFile.canReadNextPage());
 		}
-		Log.d(TAG, "onPrepareOptionsMenu");
+		Log.d(CodomaApplication.TAG, "onPrepareOptionsMenu");
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -186,8 +187,8 @@ public class NewEditorActivity extends AppCompatActivity implements
 				return true;
 
 			case R.id.help:
-				//Intent h = new Intent(this, TextWarriorHelp.class);
-				//startActivity(h);
+				new HelpDialogFragment()
+						.show(getSupportFragmentManager(), HelpDialogFragment.TAG);
 				return true;
 
 			default:
@@ -223,10 +224,63 @@ public class NewEditorActivity extends AppCompatActivity implements
 					break;
 				case REQUEST_CODE_SELECT_FOLDER:
 					GreatUri greatUri = new GreatUri(uri, AccessStorageApi.getPath(this, uri));
-					Log.v(TAG, "result of selecting folder = " + greatUri.toString());
+					Log.v(CodomaApplication.TAG, "result of selecting folder = " + greatUri.toString());
 					break;
 			}
 		}
+	}
+
+	@Override
+	public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
+		boolean handled = false;
+
+		// Intercept keystroke shortcuts
+		if (KeysInterpreter.isSwitchPanel(event) &&
+				event.getAction() == KeyEvent.ACTION_DOWN) {
+			//the view gaining focus must be able to ignore the corresponding
+			//key up event sent to it when the key is released
+			//handled = togglePanelFocus();
+		}
+
+		if (!handled) {
+			handled = super.dispatchKeyEvent(event);
+		}
+		return handled;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+			// handle accidental touching of virtual hard keys as described in
+			// http://android-developers.blogspot.com/2009/12/back-and-other
+			// -hard-keys-three-stories.html
+			event.startTracking();
+			return true;
+		}
+
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_SEARCH &&
+				!event.isCanceled() &&
+				event.isTracking()) {
+//			toggleFindPanel();
+			return true;
+		}
+
+		return super.onKeyUp(keyCode, event);
+	}
+
+	@Override
+	public void onBackPressed() {
+//		if (_editField.isEdited()) {
+//			_saveFinishedCallback = SAVE_CALLBACK_EXIT;
+//			onPromptSave();
+//		} else {
+//			finish();
+//		}
 	}
 
 	@Override
@@ -236,7 +290,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 	@Override
 	public void onClose(TextFile textFile) {
-		TextFileProvider.remove(textFile);
+		CodomaApplication.remove(textFile);
 		pagerAdapter.notifyDataSetChanged();
 
 		//viewPager.setCurrentItem(0);
@@ -259,7 +313,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		final String action = intent.getAction();
 		final String type = intent.getType();
 
-		Log.e(TAG, "parsing intent " + action + " type " + type);
+		Log.e(CodomaApplication.TAG, "parsing intent " + action + " type " + type);
 		if (type != null
 				&& Intent.ACTION_VIEW.equals(action)
 				|| Intent.ACTION_EDIT.equals(action)
@@ -307,7 +361,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 	private void createFile() {
 		if (Device.hasKitKatApi() && PreferenceHelper.getUseStorageAccessFramework(this)) {
-			Log.e(TAG, "open file with request code create");
+			Log.e(CodomaApplication.TAG, "open file with request code create");
 			Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 			intent.setType("*/*");
 			intent.putExtra(Intent.EXTRA_TITLE, ".txt");
@@ -364,8 +418,8 @@ public class NewEditorActivity extends AppCompatActivity implements
 			if (encoding != null && lineEnding != null) {
 				// TODO: add ability to reload file with new options
 			} else {
-				for (int i = 0; i < TextFileProvider.size(); ++i) {
-					TextFile textFile = TextFileProvider.get(i);
+				for (int i = 0; i < CodomaApplication.amountOfOpenedFiles(); ++i) {
+					TextFile textFile = CodomaApplication.get(i);
 					if (textFile != null
 							&& textFile.greatUri != null
 							&& textFile.greatUri.getUri().equals(uri)) {
@@ -379,7 +433,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 			textFile.encoding = encoding;
 			textFile.eol = lineEnding;
 			textFile.greatUri = new GreatUri(uri, AccessStorageApi.getPath(this, uri));
-			Log.e(TAG, uri.toString());
+			Log.e(CodomaApplication.TAG, uri.toString());
 			new LoadTextFileTask(this).execute(textFile);
 		}
 	}
@@ -395,9 +449,10 @@ public class NewEditorActivity extends AppCompatActivity implements
 	@Override
 	public void onFileLoaded(TextFile... textFiles) {
 		for (TextFile textFile : textFiles) {
-			textFile.setupPageSystem(PreferenceHelper.getSplitText(this), this);
+			//textFile.setupPageSystem(PreferenceHelper.getSplitText(this), this);
+			//textFile.detectSyntax();
 
-			int position = TextFileProvider.add(textFile);
+			int position = CodomaApplication.add(textFile);
 
 			pagerAdapter.notifyDataSetChanged();
 			viewPager.setCurrentItem(position);
@@ -419,7 +474,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 	 * Update title of application and update menu.
 	 */
 	public void updateTitle() {
-		TextFile textFile = TextFileProvider.get(viewPager.getCurrentItem());
+		TextFile textFile = CodomaApplication.get(viewPager.getCurrentItem());
 		if (textFile == null)
 			actionBar.setTitle(R.string.app_name);
 		else
@@ -435,7 +490,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		// TODO: rework search and replace
 		//pageSystemButtons.updateVisibility(false);
 		//searchResult = null;
-		TextFile textFile = TextFileProvider.get(viewPager.getCurrentItem());
+		TextFile textFile = CodomaApplication.get(viewPager.getCurrentItem());
 		if (textFile != null) {
 			textFile.clearHistory();
 		}
@@ -493,7 +548,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 		@Override
 		public Fragment getItem(int position) {
-			Log.d(TAG, "Creating page for position " + position);
+			Log.d(CodomaApplication.TAG, "Creating page for position " + position);
 			Fragment fragment = getRegisteredFragment(position);
 			if (fragment == null)
 				fragment = TextFileFragment.newInstance(position);
@@ -503,19 +558,19 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 		@Override
 		public int getCount() {
-			return TextFileProvider.size();
+			return CodomaApplication.amountOfOpenedFiles();
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			TextFile textFile = TextFileProvider.get(position);
+			TextFile textFile = CodomaApplication.get(position);
 			return textFile == null ? "(empty)" : textFile.getTitle();
 		}
 
 		@Override
 		public int getItemPosition(Object object) {
 			/*TextFileFragment frag = (TextFileFragment) object;
-			int pos = TextFileProvider.indexOf(frag.getTextFile());
+			int pos = TextFileProvider.indexOfOpenedFile(frag.getTextFile());
 			if (pos == -1) return POSITION_NONE;
 			return pos;
 			SparseArrayCompat<TextFileFragment> sparseArray = getListOfRegisteredFragments();

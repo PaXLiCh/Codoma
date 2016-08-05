@@ -8,6 +8,8 @@
  */
 package ru.kolotnev.codoma.common;
 
+import ru.kolotnev.codoma.TextFile;
+
 public interface SearchStrategy {
 	/**
 	 * Searches for target, starting from start (inclusive),
@@ -15,8 +17,8 @@ public interface SearchStrategy {
 	 *
 	 * @return charOffset of found string; -1 if not found
 	 */
-	int find(DocumentProvider src, String target, int start, int end,
-			boolean isCaseSensitive, boolean isWholeWord);
+	//int find(TextFile src, String target, int start, int end,
+	//		boolean isCaseSensitive, boolean isWholeWord);
 
 	/**
 	 * Searches for target, starting from start (inclusive),
@@ -25,8 +27,8 @@ public interface SearchStrategy {
 	 *
 	 * @return charOffset of found string; -1 if not found
 	 */
-	int wrappedFind(DocumentProvider src, String target, int start,
-			boolean isCaseSensitive, boolean isWholeWord);
+	//int wrappedFind(TextFile src, String target, int start,
+	//		boolean isCaseSensitive, boolean isWholeWord);
 
 	/**
 	 * Searches backwards from startCharOffset (inclusive),
@@ -34,8 +36,8 @@ public interface SearchStrategy {
 	 *
 	 * @return charOffset of found string; -1 if not found
 	 */
-	int findBackwards(DocumentProvider src, String target, int start, int end,
-			boolean isCaseSensitive, boolean isWholeWord);
+	//int findBackwards(TextFile src, String target, int start, int end,
+	//		boolean isCaseSensitive, boolean isWholeWord);
 
 	/**
 	 * Searches backwards from start (inclusive), wrapping around to
@@ -43,8 +45,8 @@ public interface SearchStrategy {
 	 *
 	 * @return charOffset of found string; -1 if not found
 	 */
-	int wrappedFindBackwards(DocumentProvider src, String target, int start,
-			boolean isCaseSensitive, boolean isWholeWord);
+	//int wrappedFindBackwards(TextFile src, String target, int start,
+	//		boolean isCaseSensitive, boolean isWholeWord);
 
 	/**
 	 * Replace all matches of searchText in src with replacementText.
@@ -59,9 +61,9 @@ public interface SearchStrategy {
 	 * @return Pair.first is the number of replacements made.
 	 * Pair.second is new position of mark after replacements are made.
 	 */
-	Pair replaceAll(DocumentProvider src, String searchText,
-			String replacementText, int mark,
-			boolean isCaseSensitive, boolean isWholeWord);
+	//Pair replaceAll(TextFile src, String searchText,
+	//		String replacementText, int mark,
+	//		boolean isCaseSensitive, boolean isWholeWord);
 
 
 	/**
@@ -71,5 +73,5 @@ public interface SearchStrategy {
 	 *
 	 * @return The number of characters searched so far
 	 */
-	int getProgress();
+	//int getProgress();
 }

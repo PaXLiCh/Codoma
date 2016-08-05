@@ -25,24 +25,24 @@
 			<android.support.v7.widget.Toolbar
 				android:id="@+id/toolbar"
 				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
+				android:layout_height="wrap_content"
 				android:background="?attr/colorPrimary"
+				android:minHeight="?attr/actionBarSize"
 				app:layout_scrollFlags="scroll|enterAlways"
-				app:popupTheme="@style/AppTheme.PopupOverlay">
-			</android.support.v7.widget.Toolbar>
+				app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
 			<HorizontalScrollView
-				android:layout_width="wrap_content"
+				android:id="@+id/scroll_breadcrumbs"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
+
 				<LinearLayout
 					android:id="@+id/view_breadcrumbs"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:orientation="horizontal"
-					style="@style/Base.Widget.AppCompat.ButtonBar">
-				</LinearLayout>
+					android:padding="2dp"/>
 			</HorizontalScrollView>
-
 		</android.support.design.widget.AppBarLayout>
 
 		<FrameLayout
@@ -77,8 +77,9 @@
 		android:id="@+id/menu"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="bottom|right"
+		android:layout_gravity="bottom|end"
 		android:layout_marginBottom="16dp"
+		android:layout_marginEnd="16dp"
 		android:layout_marginRight="16dp"
 		fab:menu_animationDelayPerItem="50"
 		fab:menu_buttonSpacing="0dp"

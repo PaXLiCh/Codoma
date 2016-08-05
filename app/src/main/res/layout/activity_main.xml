@@ -1,93 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-	Copyright (c) 2013 Tah Wei Hoon.
-	All rights reserved. This program and the accompanying materials
-	are made available under the terms of the Apache License Version 2.0,
-	with full text available at http://www.apache.org/licenses/LICENSE-2.0.html
-
-	This software is provided "as is". Use at your own risk.
- -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:panel="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout
+	android:id="@+id/main_content"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	tools:activity="ru.kolotnev.codoma.MainActivity"
-	>
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fitsSystemWindows="true"
+	tools:context=".NewEditorActivity">
 
-	<ru.kolotnev.codoma.FindPanel
-		android:id="@+id/find_panel"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:visibility="gone" />
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
 
-	<FrameLayout
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" >
-
-		<ru.kolotnev.codoma.FreeScrollingTextField
-			android:id="@+id/work_area"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:paddingTop="4.0dp"
-			android:paddingBottom="2.0dp"
-			android:paddingLeft="4.0dp"
-			android:paddingRight="2.0dp"
-			android:scrollbars="vertical"
-			android:scrollbarStyle="outsideInset" />
-
-		<ru.kolotnev.codoma.ClipboardPanel
-			android:id="@+id/clipboard_drawer"
-			android:layout_gravity="right"
-			android:layout_width="wrap_content"
+		<android.support.design.widget.AppBarLayout
+			android:id="@+id/appbar"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginRight="10.0dp"
-			panel:handle="@+id/clipboard_drawer_handle"
-			panel:content="@+id/clipboard_drawer_content"
-			panel:position="top"
-			panel:animationDuration="255"
-			panel:linearFlying="true"
-			panel:openedHandle="@drawable/clipboard_handle_up"
-			panel:closedHandle="@drawable/clipboard_handle_down"
-			panel:flushedHandle="true" >
+			android:paddingTop="@dimen/appbar_padding_top"
+			android:theme="@style/AppTheme.AppBarOverlay">
 
-			<ImageButton
-				android:id="@+id/clipboard_drawer_handle"
-				android:layout_width="wrap_content"
+			<android.support.v7.widget.Toolbar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize"
+				android:background="?attr/colorPrimary"
+				app:layout_scrollFlags="scroll|enterAlways"
+				app:popupTheme="@style/AppTheme.PopupOverlay"
+				>
+			</android.support.v7.widget.Toolbar>
+
+			<android.support.design.widget.TabLayout
+				android:id="@android:id/tabs"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="center"
-				android:contentDescription="@string/clipboardpanel_open"/>
+				app:tabMode="scrollable"/>
 
-			<LinearLayout
-				android:id="@id/clipboard_drawer_content"
-				android:orientation="vertical"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:gravity="right"
-				android:background="@drawable/clipboard_drawer_background_dark" >
+		</android.support.design.widget.AppBarLayout>
 
-				<ImageButton android:id="@+id/cut"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:src="@drawable/cut"
-					android:contentDescription="@string/button_cut"/>
+		<ru.kolotnev.codoma.FindPanel
+			android:id="@+id/find_panel"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="gone"/>
 
-				<ImageButton android:id="@+id/copy"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:src="@drawable/copy"
-					android:contentDescription="@string/button_copy"/>
+		<fragment
+			android:id="@+id/find_replace"
+			android:name="ru.kolotnev.codoma.FindReplaceFragment"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			tools:layout="@layout/find_replace_panel"/>
 
-				<ImageButton android:id="@+id/paste"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:src="@drawable/paste"
-					android:contentDescription="@string/button_paste"/>
-			</LinearLayout>
+		<android.support.v4.view.ViewPager
+			android:id="@+id/view_pager"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layoutMode="clipBounds"
+			android:nestedScrollingEnabled="true"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+		</android.support.v4.view.ViewPager>
 
-		</ru.kolotnev.codoma.ClipboardPanel>
+	</LinearLayout>
 
-	</FrameLayout>
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

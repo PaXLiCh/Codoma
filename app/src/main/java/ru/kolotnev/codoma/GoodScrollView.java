@@ -11,8 +11,8 @@ import android.widget.ScrollView;
  */
 public class GoodScrollView extends ScrollView {
 	public ScrollInterface scrollInterface;
-	int lastY;
-	boolean listenerEnabled = true;
+	private int lastY;
+	private boolean listenerEnabled = true;
 
 	public GoodScrollView(Context context) {
 		super(context);

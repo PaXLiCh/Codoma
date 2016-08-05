@@ -26,10 +26,10 @@
 				android:id="@+id/edit_text_line_numbers"
 				android:layout_width="wrap_content"
 				android:layout_height="match_parent"
-				android:gravity="right"
-				android:text="1\n2\n3\n199\n201"
+				android:gravity="end"
+				android:paddingBottom="5dp"
 				android:paddingTop="5dp"
-				android:paddingBottom="5dp"/>
+				android:text="1\n2\n3\n199\n201"/>
 
 			<HorizontalScrollView
 				android:id="@+id/scroll_horizontal"
@@ -49,12 +49,13 @@
 					android:cursorVisible="true"
 					android:gravity="top|start"
 					android:imeOptions="flagNoExtractUi"
+					android:paddingBottom="5dp"
+					android:paddingLeft="5dp"
+					android:paddingStart="5dp"
+					android:paddingTop="5dp"
 					android:singleLine="false"
 					android:textCursorDrawable="@null"
-					android:textIsSelectable="true"
-					android:paddingTop="5dp"
-					android:paddingBottom="5dp"
-					android:paddingLeft="5dp"/>
+					android:textIsSelectable="true"/>
 			</HorizontalScrollView>
 		</LinearLayout>
 

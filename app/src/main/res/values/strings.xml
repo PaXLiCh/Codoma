@@ -105,6 +105,7 @@
 	<string name="settings_group_view">View</string>
 	<string name="settings_group_navigation">Navigation</string>
 	<string name="settings_group_formatting">Formatting</string>
+	<string name="settings_group_editing">Editing</string>
 	<string name="settings_group_io">Opening and Saving</string>
 	<string name="settings_group_text_selection">Text Selection</string>
 
@@ -118,8 +119,6 @@
 	<string name="settings_desc_auto_indent">Start a new line with the same level of indent as the previous line</string>
 	<string name="settings_label_auto_open_clipboard">Auto-open clipboard</string>
 	<string name="settings_desc_auto_open_clipboard">Display clipboard options when selection made</string>
-	<string name="settings_label_chirality">Left/Right-handed</string>
-	<string name="settings_desc_chirality">Affects some navigation methods.</string>
 	<string name="settings_label_color_scheme">Color scheme</string>
 	<string name="settings_desc_color_scheme">Color schemes</string>
 	<string name="settings_label_drag_select">Drag select</string>
@@ -139,8 +138,7 @@
 	<string name="settings_desc_navigation_method">Ways to move the cursor. See the help file for more details.</string>
 	<string name="settings_label_show_nonprinting">Show non-printing symbols</string>
 	<string name="settings_desc_show_nonprinting">Display spaces, tabs and end of lines as visible symbols</string>
-	<string name="settings_label_show_row_number">Show current row number</string>
-	<string name="settings_desc_show_row_number">Display current row number on the title bar</string>
+
 	<string name="settings_desc_tab_spaces">Number of spaces a tab represents</string>
 	<string name="settings_label_word_wrap">Word wrap</string>
 	<string name="settings_desc_word_wrap">Continues text on the next line if it is too long</string>
@@ -184,8 +182,8 @@
 	<string name="match_case">Match case</string>
 	<string name="replace">Replace</string>
 	<string name="text_to_replace">Text to replace</string>
-	<string name="file_saved_with_success">file saved with success</string>
-	<string name="err_occured">Error occurred</string>
+	<string name="file_saved_with_success">file %s saved with success</string>
+	<string name="err_occurred">Error occurred</string>
 	<string name="file_cant_read">Can\'t read file</string>
 	<string name="save_changes">Do you want to save the changes to the file %s?</string>
 
@@ -207,15 +205,6 @@
 		<item>@string/settings_color_scheme_solarized_light</item>
 		<item>@string/settings_color_scheme_solarized_dark</item>
 		<item>@string/settings_color_scheme_obsidian</item>
-	</string-array>
-
-	<string-array
-		name="settings_entries_navigation_method">
-		<item>Basic</item>
-		<item>Trackpad</item>
-		<item>Yo-yo</item>
-		<item>Liquid</item>
-		<item>Volume keys</item>
 	</string-array>
 
 	<string-array
@@ -258,9 +247,6 @@
 	<string name="settings_view_tab_use_spaces_title">Use spaces instead tabs</string>
 	<string name="settings_view_tab_use_spaces_summary">Insert spaces instead of tabs</string>
 
-	<string name="settings_view_tab_size_title">Tabs size</string>
-	<string name="settings_view_tab_size_summary">Width of tab symbol in amount of spaces</string>
-
 	<string name="settings_view_wordwrap_title">Wordwrap</string>
 	<string name="settings_view_wordwrap_summary">Wrap long lines</string>
 
@@ -270,6 +256,21 @@
 	<string name="settings_view_font_size_title">Font size</string>
 	<string name="settings_view_font_size_summary">Default size of font</string>
 	<string name="settings_view_font_size_sample">01 TEST text Test TeXt\n02 NEXT line NEXT line\n03 void main() { /* */ }</string>
+
+	<string name="settings_view_whitespace_title">Show whitespaces</string>
+	<string name="settings_view_whitespace_summary">Not printable characters may be shown with special symbols.</string>
+
+	<string name="settings_view_tab_width_title">Tab width</string>
+	<string name="settings_view_tab_width_summary">Width of tab symbol in amount of spaces</string>
+
+	<string name="settings_view_update_delay_title">Update delay</string>
+	<string name="settings_view_update_delay_summary">Delay before updating view after last changes in text</string>
+
+	<string name="settings_edit_tab_to_spaces_title">Tabulate with spaces</string>
+	<string name="settings_edit_tab_to_spaces_summary">Convert tabs to spaces.</string>
+
+	<string name="settings_edit_indent_title">Autoindent</string>
+	<string name="settings_edit_indent_summary">Automatically add spaces or tabs on new line</string>
 
 	<string name="settings_file_encoding_title">Encoding</string>
 	<string name="settings_file_encoding_summary">Default encoding for new files</string>
@@ -285,14 +286,34 @@
 
 	<string name="settings_file_line_endings_title">Line endings</string>
 	<string name="settings_file_line_endings_summary">Default line endings for new files</string>
+
+	<string-array name="settings_view_whitespace_entries">
+		<item>No</item>
+		<item>Selection</item>
+		<item>All</item>
+	</string-array>
+
+	<string-array name="settings_view_tab_width_entries">
+		<item>Do not style tab characters</item>
+		<item>1 space</item>
+		<item>2 spaces</item>
+		<item>4 spaces</item>
+		<item>8 spaces</item>
+	</string-array>
+
+	<string-array name="settings_view_update_delay_entries">
+		<item>0.5s</item>
+		<item>1.0s</item>
+		<item>1.5s</item>
+		<item>2.0s</item>
+		<item>3.0s</item>
+		<item>5.0s</item>
+	</string-array>
+
 	<string-array name="settings_file_line_endings_entries">
-		<item>LF — Unix and OS X (\\n)</item>
-		<item>CRLF — Windows (\\r\\n)</item>
-		<item>CR — Mac OS 9 (\\r)</item>
+		<item>LF — Unix and macOS</item>
+		<item>CRLF — Windows</item>
+		<item>CR — Mac OS 9</item>
 	</string-array>
-	<string-array name="settings_file_line_endings_entry_values">
-		<item>LF</item>
-		<item>CRLF</item>
-		<item>CR</item>
-	</string-array>
+
 </resources>

@@ -27,6 +27,40 @@
 			android:key="@string/settings_view_font_size_key"
 			android:summary="@string/settings_view_font_size_summary"
 			android:title="@string/settings_view_font_size_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_view_whitespace_default"
+			android:entries="@array/settings_view_whitespace_entries"
+			android:entryValues="@array/settings_view_whitespace_values"
+			android:key="@string/settings_view_whitespace_key"
+			android:summary="@string/settings_view_whitespace_summary"
+			android:title="@string/settings_view_whitespace_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_view_tab_width_default"
+			android:entries="@array/settings_view_tab_width_entries"
+			android:entryValues="@array/settings_view_tab_width_values"
+			android:key="@string/settings_view_tab_width_key"
+			android:summary="@string/settings_view_tab_width_summary"
+			android:title="@string/settings_view_tab_width_title"/>
+		<ListPreference
+			android:defaultValue="@string/settings_view_update_delay_default"
+			android:entries="@array/settings_view_update_delay_entries"
+			android:entryValues="@array/settings_view_update_delay_values"
+			android:key="@string/settings_view_update_delay_key"
+			android:summary="@string/settings_view_update_delay_summary"
+			android:title="@string/settings_view_update_delay_title"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/settings_group_editing">
+		<SwitchPreference
+			android:defaultValue="@bool/settings_edit_tab_to_spaces_default"
+			android:key="@string/settings_edit_tab_to_spaces_key"
+			android:summary="@string/settings_edit_tab_to_spaces_summary"
+			android:title="@string/settings_edit_tab_to_spaces_title"/>
+		<SwitchPreference
+			android:defaultValue="@bool/settings_edit_indent_default"
+			android:key="@string/settings_edit_indent_key"
+			android:summary="@string/settings_edit_indent_summary"
+			android:title="@string/settings_edit_indent_title"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/settings_group_io">
@@ -53,7 +87,7 @@
 		<ListPreference
 			android:defaultValue="@string/settings_file_line_endings_default"
 			android:entries="@array/settings_file_line_endings_entries"
-			android:entryValues="@array/settings_file_line_endings_entry_values"
+			android:entryValues="@array/settings_file_line_endings_values"
 			android:key="@string/settings_file_line_endings_key"
 			android:summary="@string/settings_file_line_endings_summary"
 			android:title="@string/settings_file_line_endings_title"/>

@@ -16,6 +16,9 @@ import com.spazedog.lib.rootfw4.Shell;
 import com.spazedog.lib.rootfw4.utils.File;
 import com.spazedog.lib.rootfw4.utils.Filesystem;*/
 
+/**
+ * Asynchronous saving file.
+ */
 public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	private final Activity activity;
 	private final GreatUri uri;
@@ -37,8 +40,8 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		positiveMessage = String.format(activity.getString(R.string.file_saved_with_success), uri.getFileName());
-		negativeMessage = activity.getString(R.string.err_occured);
+		positiveMessage = activity.getString(R.string.file_saved_with_success, uri.getFileName());
+		negativeMessage = activity.getString(R.string.err_occurred);
 	}
 
 	/**
@@ -90,7 +93,7 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 					isSuccessful = false;
 			} else*/
 				message = positiveMessage;
-			isSuccessful = true;
+				isSuccessful = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			message = e.getMessage();

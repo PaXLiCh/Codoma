@@ -1,5 +1,7 @@
 package ru.kolotnev.codoma;
 
+import android.support.annotation.NonNull;
+
 import java.util.Comparator;
 
 /* The Alphanum Algorithm is an improved sorting algorithm for strings
@@ -44,6 +46,7 @@ public class AlphanumComparator implements Comparator {
 	/**
 	 * Length of string is passed in for improved efficiency (only need to calculate it once) *
 	 */
+	@NonNull
 	private String getChunk(String s, int slength, int marker) {
 		StringBuilder chunk = new StringBuilder();
 		char c = s.charAt(marker);
@@ -92,7 +95,7 @@ public class AlphanumComparator implements Comparator {
 			thatMarker += thatChunk.length();
 
 			// If both chunks contain numeric characters, sort them numerically
-			int result = 0;
+			int result;
 			if (isDigit(thisChunk.charAt(0)) && isDigit(thatChunk.charAt(0))) {
 				// Simple chunk comparison by length.
 				int thisChunkLength = thisChunk.length();

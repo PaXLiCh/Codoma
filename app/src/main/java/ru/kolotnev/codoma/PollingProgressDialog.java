@@ -13,10 +13,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Handler;
+import android.util.Log;
 
 import ru.kolotnev.codoma.common.ProgressObserver;
 import ru.kolotnev.codoma.common.ProgressSource;
-import ru.kolotnev.codoma.common.TextWarriorException;
 
 public class PollingProgressDialog extends ProgressDialog
 		implements ProgressObserver, OnCancelListener {
@@ -41,8 +41,9 @@ public class PollingProgressDialog extends ProgressDialog
 		setIndeterminate(!showProgress);
 		if (showProgress) {
 			_min = _src.getMin();
-			TextWarriorException.assertVerbose(_min < _src.getMax(),
-					"Maximum progress value <= min value");
+			if (_min > _src.getMax()) {
+				Log.e(CodomaApplication.TAG, "Maximum progress value <= min value");
+			}
 			setMax(_src.getMax());
 
 			setProgress(_min);

@@ -36,8 +36,8 @@ public class TextFileFragment extends Fragment implements
 			ID_CUT = android.R.id.cut,
 			ID_COPY = android.R.id.copy,
 			ID_PASTE = android.R.id.paste,
-			ID_UNDO = R.id.undo,
-			ID_REDO = R.id.redo;
+			ID_UNDO = R.id.action_undo,
+			ID_REDO = R.id.action_redo;
 	private TextFile textFile;
 	private NewEditorActivity activity;
 	private ColoredEditText editText;
@@ -94,15 +94,15 @@ public class TextFileFragment extends Fragment implements
 		String tempTextField;
 		if (bundle != null) {
 			int location = bundle.getInt(ARG_INDEX);
-			textFile = TextFileProvider.get(location);
+			textFile = CodomaApplication.get(location);
 			tempTextField = "loaded";
 		} else {
 			textFile = new TextFile();
 			textFile.text = "public static void main(String args..) {\n\tint i = 0;\n}\n";
-			textFile.setupPageSystem(PreferenceHelper.getSplitText(getContext()), activity);
 			Log.e(TAG, "TextFileFragment no text files");
 			tempTextField = "created";
 		}
+		textFile.setupPageSystem(PreferenceHelper.getSplitText(getContext()), activity);
 		Log.e(TAG, "loaded file with encoding " + textFile.encoding + " eol " + textFile.eol);
 		//}
 		Log.e(TAG, "content of temp text field: " + tempTextField);

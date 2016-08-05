@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Spannable;
@@ -22,6 +23,7 @@ import android.text.method.KeyListener;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.LineBackgroundSpan;
+import android.text.style.ReplacementSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
@@ -33,11 +35,23 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ru.kolotnev.codoma.SyntaxColor.SolarizedDarkSyntaxColor;
 import ru.kolotnev.codoma.SyntaxColor.SyntaxColor;
+import ru.kolotnev.codoma.TextSyntax.CSSTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.CppTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.CsharpTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.GLSLTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.HTMLTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.JavaTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.LUATextSyntax;
+import ru.kolotnev.codoma.TextSyntax.PHPTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.PlainTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.PythonTextSyntax;
+import ru.kolotnev.codoma.TextSyntax.SQLTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.TextSyntax;
 
 /**
@@ -52,10 +66,10 @@ public class ColoredEditText extends EditText {
 			ID_COPY = android.R.id.copy,
 			ID_PASTE = android.R.id.paste,
 			SYNTAX_DELAY_MILLIS_SHORT = 250,
-			SYNTAX_DELAY_MILLIS_LONG = 1500,
 			CHARS_TO_COLOR = 2500,
-			ID_UNDO = R.id.undo,
-			ID_REDO = R.id.redo;
+			ID_UNDO = R.id.action_undo,
+			ID_REDO = R.id.action_redo;
+	private int updateDelay = 1000;
 	private final Handler updateHandler = new Handler();
 	private final TextPaint gutterPaintText = new TextPaint();
 	private final TextPaint gutterPaintSelectedText = new TextPaint();
@@ -84,30 +98,47 @@ public class ColoredEditText extends EditText {
 	private SyntaxColor.Style gutterStyleSelected;
 	// TODO: цветовая схема (надо заменить её на загрузку цветовой темы)
 	private SyntaxColor colorScheme = new SolarizedDarkSyntaxColor();
-	private int firstVisibleIndex;
-	private int lastVisibleIndex;
 	private TextFile textFile;
 	private boolean isHighlightEnabled;
+	private int tabWidth = 0;
+
+	@Nullable
+	public TextSyntax textSyntax;
+
 	private final GoodScrollView.ScrollInterface scrollListener = new GoodScrollView.ScrollInterface() {
 		@Override
 		public void onScrollChanged(int l, int t, int oldl, int oldt) {
-			updateTextSyntax(SYNTAX_DELAY_MILLIS_SHORT);
+			// TODO: разобраться, можно ли выкинуть блокировку подсветки при выделенном тексте
+			if (hasSelection())
+				return;
+
+			cancelUpdate();
+			updateHandler.postDelayed(colorUpdater, SYNTAX_DELAY_MILLIS_SHORT);
 		}
 	};
 	private final TextWatcher textWatcher = new TextWatcher() {
+		private int start = 0;
+		private int count = 0;
+
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+			/* do nothing */
 		}
 
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+			this.start = start;
+			this.count = count;
 		}
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			updateTextSyntax(SYNTAX_DELAY_MILLIS_LONG);
+			cancelUpdate();
+			convertTabs(s, start, count);
+
+			updateHandler.postDelayed(colorUpdater, updateDelay);
+
+			//updateTextSyntax(updateDelay);
 			// TODO: send correct invalidate
 			((Activity) getContext()).invalidateOptionsMenu();
 		}
@@ -118,13 +149,13 @@ public class ColoredEditText extends EditText {
 	//region CONSTRUCTOR
 	public ColoredEditText(final Context context, AttributeSet attrs) {
 		super(context, attrs);
-		Log.e("Codoma", "CONSTRUCTOR");
+		Log.e(TAG, "CONSTRUCTOR");
 	}
 
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		Log.e("Codoma", "ATTACHED TO WINDOW ");
+		Log.e(TAG, "ATTACHED TO WINDOW ");
 	}
 
 	private void setScrollListener(@Nullable final GoodScrollView.ScrollInterface listener) {
@@ -162,6 +193,9 @@ public class ColoredEditText extends EditText {
 		//setLayerType(View.LAYER_TYPE_NONE, null);
 
 		final Context context = getContext();
+
+		updateDelay = PreferenceHelper.getUpdateDelay(context);
+
 		deviceHeight = getResources().getDisplayMetrics().heightPixels;
 
 		isNeedLineNumbers = PreferenceHelper.getLineNumbers(context);
@@ -215,6 +249,8 @@ public class ColoredEditText extends EditText {
 		setTextSize(PreferenceHelper.getFontSize(context));
 		gutterView.setTextSize(PreferenceHelper.getFontSize(context));
 
+		tabWidth = Math.round(getPaint().measureText("m") * PreferenceHelper.getTabWidth(context));
+
 		setFocusable(true);
 		setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -238,6 +274,34 @@ public class ColoredEditText extends EditText {
 			}
 		});
 
+		setFilters(new InputFilter[] {
+				new InputFilter() {
+					@Override
+					public CharSequence filter(
+							CharSequence source,
+							int start,
+							int end,
+							Spanned dest,
+							int dstart,
+							int dend) {
+						if (enabledChangeListener &&
+								end - start == 1 &&
+								start < source.length() &&
+								dstart < dest.length()) {
+							char c = source.charAt(start);
+
+							if (c == '\n')
+								return autoIndent(
+										source,
+										dest,
+										dstart,
+										dend);
+						}
+
+						return source;
+					}
+				} });
+
 		resetVariables();
 
 		ViewTreeObserver vto = getViewTreeObserver();
@@ -254,6 +318,121 @@ public class ColoredEditText extends EditText {
 		});
 	}
 
+	private CharSequence autoIndent(
+			CharSequence source,
+			Spanned dest,
+			int dstart,
+			int dend) {
+		String indent = "";
+		int istart = dstart - 1;
+		int iend;
+
+		// find start of this line
+		boolean dataBefore = false;
+		int pt = 0;
+
+		for (; istart > -1; --istart) {
+			char c = dest.charAt(istart);
+
+			if (c == '\n')
+				break;
+
+			if (c != ' ' && c != '\t') {
+				if (!dataBefore) {
+					// indent always after those characters
+					if (c == '{'
+							|| c == '+'
+							|| c == '-'
+							|| c == '*'
+							|| c == '/'
+							|| c == '%'
+							|| c == '^'
+							|| c == '=')
+						--pt;
+
+					dataBefore = true;
+				}
+
+				// parenthesis counter
+				if (c == '(')
+					--pt;
+				else if (c == ')')
+					++pt;
+			}
+		}
+
+		// copy indent of this line into the next
+		if (istart > -1) {
+			char charAtCursor = dest.charAt(dstart);
+
+			for (iend = ++istart; iend < dend; ++iend) {
+				char c = dest.charAt(iend);
+
+				// auto expand comments
+				if (charAtCursor != '\n' &&
+						c == '/' &&
+						iend + 1 < dend &&
+						dest.charAt(iend) == c) {
+					iend += 2;
+					break;
+				}
+
+				if (c != ' ' && c != '\t')
+					break;
+			}
+
+			indent += dest.subSequence(istart, iend);
+		}
+
+		// add new indent
+		if (pt < 0)
+			indent += "\t";
+
+		// append white space of previous line and new indent
+		return source + indent;
+	}
+
+	public void detectSyntax() {
+		if (!isHighlightEnabled) {
+			textSyntax = new PlainTextSyntax();
+			return;
+		}
+		String fileExtension
+				= textFile.greatUri == null
+				? ""
+				: textFile.greatUri.getFileExtension().toLowerCase();
+
+		if (fileExtension.contains("htm") || fileExtension.contains("xml")) {
+			textSyntax = new HTMLTextSyntax();
+		} else if (fileExtension.equals("css")) {
+			textSyntax = new CSSTextSyntax();
+		} else if (fileExtension.equals("lua")) {
+			textSyntax = new LUATextSyntax();
+		} else if (fileExtension.equals("py")) {
+			textSyntax = new PythonTextSyntax();
+		} else if (fileExtension.equals("php")) {
+			textSyntax = new PHPTextSyntax();
+		} else if (fileExtension.equals("sql")) {
+			textSyntax = new SQLTextSyntax();
+		} else if (fileExtension.equals("cpp")
+				|| fileExtension.equals("c")
+				|| fileExtension.equals("hpp")
+				|| fileExtension.equals("h")) {
+			textSyntax = new CppTextSyntax();
+		} else if (fileExtension.equals("java")) {
+			textSyntax = new JavaTextSyntax();
+		} else if (fileExtension.equals("cs")) {
+			textSyntax = new CsharpTextSyntax();
+		} else if (fileExtension.equals("glsl")) {
+			textSyntax = new GLSLTextSyntax();
+		} else if (fileExtension.equals("prop") || fileExtension.contains("conf") ||
+				(Arrays.asList(MimeTypes.MIME_MARKDOWN).contains(fileExtension))) {
+			textSyntax = new PlainTextSyntax();
+		} else {
+			textSyntax = new PlainTextSyntax();
+		}
+	}
+
 	/**
 	 * Attach ColoredEditText to text file.
 	 *
@@ -262,6 +441,8 @@ public class ColoredEditText extends EditText {
 	 */
 	public void setTextFile(@NonNull TextFile textFile) {
 		this.textFile = textFile;
+		cancelUpdate();
+		detectSyntax();
 		replaceTextKeepCursor(textFile.getCurrentPageText());
 	}
 
@@ -327,7 +508,9 @@ public class ColoredEditText extends EditText {
 	//region Other
 
 	public void updateLines(Layout layout) {
-		if (0 == getLineCount() || lineCount != getLineCount() || startingLine != textFile.getStartingLine()) {
+		if (0 == getLineCount()
+				|| lineCount != getLineCount()
+				|| startingLine != textFile.getStartingLine()) {
 			startingLine = textFile.getStartingLine();
 			lineCount = getLineCount();
 			if (lineCount == 0)
@@ -478,10 +661,8 @@ public class ColoredEditText extends EditText {
 		return lineUtils;
 	}
 
-	public void colorize(@NonNull TextSyntax textSyntax,
-			@NonNull Editable e,
-			@NonNull CharSequence textToHighlight,
-			int start) {
+	private void colorize(@NonNull Editable e, @NonNull CharSequence textToHighlight, int start) {
+		if (textSyntax == null) return;
 
 		setSpan(textSyntax.getKeywords(), textToHighlight, start, e, SyntaxColor.Scope.KEYWORD);
 
@@ -509,36 +690,20 @@ public class ColoredEditText extends EditText {
 		for (Matcher m = p.matcher(textToHighlight); m.find(); ) {
 			int from = start + m.start();
 			int to = start + m.end();
+			Object span = null;
 			if (style.foreground != null) {
-				e.setSpan(
-						new ForegroundColorSpan(style.foreground),
-						from,
-						to,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				span = new ForegroundColorSpan(style.foreground);
 			}
 			if (style.background != null) {
-				e.setSpan(
-						new BackgroundColorSpan(style.background),
-						from,
-						to,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				span = new BackgroundColorSpan(style.background);
 			}
-
 			if (style.typeface != Typeface.NORMAL) {
-				e.setSpan(
-						new StyleSpan(style.typeface),
-						from,
-						to,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				span = new StyleSpan(style.typeface);
 			}
-
 			if (style.isUnderline) {
-				e.setSpan(
-						new UnderlineSpan(),
-						from,
-						to,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				span = new UnderlineSpan();
 			}
+			e.setSpan(span, from, to, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 	}
 
@@ -557,22 +722,8 @@ public class ColoredEditText extends EditText {
 		setScrollListener(null);
 	}
 
-	/**
-	 * Update syntax highlight.
-	 *
-	 * @param delay
-	 * 		Delay before syntax update.
-	 */
-	public void updateTextSyntax(long delay) {
-		if (!isHighlightEnabled
-				// TODO: разобраться, можно ли выкинуть блокировку подсветки при выделенном тексте
-				|| hasSelection()
-				|| updateHandler == null
-				|| colorUpdater == null)
-			return;
-
+	private void cancelUpdate() {
 		updateHandler.removeCallbacks(colorUpdater);
-		updateHandler.postDelayed(colorUpdater, delay);
 	}
 
 	/**
@@ -587,8 +738,24 @@ public class ColoredEditText extends EditText {
 
 		Log.d(TAG, "updated highlight for file\n" + Log.getStackTraceString(new Exception()));
 
-		taskToUpdate = new ColorUpdaterAsyncTask();
-		taskToUpdate.execute(textToUpdate);
+		taskToUpdate = new ColorUpdaterAsyncTask(textToUpdate);
+		taskToUpdate.execute();
+	}
+
+	private void convertTabs(@NonNull Editable e, int start, int count) {
+		if (tabWidth < 1)
+			return;
+
+		String s = e.toString();
+
+		for (int stop = start + count;
+			 (start = s.indexOf("\t", start)) > -1 && start < stop;
+			 ++start)
+			e.setSpan(
+					new TabWidthSpan(),
+					start,
+					start + 1,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
 
 	private static class LineSpan implements LineBackgroundSpan {
@@ -608,43 +775,52 @@ public class ColoredEditText extends EditText {
 		}
 	}
 
+	private class TabWidthSpan extends ReplacementSpan {
+		@Override
+		public int getSize(
+				Paint paint,
+				CharSequence text,
+				int start,
+				int end,
+				Paint.FontMetricsInt fm) {
+			return tabWidth;
+		}
+
+		@Override
+		public void draw(
+				Canvas canvas,
+				CharSequence text,
+				int start,
+				int end,
+				float x,
+				int top,
+				int y,
+				int bottom,
+				Paint paint) {
+		}
+	}
+
 	private class ColorUpdaterAsyncTask extends AsyncTask<String, Void, Void> {
 		private String textToUpdate = null;
 		private Editable editable = null;
 
-		private int cursorPos;
-		private int cursorPosEnd;
+		private int firstVisibleIndex;
+		private int lastVisibleIndex;
+		private int firstColoredIndex;
 
-		private Editable highlight(Editable editable, boolean newText) {
-			editable.clearSpans();
+		public ColorUpdaterAsyncTask(@Nullable String s) {
+			super();
+			textToUpdate = s;
+		}
 
+		private Editable highlight(@NonNull Editable editable) {
 			if (editable.length() == 0) {
 				return editable;
 			}
 
-			int editorHeight = getHeight();
-
-			if (!newText && editorHeight > 0) {
-				firstVisibleIndex = getFirstVisibleOffset();
-				lastVisibleIndex = getLastVisibleOffset();
-			} else {
-				firstVisibleIndex = 0;
-				lastVisibleIndex = CHARS_TO_COLOR;
-			}
-
-			int firstColoredIndex = firstVisibleIndex - (CHARS_TO_COLOR / 5);
-
-			// normalize
-			if (firstColoredIndex < 0)
-				firstColoredIndex = 0;
-			if (lastVisibleIndex > editable.length())
-				lastVisibleIndex = editable.length();
-			if (firstColoredIndex > lastVisibleIndex)
-				firstColoredIndex = lastVisibleIndex;
-
 			CharSequence textToHighlight = editable.subSequence(firstColoredIndex, lastVisibleIndex);
 
-			colorize(textFile.textSyntax, editable, textToHighlight, firstColoredIndex);
+			colorize(editable, textToHighlight, firstColoredIndex);
 
 			return editable;
 		}
@@ -652,27 +828,47 @@ public class ColoredEditText extends EditText {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			cursorPos = getSelectionStart();
-			cursorPosEnd = getSelectionEnd();
-
 			disableTextChangedListener();
 
-			editable = getEditableText();
+			editable = getText();
+		}
+
+		private void doMagic(Editable editable2) {
+			int editorHeight = getHeight();
+
+			if (textToUpdate == null && editorHeight > 0) {
+				firstVisibleIndex = getFirstVisibleOffset();
+				lastVisibleIndex = getLastVisibleOffset();
+			} else {
+				firstVisibleIndex = 0;
+				lastVisibleIndex = CHARS_TO_COLOR;
+			}
+
+			firstColoredIndex = firstVisibleIndex - (CHARS_TO_COLOR / 5);
+
+			// normalize
+			if (firstColoredIndex < 0)
+				firstColoredIndex = 0;
+			if (lastVisibleIndex > editable2.length())
+				lastVisibleIndex = editable2.length();
+			if (firstColoredIndex > lastVisibleIndex)
+				firstColoredIndex = lastVisibleIndex;
+
+			if (isHighlightEnabled) {
+				editable = highlight(editable2);
+			} else {
+				editable = editable2;
+			}
+			convertTabs(editable2, firstColoredIndex, lastVisibleIndex - firstColoredIndex);
 		}
 
 		@Override
 		protected Void doInBackground(String... params) {
-			if (params.length > 0)
-				textToUpdate = params[0];
+			Editable editable2 = textToUpdate == null
+					? new SpannableStringBuilder(editable.toString())
+					: new SpannableStringBuilder(textToUpdate);
 
-			Editable editable2 = textToUpdate == null ?
-					new SpannableStringBuilder(editable.toString()) :
-					new SpannableStringBuilder(textToUpdate);
-			if (isHighlightEnabled) {
-				editable = highlight(editable2, textToUpdate != null);
-			} else {
-				editable = editable2;
-			}
+			doMagic(editable2);
 
 			return null;
 		}
@@ -681,27 +877,30 @@ public class ColoredEditText extends EditText {
 		protected void onPostExecute(Void aVoid) {
 			super.onPostExecute(aVoid);
 
+			int selectionStart = getSelectionStart();
+			int selectionEnd = getSelectionEnd();
+
 			setText(editable, TextView.BufferType.SPANNABLE);
 
 			int newCursorPos;
 
 			// Detect if cursor or whole selection visible
-			boolean isSelectionStartVisible = cursorPos >= firstVisibleIndex && cursorPos <= lastVisibleIndex;
-			boolean isSelectionEndVisible = cursorPosEnd >= firstVisibleIndex && cursorPosEnd <= lastVisibleIndex;
+			boolean isSelectionStartVisible = selectionStart >= firstVisibleIndex && selectionStart <= lastVisibleIndex;
+			boolean isSelectionEndVisible = selectionEnd >= firstVisibleIndex && selectionEnd <= lastVisibleIndex;
 
 			// TODO: подумать над курсором и выделением, сделать так, чтобы при установке выделения не сбрасывался скролл
 			if (isSelectionStartVisible) {
 				// if the cursor is on screen
 				// we don't change its position
-				newCursorPos = cursorPos;
+				newCursorPos = selectionStart;
 			} else {
 				// else we set it to the first visible pos
-				newCursorPos = cursorPosEnd;//firstVisibleIndex;
+				newCursorPos = selectionEnd;//firstVisibleIndex;
 			}
 
 			if (newCursorPos > -1 && newCursorPos <= length()) {
-				if (cursorPosEnd != cursorPos && isSelectionStartVisible)
-					setSelection(cursorPos, cursorPosEnd);
+				if (selectionEnd != selectionStart && isSelectionStartVisible)
+					setSelection(selectionStart, selectionEnd);
 				else
 					setSelection(newCursorPos);
 			}/**/
@@ -728,6 +927,30 @@ public class ColoredEditText extends EditText {
 			super.onCancelled(aVoid);
 
 			enableTextChangedListener();
+		}
+	}
+
+	private void clearSpans(@NonNull Editable e) {
+		// remove foreground color spans
+		{
+			ForegroundColorSpan spans[] = e.getSpans(
+					0,
+					e.length(),
+					ForegroundColorSpan.class);
+
+			for (int n = spans.length; n-- > 0; )
+				e.removeSpan(spans[n]);
+		}
+
+		// remove background color spans
+		{
+			BackgroundColorSpan spans[] = e.getSpans(
+					0,
+					e.length(),
+					BackgroundColorSpan.class);
+
+			for (int n = spans.length; n-- > 0; )
+				e.removeSpan(spans[n]);
 		}
 	}
 }

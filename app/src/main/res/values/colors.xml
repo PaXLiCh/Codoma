@@ -32,13 +32,15 @@
 	<color name="file_media_picture">#33b5e5</color>
 	<color name="file_media_video">#ff00607d</color>
 
-	<color name="syntax_number">#ffff6600</color>
-	<color name="syntax_keyword">#ff2f6f9f</color>
-	<color name="syntax_attr">#ff4f9fcf</color>
-	<color name="syntax_attr_value">#ffd44950</color>
-	<color name="syntax_string">#ffd44950</color>
-	<color name="syntax_variable">#ff009688</color>
-	<color name="syntax_comment">#ff999999</color>
+	<color name="syntax_number">#ff6600</color>
+	<color name="syntax_keyword">#2f6f9f</color>
+	<color name="syntax_attr">#4f9fcf</color>
+	<color name="syntax_attr_value">#d44950</color>
+	<color name="syntax_string">#d44950</color>
+	<color name="syntax_variable">#009688</color>
+	<color name="syntax_comment">#999999</color>
+	<color name="syntax_error">#8800</color>
+	<color name="syntax_builtin">#d79e39</color>
 
 	<color name="item_selected">#40969696</color>
 	<color name="gradient_start">#50000000</color>

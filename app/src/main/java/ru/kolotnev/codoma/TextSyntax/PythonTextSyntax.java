@@ -36,4 +36,20 @@ public class PythonTextSyntax extends TextSyntax {
 	public Pattern getSymbols() {
 		return PY_SYMBOLS;
 	}
+
+
+	@Override
+	public boolean isWordStart(char c) { return (c == '@'); }
+
+	@Override
+	public boolean isLineAStart(char c) { return false; }
+
+	@Override
+	public boolean isLineBStart(char c) { return (c == '#'); }
+
+	@Override
+	public boolean isLineStart(char c0, char c1) { return false; }
+
+	@Override
+	public boolean isMultilineStartDelimiter(char c0, char c1) { return false; }
 }
