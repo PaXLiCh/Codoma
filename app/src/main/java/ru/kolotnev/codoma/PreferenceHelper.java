@@ -106,6 +106,12 @@ public final class PreferenceHelper {
 				R.integer.settings_view_font_size_default);
 	}
 
+	public static boolean getWhitespaces(@NonNull final Context context) {
+		return getBoolean(context,
+				R.string.settings_view_whitespace_key,
+				R.bool.settings_view_whitespace_default);
+	}
+
 	public static int getTabWidth(@NonNull final Context context) {
 		return Integer.parseInt(getString(context,
 				R.string.settings_view_tab_width_key,

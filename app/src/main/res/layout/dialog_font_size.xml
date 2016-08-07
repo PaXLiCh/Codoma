@@ -9,17 +9,17 @@
 	android:padding="16dp"
 	tools:context=".CodomaPreferenceActivity">
 
+	<TextView
+		android:id="@+id/text_sample"
+		android:layout_width="match_parent"
+		android:layout_height="90sp"
+		android:text="@string/settings_view_font_size_sample"/>
+
 	<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 		android:id="@+id/seekBar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		app:dsb_max="30"
 		app:dsb_min="6"/>
-
-	<TextView
-		android:id="@+id/text_sample"
-		android:layout_width="match_parent"
-		android:layout_height="90sp"
-		android:text="@string/settings_view_font_size_sample"/>
 
 </LinearLayout>

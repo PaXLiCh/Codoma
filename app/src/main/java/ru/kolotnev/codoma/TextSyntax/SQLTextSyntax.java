@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -32,8 +38,12 @@ public class SQLTextSyntax extends TextSyntax {
 					"|(ERRLVL)|(OUTER)|(WITH)|(ESCAPE)|(OVER)|(WRITETEXT))(?=\\b)",
 			Pattern.CASE_INSENSITIVE);
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return SQL_KEYWORDS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", SQL_KEYWORDS));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

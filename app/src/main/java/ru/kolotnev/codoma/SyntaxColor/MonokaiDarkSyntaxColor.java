@@ -6,8 +6,8 @@ import android.graphics.Typeface;
  * Monokai dark theme.
  */
 public class MonokaiDarkSyntaxColor extends SyntaxColor {
-	//private static final int background = 0xFF49483E;
-	//private static final int foreground = 0xFF75715E;
+	//private static final int back = 0xFF49483E;
+	//private static final int color = 0xFF75715E;
 
 	private static final int background = 0xFF272822;
 	private static final int foreground = 0xFFF8F8F2;
@@ -27,21 +27,14 @@ public class MonokaiDarkSyntaxColor extends SyntaxColor {
 	<string>#49483E</string>
 	<key>lineHighlight</key>
 	<string>#49483E</string>
-	<key>selection</key>
-	<string>#49483E</string>*/
 
-	/*key>background</key>
+	/*key>back</key>
 	<string>#49483E</string>
 	<key>divider</key>
 	<string>#75715E</string>
-	<key>foreground</key>
+	<key>color</key>
 	<string>#75715E</string>*/
 
-
-	private static final Style gutterStyle = new Style();
-	private static final Style gutterSelectedStyle = new Style();
-
-	private static final Style foregroundStyle = new Style();
 	private static final Style keywordStyle = new Style();
 	private static final Style builtinStyle = new Style();
 	private static final Style variableStyle = new Style();
@@ -53,69 +46,57 @@ public class MonokaiDarkSyntaxColor extends SyntaxColor {
 	private static final Style errorStyle = new Style();
 
 	static {
-		gutterStyle.foreground = 0xFF75715E;
-		gutterStyle.background = 0xFF49483E;
+		keywordStyle.color = keyword;
+		builtinStyle.color = builtin;
+		variableStyle.color = variable;
 
-		gutterSelectedStyle.foreground = 0xFF75715E;
-		gutterSelectedStyle.background = 0xFF49483E;
+		stringStyle.color = string;
 
-		foregroundStyle.foreground = foreground;
-		foregroundStyle.background = background;
+		commentStyle.color = comment;
+		commentStyle.fontStyle = Typeface.ITALIC;
 
-		keywordStyle.foreground = keyword;
-		builtinStyle.foreground = builtin;
-		variableStyle.foreground = variable;
-
-		stringStyle.foreground = string;
-
-		commentStyle.foreground = comment;
-		commentStyle.typeface = Typeface.ITALIC;
-
-		linkStyle.foreground = link;
+		linkStyle.color = link;
 		linkStyle.isUnderline = true;
 
-		punctuationStyle.foreground = punctuation;
-		numberStyle.foreground = number;
+		punctuationStyle.color = punctuation;
+		numberStyle.color = number;
 
-		errorStyle.foreground = 0xFFF8F8F0;
-		errorStyle.background = 0xFFF92672;
+		errorStyle.color = 0xFFF8F8F0;
+		//errorStyle.back = 0xFFF92672;
 	}
 
 	@Override
-	public Style getStyle(Scope scope) {
-		switch (scope) {
+	public int getTextColor() {
+		return foreground;
+	}
 
-			case FOREGROUND:
-				return foregroundStyle;
-			case KEYWORD:
-				return keywordStyle;
-			case BUILTIN:
-				return builtinStyle;
-			case VARIABLE:
-				return variableStyle;
-			case STRING:
-				return stringStyle;
-			case COMMENT:
-				return commentStyle;
-			case LINK:
-				return linkStyle;
-			case PUNCTUATION:
-				return punctuationStyle;
-			case NUMBER:
-				return numberStyle;
-			case ERROR:
-				return errorStyle;
+	@Override
+	public int getBackgroundColor() {
+		return background;
+	}
 
-			case NON_PRINTING_GLYPH:
-				return foregroundStyle;
+	@Override
+	public int getSelectionColor() {
+		return 0xFF49483E;
+	}
 
-			case GUTTER:
-				return gutterStyle;
-			case GUTTER_SELECTED:
-				return gutterSelectedStyle;
+	@Override
+	public int getGutterColor() {
+		return 0xFF49483E;
+	}
 
-			default:
-				return foregroundStyle;
-		}
+	@Override
+	public int getGutterColorSelected() {
+		return 0xFF49483E;
+	}
+
+	@Override
+	public int getGutterTextColor() {
+		return 0xFF75715E;
+	}
+
+	@Override
+	public int getGutterTextColorSelected() {
+		return 0xFF75715E;
 	}
 }

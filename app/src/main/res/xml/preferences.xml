@@ -27,10 +27,8 @@
 			android:key="@string/settings_view_font_size_key"
 			android:summary="@string/settings_view_font_size_summary"
 			android:title="@string/settings_view_font_size_title"/>
-		<ListPreference
-			android:defaultValue="@string/settings_view_whitespace_default"
-			android:entries="@array/settings_view_whitespace_entries"
-			android:entryValues="@array/settings_view_whitespace_values"
+		<SwitchPreference
+			android:defaultValue="@bool/settings_view_whitespace_default"
 			android:key="@string/settings_view_whitespace_key"
 			android:summary="@string/settings_view_whitespace_summary"
 			android:title="@string/settings_view_whitespace_title"/>

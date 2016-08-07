@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -10,8 +16,12 @@ public class CTextSyntax extends TextSyntax {
 			+ "|void|auto|const|extern|register|static|volatile|signed|unsigned|sizeof|typedef|enum"
 			+ "|struct|union|break|case|continue|default|do|else|for|goto|if|return|switch|while)");
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return KEYWORDS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", KEYWORDS));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

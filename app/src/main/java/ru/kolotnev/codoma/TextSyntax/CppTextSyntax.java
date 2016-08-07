@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -17,8 +23,12 @@ public class CppTextSyntax extends TextSyntax {
 					"|compl|not|not_eq|or|or_eq|xor|xor_eq)\\b"
 	);
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return keywords;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", keywords));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

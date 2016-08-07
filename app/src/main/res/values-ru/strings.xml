@@ -175,14 +175,7 @@
 	<string name="settings_file_line_endings_title">Концы строк</string>
 	<string name="settings_file_line_endings_summary">Концы строк, с которыми будет сохранён созданный новый файл</string>
 
-	<string-array name="settings_view_whitespace_entries">
-		<item>Не показывать</item>
-		<item>В выделении</item>
-		<item>По всему тексту</item>
-	</string-array>
-
 	<string-array name="settings_view_tab_width_entries">
-		<item>Не трогать табуляцию</item>
 		<item>1 пробел</item>
 		<item>2 пробела</item>
 		<item>4 пробела</item>

@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -27,16 +33,15 @@ public class PythonTextSyntax extends TextSyntax {
 	public static final Pattern PY_SYMBOLS = Pattern.compile(
 			"\\(|\\)|\\{|\\}|\\.|,|;|=|\\+|\\-|/|\\*|&|!|\\||:|\\[|\\]|<|>|~|%|\\^");
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return PY_KEYWORDS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", PY_KEYWORDS));
+		patterns.add(new AbstractMap.SimpleEntry<>("storage", PY_SYMBOLS));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
-
-	@Override
-	public Pattern getSymbols() {
-		return PY_SYMBOLS;
-	}
-
 
 	@Override
 	public boolean isWordStart(char c) { return (c == '@'); }

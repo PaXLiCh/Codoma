@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -62,28 +68,6 @@ public abstract class TextSyntax {
 
 	public Pattern getLines() {
 		return line;
-	}
-
-	public Pattern getKeywords() {
-		return GENERAL_KEYWORDS;
-	}
-
-	public Pattern getBuiltIns() {
-		return null;
-	}
-
-	public Pattern getNumbers() {
-		return NUMBERS;
-	}
-
-	public Pattern getSymbols() { return SYMBOLS; }
-
-	public Pattern getVariables() {
-		return null;
-	}
-
-	public Pattern getComments() {
-		return GENERAL_COMMENTS;
 	}
 
 	public Pattern getTrailingWhiteSpace() {
@@ -167,5 +151,14 @@ public abstract class TextSyntax {
 	 */
 	public boolean isMultilineEndDelimiter(char c0, char c1) {
 		return (c0 == '*' && c1 == '/');
+	}
+
+	@NonNull
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("constant.numeric", NUMBERS));
+		patterns.add(new AbstractMap.SimpleEntry<>("string.quoted", GENERAL_STRINGS));
+		patterns.add(new AbstractMap.SimpleEntry<>("comment", GENERAL_COMMENTS));
+		return patterns;
 	}
 }

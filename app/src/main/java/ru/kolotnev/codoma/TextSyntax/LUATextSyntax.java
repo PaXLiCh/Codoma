@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -53,8 +59,12 @@ public class LUATextSyntax extends TextSyntax {
 					"|tonumber|tostring|type|unpack|xpcall)\\b"
 	);
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return LUA_KEYWORDS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", LUA_KEYWORDS));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

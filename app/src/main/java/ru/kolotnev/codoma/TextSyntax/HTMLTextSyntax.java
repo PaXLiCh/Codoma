@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -13,18 +19,14 @@ public class HTMLTextSyntax extends TextSyntax {
 			"(\\S+)=[\"']?((?:.(?![\"']?\\s+(?:\\S+)=|[>\"']))+.)[\"']?");
 	public static final Pattern XML_COMMENTS = Pattern.compile("(?s)<!--.*?-->");
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return HTML_TAGS;
-	}
-
-	@Override
-	public Pattern getVariables() {
-		return HTML_ATTRS;
-	}
-
-	@Override
-	public Pattern getComments() {
-		return XML_COMMENTS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("entity.name.class", HTML_TAGS));
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", HTML_ATTRS));
+		patterns.add(new AbstractMap.SimpleEntry<>("comment", XML_COMMENTS));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

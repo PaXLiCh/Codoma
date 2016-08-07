@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -19,18 +25,14 @@ public class PHPTextSyntax extends TextSyntax {
 
 	public static final Pattern PHP_VARIABLES = Pattern.compile("\\$\\s*(\\w+)");
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return KEYWORDS;
-	}
-
-	@Override
-	public Pattern getVariables() {
-		return PHP_VARIABLES;
-	}
-
-	@Override
-	public Pattern getSymbols() {
-		return SYMBOLS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", KEYWORDS));
+		patterns.add(new AbstractMap.SimpleEntry<>("constant.character", SYMBOLS));
+		patterns.add(new AbstractMap.SimpleEntry<>("variable", PHP_VARIABLES));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

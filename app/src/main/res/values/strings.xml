@@ -287,14 +287,7 @@
 	<string name="settings_file_line_endings_title">Line endings</string>
 	<string name="settings_file_line_endings_summary">Default line endings for new files</string>
 
-	<string-array name="settings_view_whitespace_entries">
-		<item>No</item>
-		<item>Selection</item>
-		<item>All</item>
-	</string-array>
-
 	<string-array name="settings_view_tab_width_entries">
-		<item>Do not style tab characters</item>
 		<item>1 space</item>
 		<item>2 spaces</item>
 		<item>4 spaces</item>

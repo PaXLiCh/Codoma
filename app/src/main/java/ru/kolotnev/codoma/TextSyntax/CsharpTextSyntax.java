@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -16,8 +22,12 @@ public class CsharpTextSyntax extends TextSyntax {
 			"|dynamic|get|set|add|remove|global|value|var|yield|alias|partial|from|where|join|on" +
 			"|equals|into|let|orderby|ascending|descending|select|group|by)\\b");
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return KEYWORDS;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", KEYWORDS));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }

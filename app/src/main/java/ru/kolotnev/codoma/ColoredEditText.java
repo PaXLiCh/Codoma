@@ -3,6 +3,7 @@ package ru.kolotnev.codoma;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -17,7 +18,6 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.style.BackgroundColorSpan;
@@ -36,6 +36,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,10 +72,6 @@ public class ColoredEditText extends EditText {
 			ID_REDO = R.id.action_redo;
 	private int updateDelay = 1000;
 	private final Handler updateHandler = new Handler();
-	private final TextPaint gutterPaintText = new TextPaint();
-	private final TextPaint gutterPaintSelectedText = new TextPaint();
-	private final Paint gutterPaintBack = new Paint();
-	private final Paint gutterPaintSelectedBack = new Paint();
 	private ColorUpdaterAsyncTask taskToUpdate = null;
 	private final Runnable colorUpdater = new Runnable() {
 		@Override
@@ -95,12 +92,17 @@ public class ColoredEditText extends EditText {
 	private boolean[] isGoodLineArray;
 	private int[] realLines;
 	private TextView gutterView;
-	private SyntaxColor.Style gutterStyleSelected;
 	// TODO: цветовая схема (надо заменить её на загрузку цветовой темы)
 	private SyntaxColor colorScheme = new SolarizedDarkSyntaxColor();
+	private SyntaxColor.Style styleWhitespaces;
 	private TextFile textFile;
 	private boolean isHighlightEnabled;
+	private boolean isTabAsSpaces = false;
+	private String tabulation;
 	private int tabWidth = 0;
+	private int tabWidthInPixels = 0;
+	private int spaceWidthInPixels = 0;
+	private boolean isWhitespaces = false;
 
 	@Nullable
 	public TextSyntax textSyntax;
@@ -187,8 +189,9 @@ public class ColoredEditText extends EditText {
 			}
 		});*/
 
-		setTextColor(colorScheme.getStyle(SyntaxColor.Scope.FOREGROUND).foreground);
-		setBackgroundColor(colorScheme.getStyle(SyntaxColor.Scope.FOREGROUND).background);
+		setTextColor(colorScheme.getTextColor());
+		setBackgroundColor(colorScheme.getBackgroundColor());
+		setHighlightColor(colorScheme.getSelectionColor());
 
 		//setLayerType(View.LAYER_TYPE_NONE, null);
 
@@ -204,23 +207,11 @@ public class ColoredEditText extends EditText {
 		gutterView = (TextView) getRootView().findViewById(R.id.edit_text_line_numbers);
 		gutterView.setVisibility(isNeedLineNumbers ? View.VISIBLE : View.GONE);
 		if (isNeedLineNumbers) {
-			gutterView.setTextColor(colorScheme.getStyle(SyntaxColor.Scope.GUTTER).foreground);
-			gutterView.setBackgroundColor(colorScheme.getStyle(SyntaxColor.Scope.GUTTER).background);
-
-			gutterPaintText.setAntiAlias(true);
-			gutterPaintText.setDither(false);
-			gutterPaintText.setTextAlign(Paint.Align.RIGHT);
-			gutterPaintText.setColor(colorScheme.getStyle(SyntaxColor.Scope.GUTTER).foreground);
-			gutterPaintBack.setColor(colorScheme.getStyle(SyntaxColor.Scope.GUTTER).background);
-
-			gutterPaintSelectedText.setAntiAlias(true);
-			gutterPaintSelectedText.setDither(false);
-			gutterPaintSelectedText.setTextAlign(Paint.Align.RIGHT);
-			gutterPaintSelectedText.setColor(colorScheme.getStyle(SyntaxColor.Scope.GUTTER_SELECTED).foreground);
-			gutterPaintSelectedBack.setColor(colorScheme.getStyle(SyntaxColor.Scope.GUTTER_SELECTED).background);
-
-			gutterStyleSelected = colorScheme.getStyle(SyntaxColor.Scope.GUTTER_SELECTED);
+			gutterView.setTextColor(colorScheme.getGutterTextColor());
+			gutterView.setBackgroundColor(colorScheme.getGutterColor());
 		}
+		isWhitespaces = PreferenceHelper.getWhitespaces(context);
+		styleWhitespaces = colorScheme.getWhitespaceStyle();
 
 		lineUtils = new LineUtils();
 
@@ -249,7 +240,19 @@ public class ColoredEditText extends EditText {
 		setTextSize(PreferenceHelper.getFontSize(context));
 		gutterView.setTextSize(PreferenceHelper.getFontSize(context));
 
-		tabWidth = Math.round(getPaint().measureText("m") * PreferenceHelper.getTabWidth(context));
+		tabWidth = PreferenceHelper.getTabWidth(context);
+		tabWidthInPixels = Math.round(getPaint().measureText("m") * tabWidth);
+		spaceWidthInPixels = Math.round(getPaint().measureText(" "));
+		isTabAsSpaces = PreferenceHelper.getTabToSpaces(context);
+		if (isTabAsSpaces) {
+			StringBuilder str = new StringBuilder();
+			for (int i = 0; i < tabWidth; ++i) {
+				str.append(' ');
+			}
+			tabulation = str.toString();
+		} else {
+			tabulation = "\t";
+		}
 
 		setFocusable(true);
 		setOnClickListener(new View.OnClickListener() {
@@ -274,6 +277,7 @@ public class ColoredEditText extends EditText {
 			}
 		});
 
+		final boolean autoIndent = PreferenceHelper.getAutoIndent(context);
 		setFilters(new InputFilter[] {
 				new InputFilter() {
 					@Override
@@ -290,7 +294,7 @@ public class ColoredEditText extends EditText {
 								dstart < dest.length()) {
 							char c = source.charAt(start);
 
-							if (c == '\n')
+							if (c == '\n' && autoIndent)
 								return autoIndent(
 										source,
 										dest,
@@ -369,10 +373,10 @@ public class ColoredEditText extends EditText {
 				char c = dest.charAt(iend);
 
 				// auto expand comments
-				if (charAtCursor != '\n' &&
-						c == '/' &&
-						iend + 1 < dend &&
-						dest.charAt(iend) == c) {
+				if (charAtCursor != '\n'
+						&& c == '/'
+						&& iend + 1 < dend
+						&& dest.charAt(iend) == c) {
 					iend += 2;
 					break;
 				}
@@ -386,7 +390,7 @@ public class ColoredEditText extends EditText {
 
 		// add new indent
 		if (pt < 0)
-			indent += "\t";
+			indent += tabulation;
 
 		// append white space of previous line and new indent
 		return source + indent;
@@ -489,9 +493,6 @@ public class ColoredEditText extends EditText {
 	@Override
 	public void setTextSize(float size) {
 		super.setTextSize(size);
-		final float scale = getContext().getResources().getDisplayMetrics().density;
-		gutterPaintText.setTextSize((int) (size * scale * 0.65f));
-		gutterPaintSelectedText.setTextSize((int) (size * scale * 0.65f));
 	}
 
 	public int getFirstVisibleOffset() {
@@ -531,8 +532,6 @@ public class ColoredEditText extends EditText {
 		if (!isNeedLineNumbers)
 			return;
 
-		if (gutterStyleSelected == null) { return; }
-
 		boolean wrapContent = PreferenceHelper.getWrapContent(getContext());
 
 		SpannableStringBuilder text = new SpannableStringBuilder();
@@ -553,8 +552,8 @@ public class ColoredEditText extends EditText {
 			text.append(lineNum);
 			int end = start + lineNum.length();
 			if (realLine >= selection[0] && realLine <= selection[1]) {
-				text.setSpan(new ForegroundColorSpan(gutterStyleSelected.foreground), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-				text.setSpan(new LineSpan(gutterStyleSelected.background), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				text.setSpan(new ForegroundColorSpan(colorScheme.getGutterTextColorSelected()), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				text.setSpan(new LineSpan(colorScheme.getGutterColorSelected()), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
 			start = end;
 		}
@@ -664,19 +663,9 @@ public class ColoredEditText extends EditText {
 	private void colorize(@NonNull Editable e, @NonNull CharSequence textToHighlight, int start) {
 		if (textSyntax == null) return;
 
-		setSpan(textSyntax.getKeywords(), textToHighlight, start, e, SyntaxColor.Scope.KEYWORD);
-
-		setSpan(textSyntax.getBuiltIns(), textToHighlight, start, e, SyntaxColor.Scope.BUILTIN);
-
-		setSpan(textSyntax.getVariables(), textToHighlight, start, e, SyntaxColor.Scope.VARIABLE);
-
-		setSpan(textSyntax.getComments(), textToHighlight, start, e, SyntaxColor.Scope.COMMENT);
-
-		setSpan(textSyntax.getSymbols(), textToHighlight, start, e, SyntaxColor.Scope.PUNCTUATION);
-
-		setSpan(textSyntax.getNumbers(), textToHighlight, start, e, SyntaxColor.Scope.NUMBER);
-
-		setSpan(TextSyntax.LINK, textToHighlight, start, e, SyntaxColor.Scope.LINK);
+		for(Map.Entry<String, Pattern> pair : textSyntax.getPatterns()) {
+			setSpan(pair.getValue(), textToHighlight, start, e, pair.getKey());
+		}
 	}
 
 	private void setSpan(
@@ -684,26 +673,21 @@ public class ColoredEditText extends EditText {
 			CharSequence textToHighlight,
 			int start,
 			Editable e,
-			SyntaxColor.Scope scope) {
+			String patternName) {
 		if (p == null) return;
-		SyntaxColor.Style style = colorScheme.getStyle(scope);
+		SyntaxColor.Style style = colorScheme.getStyle(patternName);
 		for (Matcher m = p.matcher(textToHighlight); m.find(); ) {
 			int from = start + m.start();
 			int to = start + m.end();
-			Object span = null;
-			if (style.foreground != null) {
-				span = new ForegroundColorSpan(style.foreground);
+			if (style.color != null) {
+				e.setSpan(new ForegroundColorSpan(style.color), from, to, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
-			if (style.background != null) {
-				span = new BackgroundColorSpan(style.background);
-			}
-			if (style.typeface != Typeface.NORMAL) {
-				span = new StyleSpan(style.typeface);
+			if (style.fontStyle != Typeface.NORMAL) {
+				e.setSpan(new StyleSpan(style.fontStyle), from, to, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
 			if (style.isUnderline) {
-				span = new UnderlineSpan();
+				e.setSpan(new UnderlineSpan(), from, to, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
-			e.setSpan(span, from, to, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 	}
 
@@ -743,7 +727,7 @@ public class ColoredEditText extends EditText {
 	}
 
 	private void convertTabs(@NonNull Editable e, int start, int count) {
-		if (tabWidth < 1)
+		if (tabWidthInPixels < 2 && !isWhitespaces)
 			return;
 
 		String s = e.toString();
@@ -757,6 +741,20 @@ public class ColoredEditText extends EditText {
 					start + 1,
 					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 	}
+
+	private void convertWhitespaces(@NonNull Editable e, int start, int count) {
+
+		String s = e.toString();
+		int stop = start + count;
+		for (;(start = s.indexOf(" ", start)) > -1 && start < stop; ++start) {
+			e.setSpan(
+					new SpaceSpan(),
+					start,
+					start + 1,
+					Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		}
+	}
+
 
 	private static class LineSpan implements LineBackgroundSpan {
 		private final int color;
@@ -783,7 +781,7 @@ public class ColoredEditText extends EditText {
 				int start,
 				int end,
 				Paint.FontMetricsInt fm) {
-			return tabWidth;
+			return tabWidthInPixels;
 		}
 
 		@Override
@@ -797,6 +795,63 @@ public class ColoredEditText extends EditText {
 				int y,
 				int bottom,
 				Paint paint) {
+			paint.setColor(styleWhitespaces.color);
+			if (isWhitespaces)
+				canvas.drawText("»", x, y, paint);
+		}
+	}
+
+	private class NewLineSpan extends ReplacementSpan {
+		@Override
+		public int getSize(
+				Paint paint,
+				CharSequence text,
+				int start,
+				int end,
+				Paint.FontMetricsInt fm) {
+			return 0;
+		}
+
+		@Override
+		public void draw(
+				Canvas canvas,
+				CharSequence text,
+				int start,
+				int end,
+				float x,
+				int top,
+				int y,
+				int bottom,
+				Paint paint) {
+			paint.setColor(0xFF666666);
+			canvas.drawText("¬", x, y, paint);
+		}
+	}
+
+	private class SpaceSpan extends ReplacementSpan {
+		@Override
+		public int getSize(
+				Paint paint,
+				CharSequence text,
+				int start,
+				int end,
+				Paint.FontMetricsInt fm) {
+			return spaceWidthInPixels;
+		}
+
+		@Override
+		public void draw(
+				Canvas canvas,
+				CharSequence text,
+				int start,
+				int end,
+				float x,
+				int top,
+				int y,
+				int bottom,
+				Paint paint) {
+			paint.setColor(styleWhitespaces.color);
+			canvas.drawText("·", x, y, paint);
 		}
 	}
 
@@ -860,6 +915,8 @@ public class ColoredEditText extends EditText {
 				editable = editable2;
 			}
 			convertTabs(editable2, firstColoredIndex, lastVisibleIndex - firstColoredIndex);
+			if (isWhitespaces)
+				convertWhitespaces(editable2, firstColoredIndex, lastVisibleIndex - firstColoredIndex);
 		}
 
 		@Override

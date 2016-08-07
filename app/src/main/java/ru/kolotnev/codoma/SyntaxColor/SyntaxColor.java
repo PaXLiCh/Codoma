@@ -1,6 +1,8 @@
 package ru.kolotnev.codoma.SyntaxColor;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 
@@ -20,78 +22,66 @@ public abstract class SyntaxColor {
 	private static final int PURPLE = 0xFF7F0055;
 	private static final int RED = 0xFFFF0000;
 	private static final int WHITE = 0xFFFFFFFF;
-	protected HashMap<Scope, Integer> _colors = generateDefaultColors();
 
-	protected void setColor(Scope scope, int color) {
-		_colors.put(scope, color);
+	private static final Style NONE = new Style();
+	private static final Style WHITESPACE = new Style();
+
+	static {
+		NONE.color = Color.BLACK;
+		WHITESPACE.color = Color.LTGRAY;
 	}
 
-	public Style getStyle(Scope scope) {
-		switch (scope) {
-			default: return null;
-		}
+	@NonNull
+	public Style getStyle(String scope) {
+		return NONE;
+	}
+
+	@NonNull
+	public Style getWhitespaceStyle() {
+		return WHITESPACE;
 	}
 
 	/**
-	 * Whether this color scheme uses a dark background, like black or dark grey.
+	 * Whether this color scheme uses a dark back, like black or dark grey.
 	 */
 	public boolean isDark() { return false; }
-
-	private HashMap<Scope, Integer> generateDefaultColors() {
-		// High-contrast, black-on-white color scheme
-		HashMap<Scope, Integer> colors = new HashMap<>(Scope.values().length);
-		colors.put(Scope.FOREGROUND, BLACK);
-		colors.put(Scope.LINE_HIGHLIGHT, RED);
-		colors.put(Scope.NON_PRINTING_GLYPH, LIGHT_GREY);
-		colors.put(Scope.COMMENT, OLIVE_GREEN); //  Eclipse default color
-		colors.put(Scope.KEYWORD, PURPLE); // Eclipse default color
-		colors.put(Scope.LITERAL, INDIGO); // Eclipse default color
-		colors.put(Scope.SECONDARY, DARK_RED);
-
-		colors.put(Scope.SELECTION_FOREGROUND, WHITE);
-		colors.put(Scope.SELECTION_BACKGROUND, MAROON);
-
-		colors.put(Scope.CARET_FOREGROUND, WHITE);
-		colors.put(Scope.CARET_BACKGROUND, BLUE);
-		colors.put(Scope.CARET_DISABLED, GREY);
-
-		return colors;
-	}
 
 	/**
 	 * Style for scope.
 	 */
 	public static class Style {
-		public Integer foreground;
-		public Integer background;
-		public int typeface = Typeface.NORMAL;
+		public Integer color;
+		public int fontStyle = Typeface.NORMAL;
 		public boolean isUnderline = false;
 	}
 
-	/**
-	 * Scope for syntax highlighting.
-	 */
-	public enum Scope {
-		FOREGROUND,
-		KEYWORD,
-		BUILTIN,
-		VARIABLE,
-		STRING,
-		COMMENT,
-		LINK,
-		PUNCTUATION,
-		NUMBER,
-		ERROR,
 
-		NON_PRINTING_GLYPH,
+	public int getTextColor() {
+		return Color.BLACK;
+	}
 
-		GUTTER,
-		GUTTER_SELECTED,
+	public int getBackgroundColor() {
+		return Color.WHITE;
+	}
 
-		// TODO: sort and clear this
-		SELECTION_FOREGROUND, SELECTION_BACKGROUND,
-		CARET_FOREGROUND, CARET_BACKGROUND, CARET_DISABLED, LINE_HIGHLIGHT,
-		LITERAL,
-		SECONDARY
+	public int getSelectionColor() {
+		return Color.GRAY;
+	}
+
+
+	public int getGutterColor() {
+		return Color.WHITE;
+	}
+
+	public int getGutterColorSelected() {
+		return Color.LTGRAY;
+	}
+
+	public int getGutterTextColor() {
+		return Color.BLACK;
+	}
+
+	public int getGutterTextColorSelected() {
+		return Color.BLACK;
 	}
 }

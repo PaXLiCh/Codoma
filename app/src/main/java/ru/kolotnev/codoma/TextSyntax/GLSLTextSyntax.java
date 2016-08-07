@@ -1,5 +1,11 @@
 package ru.kolotnev.codoma.TextSyntax;
 
+import android.support.annotation.NonNull;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -23,18 +29,14 @@ public class GLSLTextSyntax extends TextSyntax {
 	private static final Pattern comments = Pattern.compile(
 			"/\\*(?:.|[\\n\\r])*?\\*/|//.*");
 
+	@NonNull
 	@Override
-	public Pattern getKeywords() {
-		return keywords;
-	}
-
-	@Override
-	public Pattern getBuiltIns() {
-		return builtIns;
-	}
-
-	@Override
-	public Pattern getComments() {
-		return comments;
+	public List<Map.Entry<String, Pattern>> getPatterns() {
+		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
+		patterns.add(new AbstractMap.SimpleEntry<>("keyword", keywords));
+		patterns.add(new AbstractMap.SimpleEntry<>("support.function.builtin", builtIns));
+		patterns.add(new AbstractMap.SimpleEntry<>("comment", comments));
+		patterns.addAll(super.getPatterns());
+		return patterns;
 	}
 }
