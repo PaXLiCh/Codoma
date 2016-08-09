@@ -158,6 +158,7 @@ public abstract class TextSyntax {
 		List<Map.Entry<String, Pattern>> patterns = new ArrayList<>();
 		patterns.add(new AbstractMap.SimpleEntry<>("constant.numeric", NUMBERS));
 		patterns.add(new AbstractMap.SimpleEntry<>("string.quoted", GENERAL_STRINGS));
+		patterns.add(new AbstractMap.SimpleEntry<>("punctuation.definition.parameters", SYMBOLS));
 		patterns.add(new AbstractMap.SimpleEntry<>("comment", GENERAL_COMMENTS));
 		return patterns;
 	}

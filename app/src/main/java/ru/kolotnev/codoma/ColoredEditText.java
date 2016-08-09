@@ -3,7 +3,6 @@ package ru.kolotnev.codoma;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -40,7 +39,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ru.kolotnev.codoma.SyntaxColor.SolarizedDarkSyntaxColor;
+import ru.kolotnev.codoma.SyntaxColor.Base16TomorrowNightSyntaxColor;
 import ru.kolotnev.codoma.SyntaxColor.SyntaxColor;
 import ru.kolotnev.codoma.TextSyntax.CSSTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.CppTextSyntax;
@@ -93,7 +92,7 @@ public class ColoredEditText extends EditText {
 	private int[] realLines;
 	private TextView gutterView;
 	// TODO: цветовая схема (надо заменить её на загрузку цветовой темы)
-	private SyntaxColor colorScheme = new SolarizedDarkSyntaxColor();
+	private SyntaxColor colorScheme = new Base16TomorrowNightSyntaxColor();
 	private SyntaxColor.Style styleWhitespaces;
 	private TextFile textFile;
 	private boolean isHighlightEnabled;

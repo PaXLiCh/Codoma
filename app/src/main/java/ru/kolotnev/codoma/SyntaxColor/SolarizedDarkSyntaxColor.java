@@ -34,8 +34,8 @@ public class SolarizedDarkSyntaxColor extends SyntaxColor {
 	private static final int cyan = 0xFF2aa198;
 	private static final int green = 0xFF859900;
 
-// Custom variables
-// Warning Don't use in packages
+	// Custom variables
+	// Warning Don't use in packages
 
 	private static final int syntax_comment_color = base01;
 	private static final int syntax_subtle_color = base00;
@@ -51,7 +51,7 @@ public class SolarizedDarkSyntaxColor extends SyntaxColor {
 
 	// Guide colors
 	private static final int syntax_wrap_guide_color = base02;//lighten(base02, 6%);
-	private static final int syntax_indent_guide_color = base02;//lighten(base02, 6%);
+	private static final int syntax_indent_guide_color = base02 + 0xFF101010;//lighten(base02, 6%);
 	private static final int syntax_invisible_character_color = base02;//lighten(base02, 6%);
 
 	// For find and replace markers
@@ -113,8 +113,6 @@ public class SolarizedDarkSyntaxColor extends SyntaxColor {
 
 	private static final Style invisible_character = new Style();
 
-	private static final Style indent_guide = new Style();
-
 	private static final Style cursor = new Style();
 
 	private static final Style bracket_matcher = new Style();
@@ -157,8 +155,6 @@ public class SolarizedDarkSyntaxColor extends SyntaxColor {
 
 		invisible_character.color = syntax_invisible_character_color;
 
-		indent_guide.color = syntax_indent_guide_color;
-
 		cursor.color = syntax_cursor_color;
 
 		bracket_matcher.color = magenta;
@@ -191,7 +187,6 @@ public class SolarizedDarkSyntaxColor extends SyntaxColor {
 		styleMap.put("tag.punctuationdefinition.end", tag_punctuationdefinition_end);
 		styleMap.put("invalid.deprecated", invalid_deprecated);
 		styleMap.put("invalid.illegal", invalid_illegal);
-		styleMap.put("indent.guide", indent_guide);
 		styleMap.put("cursor", cursor);
 		styleMap.put("bracket.matcher", bracket_matcher);
 	}
