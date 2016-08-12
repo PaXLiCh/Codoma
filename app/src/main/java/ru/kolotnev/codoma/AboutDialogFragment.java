@@ -23,7 +23,7 @@ public class AboutDialogFragment extends DialogFragment {
 		return new AlertDialog.Builder(context)
 				.setTitle(R.string.dialog_about)
 				.setView(aboutText)
-				.setNeutralButton(android.R.string.ok, null)
+				.setPositiveButton(android.R.string.ok, null)
 				.create();
 	}
 }

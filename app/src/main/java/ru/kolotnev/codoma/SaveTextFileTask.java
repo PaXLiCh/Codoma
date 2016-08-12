@@ -7,14 +7,13 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.spazedog.lib.rootfw4.RootFW;
+import com.spazedog.lib.rootfw4.utils.Filesystem;
+import com.spazedog.lib.rootfw4.utils.io.FileWriter;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-
-/*import com.spazedog.lib.rootfw4.RootFW;
-import com.spazedog.lib.rootfw4.Shell;
-import com.spazedog.lib.rootfw4.utils.File;
-import com.spazedog.lib.rootfw4.utils.Filesystem;*/
 
 /**
  * Asynchronous saving file.
@@ -25,7 +24,7 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	private final String newContent;
 	private final String encoding;
 	private String message;
-	private String positiveMessage, negativeMessage;
+	private String positiveMessage;
 	private SaveTextFileListener listener;
 	private boolean isSuccessful = false;
 
@@ -41,7 +40,6 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	protected void onPreExecute() {
 		super.onPreExecute();
 		positiveMessage = activity.getString(R.string.file_saved_with_success, uri.getFileName());
-		negativeMessage = activity.getString(R.string.err_occurred);
 	}
 
 	/**
@@ -49,8 +47,7 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	 */
 	@Override
 	protected Void doInBackground(final Void... voids) {
-		//boolean isRootNeeded = false;
-		//Shell.Result resultRoot = null;
+		boolean isRootNeeded = false;
 
 		try {
 			String filePath = uri.getFilePath();
@@ -58,42 +55,25 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 			if (TextUtils.isEmpty(filePath)) {
 				writeUri(uri.getUri(), newContent, encoding);
 			} else {
-				//isRootNeeded = !uri.isWritable();
-				//if (isRootNeeded == false) {
+				isRootNeeded = !uri.isWritable();
+				if (!isRootNeeded) {
 					writeUri(uri.getUri(), newContent, encoding);
-				/*} else {
+				} else {
 					// if we can read the file associated with the uri
 					if (RootFW.connect()) {
 						Filesystem.Disk systemPart = RootFW.getDisk(uri.getParentFolder());
-						systemPart.mount(new String[]{"rw"});
+						systemPart.mount(new String[] { "rw" });
 
-						File file = RootFW.getFile(uri.getFilePath());
-						resultRoot = file.writeResult(newContent);
+						FileWriter file = RootFW.getFileWriter(uri.getFilePath(), false);
+						file.write(newContent.getBytes(Charset.forName(encoding)));
 
 						RootFW.disconnect();
 					}
-				}*/
+				}
 			}
 
-			/*if (isRootNeeded) {
-				if (resultRoot != null && resultRoot.wasSuccessful()) {
-					isSuccessful = true;
-					message = positiveMessage;
-				} else if (resultRoot != null) {
-					isSuccessful = false;
-					message = negativeMessage +
-							" command number: " +
-							resultRoot.getCommandNumber() +
-							" result code: " +
-							resultRoot.getResultCode() +
-							" error lines: " +
-							resultRoot.getString();
-				} else
-					message = negativeMessage;
-					isSuccessful = false;
-			} else*/
-				message = positiveMessage;
-				isSuccessful = true;
+			message = positiveMessage;
+			isSuccessful = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			message = e.getMessage();
@@ -116,10 +96,6 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	protected void onPostExecute(final Void aVoid) {
 		super.onPostExecute(aVoid);
 		Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-
-		/*android.content.ClipboardManager clipboard = (android.content.ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-		android.content.ClipData clip = android.content.ClipData.newPlainText("Clip",message);
-		clipboard.setPrimaryClip(clip);*/
 
 		if (listener != null)
 			listener.fileSaved(isSuccessful);

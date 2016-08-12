@@ -2,12 +2,10 @@ package ru.kolotnev.codoma;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -31,20 +29,22 @@ public class NewEditorActivity extends AppCompatActivity implements
 		LoadTextFileTask.LoadTextFileListener,
 		TextFile.PageSystemListener,
 		FileOptionsDialogFragment.Callbacks,
-		RecentFilesDialogFragment.Callbacks,
-		SharedPreferences.OnSharedPreferenceChangeListener {
+		RecentFilesDialogFragment.Callbacks {
 
 	private static final int
 			REQUEST_CODE_CREATE = 43,
 			REQUEST_CODE_SELECT_FILE = 121,
 			REQUEST_CODE_SELECT_FOLDER = 122,
-			REQUEST_CODE_SELECT_FILE_AS = 143;
+			REQUEST_CODE_SELECT_FILE_AS = 143,
+			REQUEST_CODE_PREFERENCES = 200;
 	private ActionBar actionBar;
 	private ViewPager viewPager;
 	private ScreenSlidePagerAdapter pagerAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Utils.setTheme(this);
+
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
@@ -73,10 +73,6 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 		// Parse the intent
 		parseIntent(getIntent());
-
-		PreferenceManager
-				.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -161,7 +157,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 				return true;
 			case R.id.settings:
 				Intent i = new Intent(this, CodomaPreferenceActivity.class);
-				startActivity(i);
+				startActivityForResult(i, REQUEST_CODE_PREFERENCES);
 				return true;
 
 
@@ -199,6 +195,14 @@ public class NewEditorActivity extends AppCompatActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
+		if (requestCode == REQUEST_CODE_PREFERENCES && resultCode == RESULT_OK) {
+			Utils.updateTheme(this);
+			//for (int i = 0; i < pagerAdapter.getCount(); ++i) {
+			//	pagerAdapter.getRegisteredFragment(i).preferencesChanged();
+			//}
+			return;
+		}
+
 		if (resultCode == RESULT_OK) {
 			final Uri uri = intent.getData();
 			if (Device.hasKitKatApi() && PreferenceHelper.getUseStorageAccessFramework(this)) {
@@ -438,7 +442,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void textFileFromText(final String text) {
+	private void textFileFromText(@NonNull final String text) {
 		TextFile textFile = new TextFile();
 		textFile.encoding = PreferenceHelper.getEncoding(this);
 		textFile.eol = PreferenceHelper.getLineEnding(this);
@@ -529,13 +533,6 @@ public class NewEditorActivity extends AppCompatActivity implements
 	@Override
 	public void onRecentFileSelected(Uri uri) {
 		textFileByUri(uri, null, null);
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		for (int i = 0; i < pagerAdapter.getCount(); ++i) {
-			pagerAdapter.getRegisteredFragment(i).preferencesChanged();
-		}
 	}
 
 	/**

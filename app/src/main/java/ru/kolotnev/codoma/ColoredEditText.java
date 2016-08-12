@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.kolotnev.codoma.SyntaxColor.Base16TomorrowDaySyntaxColor;
 import ru.kolotnev.codoma.SyntaxColor.Base16TomorrowNightSyntaxColor;
 import ru.kolotnev.codoma.SyntaxColor.SyntaxColor;
 import ru.kolotnev.codoma.TextSyntax.CSSTextSyntax;
@@ -92,7 +93,7 @@ public class ColoredEditText extends EditText {
 	private int[] realLines;
 	private TextView gutterView;
 	// TODO: цветовая схема (надо заменить её на загрузку цветовой темы)
-	private SyntaxColor colorScheme = new Base16TomorrowNightSyntaxColor();
+	private SyntaxColor colorScheme;
 	private SyntaxColor.Style styleWhitespaces;
 	private TextFile textFile;
 	private boolean isHighlightEnabled;
@@ -188,13 +189,17 @@ public class ColoredEditText extends EditText {
 			}
 		});*/
 
-		setTextColor(colorScheme.getTextColor());
-		setBackgroundColor(colorScheme.getBackgroundColor());
-		setHighlightColor(colorScheme.getSelectionColor());
-
 		//setLayerType(View.LAYER_TYPE_NONE, null);
 
 		final Context context = getContext();
+
+		colorScheme = PreferenceHelper.isDarkTheme(context)
+				? new Base16TomorrowNightSyntaxColor()
+				: new Base16TomorrowDaySyntaxColor();
+
+		setTextColor(colorScheme.getTextColor());
+		setBackgroundColor(colorScheme.getBackgroundColor());
+		setHighlightColor(colorScheme.getSelectionColor());
 
 		updateDelay = PreferenceHelper.getUpdateDelay(context);
 

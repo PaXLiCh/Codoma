@@ -83,7 +83,7 @@ public class FileOptionsDialogFragment
 		Context context = getActivity();
 		View v = View.inflate(context, R.layout.dialog_file_options, null);
 		Spinner spinnerEncoding = (Spinner) v.findViewById(R.id.spinner_encodings);
-		Spinner spinnerEnding = (Spinner) v.findViewById(R.id.spinner_eols);
+		Spinner spinnerEnding = (Spinner) v.findViewById(R.id.spinner_endings);
 
 		Resources res = getResources();
 		final String[] valuesEndings = res
@@ -124,7 +124,7 @@ public class FileOptionsDialogFragment
 		});
 
 		return new AlertDialog.Builder(context)
-				.setTitle("File options")
+				.setTitle(R.string.dialog_file_options_title)
 				.setPositiveButton(android.R.string.ok, this)
 				.setNegativeButton(android.R.string.cancel, null)
 				.setView(v)

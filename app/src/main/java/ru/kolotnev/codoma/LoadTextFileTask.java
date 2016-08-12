@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import com.spazedog.lib.rootfw4.RootFW;
+import com.spazedog.lib.rootfw4.utils.io.FileReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +21,7 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 	private final Activity activity;
 
 	private String message = "";
-	//private boolean isRootRequired = false;
+	private boolean isRootRequired = false;
 	private ProgressDialog progressDialog;
 	private TextFile[] textFiles;
 	private LoadTextFileListener listener;
@@ -70,14 +74,10 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 					} else {
 						// if the uri has a path
 
-						//isRootRequired = !newUri.isReadable();
 						// if we cannot read the file, root permission required
-						//if (isRootRequired) {
-						//	readUri(newUri.getUri(), filePath, true);
-						//} else {
-						// if we can read the file associated with the uri
-						readUri(textFile, newUri.getUri(), filePath, false);
-						//}
+						isRootRequired = !newUri.isReadable();
+						// read the file associated with the uri
+						readUri(textFile, newUri.getUri(), filePath, isRootRequired);
 					}
 
 				}
@@ -91,20 +91,20 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 		return (long) 0;
 	}
 
-	private void readUri(TextFile textFile, Uri uri, String path, boolean asRoot) throws IOException {
+	private void readUri(@NonNull TextFile textFile, Uri uri, String path, boolean asRoot) throws IOException {
 		LineReader lineReader = null;
 		StringBuilder stringBuilder = new StringBuilder();
 		String line;
+		FileReader reader = null;
 		InputStreamReader streamReader = null;
 
-		/*if (asRoot) {
+		if (asRoot) {
 			// Connect the shared connection
 			if (RootFW.connect()) {
-				FileReader reader = RootFW.getFileReader(path);
-				buffer = new BufferedReader(reader);
+				reader = RootFW.getFileReader(path);
+				lineReader = new LineReader(reader);
 			}
-		} else*/
-		{
+		} else {
 			if (textFile.encoding == null || textFile.encoding.isEmpty()) {
 				textFile.encoding = FileUtils.detectEncoding(activity.getContentResolver().openInputStream(uri));
 				if (textFile.encoding.isEmpty()) {
@@ -128,14 +128,17 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 				stringBuilder.append(line);
 				stringBuilder.append("\n");
 			}
-			streamReader.close();
+			if (streamReader != null)
+				streamReader.close();
+			if (reader != null)
+				reader.close();
 			textFile.text = stringBuilder.toString();
 			if (textFile.eol == null)
 				textFile.eol = lineReader.getLineEndings();
 		}
 
-		//if (isRootRequired)
-		//	RootFW.disconnect();
+		if (isRootRequired)
+			RootFW.disconnect();
 	}
 
 	/**

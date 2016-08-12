@@ -3,6 +3,32 @@
 	<string name="yes">Да</string>
 	<string name="no">Нет</string>
 
+	<string name="menu_main_close">Закрыть</string>
+	<string name="menu_main_about">О программе</string>
+	<string name="menu_main_new">Создать</string>
+	<string name="menu_main_open">Открыть</string>
+	<string name="menu_main_open_as">Открыть как&#8230;</string>
+	<string name="menu_main_recent_files">Недавние</string>
+	<string name="menu_main_save_as">Сохранить как…</string>
+	<string name="menu_main_settings">Настройки</string>
+	<string name="menu_main_undo">Отменить</string>
+	<string name="menu_main_save">Сохранить</string>
+	<string name="menu_main_select_all">Выбрать всё</string>
+	<string name="menu_main_file_info">Свойства</string>
+	<string name="menu_main_redo">Повторить</string>
+	<string name="menu_main_find_panel_toggle">Найти/Заменить</string>
+	<string name="menu_main_help">Справка</string>
+	<string name="menu_main_go_to_line">Перейти к строке&#8230;</string>
+	<string name="menu_main_input_method">Метод ввода</string>
+
+	<string name="menu_select_file_select">Выбрать</string>
+	<string name="menu_select_file_set_as_working_folder">Сделать рабочей папкой</string>
+	<string name="menu_select_file_is_working_folder">Это рабочая папка</string>
+	<string name="menu_select_file_search">Найти</string>
+
+	<string name="menu_select_file_fab_create_file">Создать файл</string>
+	<string name="menu_select_file_fab_create_folder">Создать папку</string>
+
 	<string name="dialog_edit_name_title_file">Имя файла</string>
 	<string name="dialog_edit_name_title_folder">Имя папки</string>
 	<string name="dialog_edit_name_title_rename">Новое имя</string>
@@ -11,40 +37,19 @@
 	<string name="dialog_button_go_back">Назад</string>
 	<string name="dialog_button_overwrite">Заменить</string>
 	<string name="dialog_about">О программе</string>
-	<string name="action_settings">Настройки</string>
 	<string name="dialog_button_save_different_name">Сохранить как&#8230;</string>
 	<string name="dialog_file_save_success">Файл сохранён</string>
 	<string name="dialog_go_to_line_text_hint">Номер строки</string>
 	<string name="dialog_recent_files_none">Нет недавних файлов.</string>
-	<string name="dialog_statistics">Свойства</string>
-	<string name="dialog_statistics_format">Исходная кодировка</string>
-	<string name="dialog_statistics_words">Слов</string>
 	<string name="find_panel_find_label">Найти</string>
 	<string name="find_panel_match_whole_word">Слово целиком</string>
 	<string name="file_picker_inform_empty">Папка пустая.</string>
-	<string name="dialog_statistics_line_terminator_style">Исходные концы строк</string>
-	<string name="dialog_statistics_no_whitespace">Символов (кроме пробелов)</string>
-	<string name="dialog_statistics_chars">Символов</string>
-	<string name="dialog_statistics_rows">Строк (без переносов)</string>
-	<string name="menu_about">О программе</string>
-	<string name="menu_new">Создать</string>
-	<string name="menu_open">Открыть</string>
-	<string name="menu_open_as">Открыть как…</string>
-	<string name="menu_recent_files">Недавние</string>
-	<string name="action_save_as">Сохранить как…</string>
-	<string name="menu_settings">Настройки</string>
-	<string name="menu_undo">Отменить</string>
 	<string name="progress_dialog_find">Поиск&#8230;</string>
 	<string name="dialog_find_no_results">Ничего не найдено</string>
-	<string name="action_save">Сохранить</string>
-	<string name="menu_select_all">Выбрать всё</string>
 	<string name="progress_dialog_save">Сохранение&#8230;</string>
 	<string name="progress_dialog_open">Открытие&#8230;</string>
 	<string name="progress_dialog_message">Подождите&#8230;</string>
 	<string name="progress_dialog_replace">Замена&#8230;</string>
-	<string name="menu_statistics">Статистика</string>
-	<string name="menu_redo">Повторить</string>
-	<string name="menu_find_panel_toggle">Найти/Заменить</string>
 	<string name="find_panel_replace_label">Заменить</string>
 	<string name="find_panel_options">Настройки поиска</string>
 	<string name="progress_dialog_analyze">Исследование&#8230;</string>
@@ -55,9 +60,6 @@
 	<string name="dialog_error_file_write_denied">Нельзя записать в выбранную папку.</string>
 	<string name="dialog_error_no_file_name">Нужно задать имя файла.</string>
 	<string name="dialog_sorry">Обидно, да.</string>
-	<string name="menu_help">Справка</string>
-	<string name="menu_go_to_line">Перейти к строке&#8230;</string>
-	<string name="menu_change_input_method">Метод ввода</string>
 	<string name="help_title">Справка по Codoma</string>
 	<string name="settings_group_text_selection">Выделение текста</string>
 	<string name="settings_group_io">Открытие и сохранение</string>
@@ -112,11 +114,7 @@
 	<string name="dialog_replace_no_selection">Нет выбранного текста для замены</string>
 	<string name="dialog_sorry_backup_disabled">Возможно, что некоторые несохранённые изменения были потеряны, На будущее, убедитесь, что включена опция резервного копирования.</string>
 	<string name="settings_common_option_auto_label">Автовыбор</string>
-	<string name="action_close">Закрыть</string>
-	<string name="action_select">Выбрать</string>
-	<string name="action_set_as_working_folder">Сделать рабочей папкой</string>
-	<string name="action_is_working_folder">Это рабочая папка</string>
-	<string name="action_search">Найти</string>
+
 	<string name="file_saved_with_success">Файл %s сохранён</string>
 	<string name="match_case">С учётом регистра</string>
 	<string name="regular_expression">Регулярное выражение</string>
@@ -124,15 +122,30 @@
 	<string name="replace">Заменить</string>
 	<string name="save_changes">Хотите сохранить изменения в файле %s?</string>
 	<string name="title_activity_select_file">Выберите файл</string>
-	<string name="action_create_file">Создать файл</string>
-	<string name="action_create_folder">Создать папку</string>
 	<string name="hint_name">Введите имя</string>
 	<string name="occurrences_found">%d совпадений найдено</string>
 
 
+	<string name="dialog_file_options_title">Параметры файла</string>
+	<string name="dialog_file_options_encoding">Кодировка</string>
+	<string name="dialog_file_options_endings">Концы строк</string>
+
+	<string name="dialog_file_info_encoding">Кодировка</string>
+	<string name="dialog_file_info_endings">Концы строк</string>
+	<string name="dialog_file_info_path">Путь</string>
+	<string name="dialog_file_info_size">Размер</string>
+	<string name="dialog_file_info_date">Дата изменения</string>
+	<string name="dialog_file_info_words">Слов</string>
+	<string name="dialog_file_info_lines">Строк</string>
+	<string name="dialog_file_info_whitespaces">Пробелов</string>
+	<string name="dialog_file_info_symbols">Символов</string>
+
 	<!--
 	NEW EDITOR SETTINGS
 	-->
+	<string name="settings_view_dark_title">Тёмное оформление</string>
+	<string name="settings_view_dark_summary">Интерфейс и подсветка синтаксиса будут в глубоких тёмных тонах</string>
+
 	<string name="settings_view_syntax_highlight_title">Подсветка синтаксиса</string>
 	<string name="settings_view_syntax_highlight_summary">Подсвечивает текст в соответствии с языком программирования</string>
 

@@ -11,7 +11,7 @@ import java.util.Map;
  * A color scheme by Chris Kempson (http://chriskempson.com)
  * Created by Pavel Kolotnev on 09.08.16.
  */
-public class Base16TomorrowNightSyntaxColor extends SyntaxColor {
+public class Base16TomorrowDaySyntaxColor extends SyntaxColor {
 
 	// Grayscale
 	private static final int black = 0xFF1d1f21; // 00
@@ -36,24 +36,24 @@ public class Base16TomorrowNightSyntaxColor extends SyntaxColor {
 	// Official Syntax Variables
 
 	// General colors
-	private static final int syntax_text_color = very_light_gray;
-	private static final int syntax_cursor_color = white;
-	private static final int syntax_selection_color = dark_gray;
-	private static final int syntax_selection_flash_color = very_light_gray;
-	private static final int syntax_background_color = black;
+	private static final int syntax_text_color = black;
+	private static final int syntax_cursor_color = black;
+	private static final int syntax_selection_color = almost_white;
+	private static final int syntax_selection_flash_color = very_dark_gray;
+	private static final int syntax_background_color = white;
 
 	// Guide colors
-	private static final int syntax_wrap_guide_color = very_dark_gray;
-	private static final int syntax_indent_guide_color = dark_gray;
-	private static final int syntax_invisible_character_color = dark_gray;
+	private static final int syntax_wrap_guide_color = almost_white;
+	private static final int syntax_indent_guide_color = almost_white;
+	private static final int syntax_invisible_character_color = very_light_gray;
 
 	// For find and replace markers
-	private static final int syntax_result_marker_color = gray;
-	private static final int syntax_result_marker_color_selected = white;
+	private static final int syntax_result_marker_color = light_gray;
+	private static final int syntax_result_marker_color_selected = very_light_gray;
 
 	// Gutter colors
-	private static final int syntax_gutter_text_color = gray;
-	private static final int syntax_gutter_text_color_selected = very_light_gray;
+	private static final int syntax_gutter_text_color = light_gray;
+	private static final int syntax_gutter_text_color_selected = dark_gray;
 	private static final int syntax_gutter_background_color = syntax_background_color;
 	private static final int syntax_gutter_background_color_selected = syntax_selection_color;
 
@@ -293,9 +293,9 @@ public class Base16TomorrowNightSyntaxColor extends SyntaxColor {
 	}
 
 	/**
-	 * This is light theme.
+	 * This is dark theme.
 	 *
-	 * @return false.
+	 * @return true.
 	 */
 	@Override
 	public boolean isDark() {

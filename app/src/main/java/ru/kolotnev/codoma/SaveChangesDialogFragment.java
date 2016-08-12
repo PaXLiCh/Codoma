@@ -44,9 +44,9 @@ public class SaveChangesDialogFragment extends DialogFragment {
 
 		return new AlertDialog.Builder(context)
 				.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_action_content_save))
-				.setTitle(R.string.action_save)
+				.setTitle(R.string.menu_main_save)
 				.setMessage(getString(R.string.save_changes, fileName))
-				.setPositiveButton(R.string.action_save,
+				.setPositiveButton(R.string.menu_main_save,
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {

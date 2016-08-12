@@ -31,4 +31,5 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:+'
     compile 'org.adw.library:discrete-seekbar:+'
     compile 'commons-io:commons-io:+'
+    compile 'com.spazedog.lib:rootfw_gen4:+@aar'
 }

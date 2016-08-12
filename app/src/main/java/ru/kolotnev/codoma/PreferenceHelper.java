@@ -53,6 +53,19 @@ public final class PreferenceHelper {
 	//region View
 
 	/**
+	 * Is interface and syntax highlight must be dark.
+	 * @param context
+	 * @return Is color scheme dark.
+	 */
+	public static boolean isDarkTheme(@NonNull final Context context) {
+		return getBoolean(context, R.string.settings_view_dark_key, R.bool.settings_view_dark_default);
+	}
+
+	public static int getTheme(@NonNull final Context context) {
+		return getPrefs(context).getInt("theme", 0);
+	}
+
+	/**
 	 * Show line numbers on gutter.
 	 *
 	 * @param context
@@ -148,18 +161,6 @@ public final class PreferenceHelper {
 
 	public static boolean getUseAccessoryView(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("accessory_view", true);
-	}
-
-	public static int getTheme(@NonNull final Context context) {
-		return getPrefs(context).getInt("theme", 0);
-	}
-
-	public static boolean isDarkTheme(@NonNull final Context context) {
-		return getPrefs(context).getInt("theme", 0) == 0;
-	}
-
-	public static boolean isLightTheme(@NonNull final Context context) {
-		return getPrefs(context).getInt("theme", 0) == 1;
 	}
 
 	// region FILE IO

@@ -3,25 +3,25 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto">
 	<item
 		android:id="@+id/im_select_folder"
-		android:title="@string/action_select"
+		android:title="@string/menu_select_file_select"
 		app:showAsAction="ifRoom">
 	</item>
 	<item
 		android:id="@+id/im_set_as_working_folder"
 		android:icon="@drawable/ic_action_bookmark_outline"
-		android:title="@string/action_set_as_working_folder"
+		android:title="@string/menu_select_file_set_as_working_folder"
 		app:showAsAction="ifRoom">
 	</item>
 	<item
 		android:id="@+id/im_is_working_folder"
 		android:icon="@drawable/ic_action_bookmark"
-		android:title="@string/action_is_working_folder"
+		android:title="@string/menu_select_file_is_working_folder"
 		app:showAsAction="ifRoom">
 	</item>
 	<item
 		android:id="@+id/im_search"
 		android:icon="@drawable/ic_action_search"
-		android:title="@string/action_search"
+		android:title="@string/menu_select_file_search"
 		app:actionViewClass="android.support.v7.widget.SearchView"
 		app:showAsAction="ifRoom|collapseActionView">
 	</item>

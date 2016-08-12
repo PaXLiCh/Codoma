@@ -12,6 +12,8 @@
 	<bool name="settings_show_row_number_default">false</bool>
 	<bool name="settings_word_wrap_default">true</bool>
 
+	<bool name="settings_view_dark_default">false</bool>
+
 	<bool name="settings_view_wordwrap_default">true</bool>
 	<bool name="settings_view_syntax_highlight_default">true</bool>
 	<bool name="settings_view_line_numbers_default">true</bool>

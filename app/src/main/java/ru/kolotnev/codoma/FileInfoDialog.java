@@ -48,7 +48,7 @@ public class FileInfoDialog extends DialogFragment {
 
 		return new AlertDialog.Builder(getActivity())
 				.setView(view)
-				.setTitle(R.string.dialog_statistics)
+				.setTitle(R.string.menu_main_file_info)
 				.setPositiveButton(android.R.string.ok, null)
 				.create();
 	}
@@ -67,11 +67,11 @@ public class FileInfoDialog extends DialogFragment {
 			TextFile textFile = CodomaApplication.get(getArguments().getInt(ARG_TEXT_FILE_INDEX));
 			if (textFile == null) return null;
 
-			linesInfo.add(new Pair<>("Encoding", textFile.encoding));
+			linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_encoding), textFile.encoding));
 
 			Resources res = getResources();
 			String[] eolNames = res.getStringArray(R.array.settings_file_line_endings_entries);
-			linesInfo.add(new Pair<>("Line endings", eolNames[textFile.eol.getIndex()]));
+			linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_endings), eolNames[textFile.eol.getIndex()]));
 
 			// Read data about saved file
 			if (textFile.greatUri != null && textFile.greatUri.getUri() != Uri.EMPTY) {
@@ -82,8 +82,8 @@ public class FileInfoDialog extends DialogFragment {
 					file = DocumentFile.fromSingleUri(getActivity(), (Uri) getArguments().getParcelable("uri"));
 				}*/
 
-				linesInfo.add(new Pair<>("File path", file.getUri().getPath()));
-				linesInfo.add(new Pair<>("Size", org.apache.commons.io.FileUtils.byteCountToDisplaySize(file.length())));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_path), file.getUri().getPath()));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_size), org.apache.commons.io.FileUtils.byteCountToDisplaySize(file.length())));
 
 				// Get the last modification information.
 				Long lastModified = file.lastModified();
@@ -91,7 +91,7 @@ public class FileInfoDialog extends DialogFragment {
 				// Create a new date object and pass last modified information
 				// to the date object.
 				Date date = new Date(lastModified);
-				linesInfo.add(new Pair<>("Modification date", date.toString()));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_date), date.toString()));
 
 				int wordCount = 0;
 				int _unitsDone = 0;
@@ -136,10 +136,10 @@ public class FileInfoDialog extends DialogFragment {
 					++wordCount;
 				}
 
-				linesInfo.add(new Pair<>("Words count", String.valueOf(wordCount)));
-				linesInfo.add(new Pair<>("Lines", String.valueOf(lines)));
-				linesInfo.add(new Pair<>("White space count", String.valueOf(whiteSpaceCount)));
-				linesInfo.add(new Pair<>("Symbols", String.valueOf(_unitsDone)));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_words), String.valueOf(wordCount)));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_lines), String.valueOf(lines)));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_whitespaces), String.valueOf(whiteSpaceCount)));
+				linesInfo.add(new Pair<>(getString(R.string.dialog_file_info_symbols), String.valueOf(_unitsDone)));
 			}
 			return null;
 		}

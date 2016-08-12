@@ -21,6 +21,7 @@
 	<string name="settings_key_word_wrap" translatable="false">editor_appearance_word_wrap</string>
 	<string name="settings_key_zoom_size" translatable="false">editor_appearance_zoom</string>
 
+	<string name="settings_view_dark_key" translatable="false">view_dark</string>
 	<string name="settings_view_syntax_highlight_key" translatable="false">view_syntax_highlight</string>
 	<string name="settings_view_line_numbers_key" translatable="false">view_line_numbers</string>
 	<string name="settings_view_wordwrap_key" translatable="false">view_wordwrap</string>

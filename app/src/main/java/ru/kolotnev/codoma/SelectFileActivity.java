@@ -20,15 +20,17 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
+import com.spazedog.lib.rootfw4.RootFW;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 public class SelectFileActivity extends AppCompatActivity implements
 		SearchView.OnQueryTextListener,
@@ -40,7 +42,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 
 	private static final String ROOT_DIR = "/";
 	private static final String PATH_SEPARATOR = "/";
-	private final FileInfoAdapter adapter = new FileInfoAdapter();
+	private FileInfoAdapter adapter;
 	private String currentFolder;
 	private MenuItem mSearchViewMenuItem;
 	private SearchView searchView;
@@ -52,6 +54,8 @@ public class SelectFileActivity extends AppCompatActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Utils.setTheme(this);
+
 		super.onCreate(savedInstanceState);
 
 		currentFolder = PreferenceHelper.defaultFolder(this);
@@ -69,7 +73,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		Bundle bundle = getIntent().getExtras();
 		action = (Actions) bundle.getSerializable(EXTRA_ACTION);
 
-		adapter.setOnItemClickListener(this);
+		adapter = new FileInfoAdapter(this, this);
 		listView = (RecyclerView) findViewById(android.R.id.list);
 		listView.setAdapter(adapter);
 		textViewEmpty = findViewById(R.id.empty_text);
@@ -309,8 +313,8 @@ public class SelectFileActivity extends AppCompatActivity implements
 		SelectFile, SelectFolder, SaveFile
 	}
 
-	private class UpdateList extends AsyncTask<String, Void, LinkedList<FileInfoAdapter.FileDetail>> {
-		String exceptionMessage;
+	private class UpdateList extends AsyncTask<String, Void, ArrayList<FileInfoAdapter.FileDetail>> {
+		private String exceptionMessage;
 
 		@Override
 		protected void onPreExecute() {
@@ -326,7 +330,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected LinkedList<FileInfoAdapter.FileDetail> doInBackground(final String... params) {
+		protected ArrayList<FileInfoAdapter.FileDetail> doInBackground(final String... params) {
 			try {
 
 				final String path = params[0];
@@ -341,31 +345,43 @@ public class SelectFileActivity extends AppCompatActivity implements
 
 				String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };
 
-				final LinkedList<FileInfoAdapter.FileDetail> fileDetails = new LinkedList<>();
-				final LinkedList<FileInfoAdapter.FileDetail> folderDetails = new LinkedList<>();
+				final DateFormat format = DateFormat.getDateInstance();
+				final ArrayList<FileInfoAdapter.FileDetail> fileDetails = new ArrayList<>();
+				final ArrayList<FileInfoAdapter.FileDetail> folderDetails = new ArrayList<>();
+				if (currentFolder.equals("/")) {
+					folderDetails.add(new FileInfoAdapter.FileDetail(null, getString(R.string.home), getString(R.string.folder), true, true));
+				} else {
+					folderDetails.add(new FileInfoAdapter.FileDetail(null, "..", getString(R.string.folder), true, true));
+				}
 
 				if (!tempFolder.canRead()) {
-					/*if (RootFW.connect()) {
+					if (RootFW.connect()) {
 						com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentFolder);
 						com.spazedog.lib.rootfw4.utils.File.FileStat[] stats = folder.getDetailedList();
 
 						if (stats != null) {
 							for (com.spazedog.lib.rootfw4.utils.File.FileStat stat : stats) {
 								if (stat.type().equals("d")) {
-									folderDetails.add(new FileInfoAdapter.FileDetail(stat.name(),
+									folderDetails.add(new FileInfoAdapter.FileDetail(null, stat.name(),
 											getString(R.string.folder),
-											""));
+											true, true));
 								} else if (!FilenameUtils.isExtension(stat.name().toLowerCase(), unopenableExtensions)
-										&& stat.size() <= Build.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
+										&& stat.size() <= CodomaApplication.MAX_FILE_SIZE * FileUtils.ONE_KB) {
 									final long fileSize = stat.size();
-									//SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy  hh:mm a");
-									//String date = format.format("");
-									fileDetails.add(new FileInfoAdapter.FileDetail(stat.name(),
-											org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize), ""));
+									String date = format.format(stat);
+									String description = getString(
+											R.string.file_info_detail,
+											FileUtils.byteCountToDisplaySize(fileSize),
+											date);
+									fileDetails.add(new FileInfoAdapter.FileDetail(
+											null,
+											stat.name(),
+											description,
+											true, false));
 								}
 							}
 						}
-					}*/
+					}
 					exceptionMessage = "Cant read folder " + tempFolder.getAbsolutePath();
 					return null;
 				} else {
@@ -376,18 +392,20 @@ public class SelectFileActivity extends AppCompatActivity implements
 					Arrays.sort(files, getFileNameComparator());
 
 					for (final File f : files) {
+						Uri uri = Uri.parse(f.toURI().toString());
 						if (f.isDirectory()) {
-							folderDetails.add(new FileInfoAdapter.FileDetail(f.getName(),
+							folderDetails.add(new FileInfoAdapter.FileDetail(uri, f.getName(),
 									getString(R.string.folder),
-									""));
+									true, true));
 						} else if (f.isFile()
 								&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
-								&& org.apache.commons.io.FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
-							final long fileSize = f.length();
-							DateFormat format = DateFormat.getDateTimeInstance();
-							String date = format.format(f.lastModified());
-							fileDetails.add(new FileInfoAdapter.FileDetail(f.getName(),
-									org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize), date));
+								&& FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * FileUtils.ONE_KB) {
+							String description = getString(
+									R.string.file_info_detail,
+									FileUtils.byteCountToDisplaySize(f.length()),
+									format.format(f.lastModified()));
+							fileDetails.add(new FileInfoAdapter.FileDetail(
+									uri, f.getName(), description, true, false));
 						}
 					}
 				}
@@ -404,9 +422,9 @@ public class SelectFileActivity extends AppCompatActivity implements
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected void onPostExecute(final LinkedList<FileInfoAdapter.FileDetail> names) {
+		protected void onPostExecute(final ArrayList<FileInfoAdapter.FileDetail> names) {
 			if (names != null) {
-				adapter.setFiles(getBaseContext(), names, currentFolder.equals("/"));
+				adapter.setFiles(names);
 				listView.scrollToPosition(0);
 			}
 			textViewEmpty.setVisibility(names == null || names.size() < 1 ? View.VISIBLE : View.GONE);

@@ -1,20 +1,25 @@
 <resources>
-
-	<!-- Base application theme. -->
-	<style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-		<!-- Customize your theme here. -->
-		<item name="colorPrimary">@color/colorPrimary</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="colorAccent">@color/colorAccent</item>
-	</style>
-
-	<style name="AppTheme.NoActionBar">
+	<style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">#E9EAEC</item>
+		<item name="colorPrimaryDark">#D4D5D8</item>
+		<item name="colorAccent">#608CD6</item>
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
+		<item name="popup_overlay">@style/ThemeOverlay.AppCompat.Light</item>
+		<item name="appbar_overlay">@style/ThemeOverlay.AppCompat.ActionBar</item>
 	</style>
 
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+		<item name="colorPrimary">#232426</item>
+		<item name="colorPrimaryDark">#1D1D1F</item>
+		<item name="colorAccent">#6FA4FF</item>
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+		<item name="popup_overlay">@style/ThemeOverlay.AppCompat</item>
+		<item name="appbar_overlay">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+	</style>
 
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
-
+	<style name="AppCompatAlertDialogStyle.Light" parent="Theme.AppCompat.Light.Dialog.Alert">
+		<item name="colorAccent">#608CD6</item>
+	</style>
 </resources>

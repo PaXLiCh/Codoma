@@ -10,17 +10,17 @@
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Line endings"/>
+		android:text="@string/dialog_file_options_endings"/>
 
 	<Spinner
-		android:id="@+id/spinner_eols"
+		android:id="@+id/spinner_endings"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"/>
 
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Encoding"/>
+		android:text="@string/dialog_file_options_encoding"/>
 
 	<Spinner
 		android:id="@+id/spinner_encodings"

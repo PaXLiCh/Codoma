@@ -4,8 +4,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 
-import java.util.HashMap;
-
 /**
  * Color scheme for syntax highlight.
  */
@@ -31,6 +29,11 @@ public abstract class SyntaxColor {
 		WHITESPACE.color = Color.LTGRAY;
 	}
 
+	/**
+	 * Whether this color scheme uses a dark back, like black or dark grey.
+	 */
+	public boolean isDark() { return false; }
+
 	@NonNull
 	public Style getStyle(String scope) {
 		return NONE;
@@ -40,21 +43,6 @@ public abstract class SyntaxColor {
 	public Style getWhitespaceStyle() {
 		return WHITESPACE;
 	}
-
-	/**
-	 * Whether this color scheme uses a dark back, like black or dark grey.
-	 */
-	public boolean isDark() { return false; }
-
-	/**
-	 * Style for scope.
-	 */
-	public static class Style {
-		public Integer color;
-		public int fontStyle = Typeface.NORMAL;
-		public boolean isUnderline = false;
-	}
-
 
 	public int getTextColor() {
 		return Color.BLACK;
@@ -67,7 +55,6 @@ public abstract class SyntaxColor {
 	public int getSelectionColor() {
 		return Color.GRAY;
 	}
-
 
 	public int getGutterColor() {
 		return Color.WHITE;
@@ -84,4 +71,14 @@ public abstract class SyntaxColor {
 	public int getGutterTextColorSelected() {
 		return Color.BLACK;
 	}
+
+	/**
+	 * Style for scope.
+	 */
+	public static class Style {
+		public Integer color;
+		public int fontStyle = Typeface.NORMAL;
+		public boolean isUnderline = false;
+	}
+
 }

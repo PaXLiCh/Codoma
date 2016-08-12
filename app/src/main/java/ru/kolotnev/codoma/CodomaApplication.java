@@ -26,7 +26,6 @@ public class CodomaApplication extends Application {
 
 	public static final String PLAY_STORE = "market://search?q=pub:Kolotnev";
 
-
 	private static final List<TextFile> textFiles = new ArrayList<>();
 
 	public static int amountOfOpenedFiles() {

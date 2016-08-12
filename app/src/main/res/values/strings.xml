@@ -2,11 +2,37 @@
 <resources>
 
 	<string name="app_name" translatable="false">Codoma</string>
-	<string name="action_settings">Settings</string>
+	<string name="file_info_detail" translatable="false">%s \t\t %s</string>
+
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 
-	<string name="file_info_detail" translatable="false">%s \t\t %s</string>
+	<string name="menu_main_about">About</string>
+	<string name="menu_main_input_method">Change input method</string>
+	<string name="menu_main_find_panel_toggle">Find/Replace</string>
+	<string name="menu_main_go_to_line">Go to line&#8230;</string>
+	<string name="menu_main_go_to_page">Go to page&#8230;</string>
+	<string name="menu_main_help">Help</string>
+	<string name="menu_main_new">New</string>
+	<string name="menu_main_open">Open</string>
+	<string name="menu_main_open_as">Open as&#8230;</string>
+	<string name="menu_main_recent_files">Recent</string>
+	<string name="menu_main_save">Save</string>
+	<string name="menu_main_save_as">Save as&#8230;</string>
+	<string name="menu_main_select_all">Select all</string>
+	<string name="menu_main_file_info">Properties</string>
+	<string name="menu_main_settings">Settings</string>
+	<string name="menu_main_undo">Undo</string>
+	<string name="menu_main_redo">Redo</string>
+	<string name="menu_main_close">Close</string>
+
+	<string name="menu_select_file_select">Select</string>
+	<string name="menu_select_file_search">Search</string>
+	<string name="menu_select_file_set_as_working_folder">Set as working folder</string>
+	<string name="menu_select_file_is_working_folder">Is working folder</string>
+
+	<string name="menu_select_file_fab_create_file">Create file</string>
+	<string name="menu_select_file_fab_create_folder">Create folder</string>
 
 	<string name="dialog_confirm_overwrite">Another file with the same name already exists. Replace existing file?</string>
 	<string name="dialog_prompt_save">Save changes to file?</string>
@@ -14,22 +40,15 @@
 	<string name="dialog_find_no_results">No results found</string>
 	<string name="dialog_replace_all_result">Replacements:\u0020</string>
 	<string name="dialog_replace_no_selection">No selected text to replace</string>
-	<string name="dialog_go_to_line" translatable="false">@string/menu_go_to_line</string>
+	<string name="dialog_go_to_line" translatable="false">@string/menu_main_go_to_line</string>
 	<string name="dialog_go_to_line_text_hint">Line number</string>
-	<string name="dialog_recent_files" translatable="false">@string/menu_recent_files</string>
+	<string name="dialog_recent_files" translatable="false">@string/menu_main_recent_files</string>
 	<string name="dialog_recent_files_none">There are no recent files.</string>
-	<string name="dialog_statistics">Properties</string>
-	<string name="dialog_statistics_words">Words</string>
-	<string name="dialog_statistics_chars">Characters</string>
-	<string name="dialog_statistics_no_whitespace">Characters (excluding spaces)</string>
-	<string name="dialog_statistics_rows">Lines (without word wrap)</string>
-	<string name="dialog_statistics_format">Original encoding</string>
-	<string name="dialog_statistics_line_terminator_style">Original line terminator style</string>
 	<string name="dialog_about">About Codoma</string>
 	<string name="dialog_button_discard">Discard</string>
 	<string name="dialog_button_overwrite">Replace</string>
 	<string name="dialog_button_go_back">Go back</string>
-	<string name="dialog_button_save" translatable="false">@string/action_save</string>
+	<string name="dialog_button_save" translatable="false">@string/menu_main_save</string>
 	<string name="dialog_button_save_different_name">Save as another file</string>
 	<string name="dialog_error_file_open">Error opening file:\u0020</string>
 	<string name="dialog_error_file_save">Error saving file:\u0020</string>
@@ -67,7 +86,7 @@
 	<string name="file_picker_inform_empty">This folder is empty.</string>
 	<string name="file_picker_title_pick_file">Select a file to open</string>
 	<string name="file_picker_title_enter_filename">Enter a file name to save</string>
-	<string name="file_picker_label_save" translatable="false">@string/action_save</string>
+	<string name="file_picker_label_save" translatable="false">@string/menu_main_save</string>
 	<string name="file_picker_file_not_found">%s (not available)</string>
 
 	<string name="find_panel_find_label">Find</string>
@@ -77,25 +96,6 @@
 	<string name="find_panel_match_whole_word">Whole word</string>
 
 	<string name="help_title">Codoma Help</string>
-
-	<string name="menu_about">About</string>
-	<string name="menu_change_input_method">Change input method</string>
-	<string name="menu_find_panel_toggle">Find/Replace</string>
-	<string name="menu_go_to_line">Go to line&#8230;</string>
-	<string name="menu_go_to_page">Go to page&#8230;</string>
-	<string name="menu_help">Help</string>
-	<string name="menu_new">New</string>
-	<string name="menu_open">Open</string>
-	<string name="menu_open_as">Open as…</string>
-	<string name="menu_recent_files">Recent</string>
-	<string name="action_save">Save</string>
-	<string name="action_save_as">Save as…</string>
-	<string name="menu_select_all">Select all</string>
-	<string name="menu_statistics">Word count and properties</string>
-	<string name="menu_settings">Settings</string>
-	<string name="menu_undo">Undo</string>
-	<string name="menu_redo">Redo</string>
-	<string name="action_close">Close</string>
 
 	<string name="dialog_edit_name_title_file">Name for file</string>
 	<string name="dialog_edit_name_title_folder">Name for folder</string>
@@ -158,25 +158,12 @@
 
 	<string name="settings_common_option_auto_label">Auto</string>
 
-	<string name="button_cut">Cut</string>
-	<string name="button_copy">Copy</string>
-	<string name="button_paste">Paste</string>
-	<string name="clipboardpanel_open">Open panel</string>
-
-	<string name="action_select">Select</string>
-	<string name="action_search">Search</string>
-	<string name="action_set_as_working_folder">Set as working folder</string>
-	<string name="action_is_working_folder">Is working folder</string>
-
-	<string name="action_create_file">Create file</string>
-	<string name="action_create_folder">Create folder</string>
 	<string name="file">File</string>
 	<string name="folder">Folder</string>
 	<string name="home">Home</string>
 	<string name="rename">Rename</string>
 	<string name="hint_name">Enter name</string>
 	<string name="is_the_working_folder">Is the working folder</string>
-	<string name="enable_autoencoding">Enable autoencoding</string>
 	<string name="text_to_find">Text to find</string>
 	<string name="regular_expression">Regular expression</string>
 	<string name="match_case">Match case</string>
@@ -191,21 +178,6 @@
 		 don't forget to make corresponding modifications in the array
 		 settings_entry_values_<name> in string_keys.xml
 	  -->
-
-	<string-array
-		name="settings_entries_chirality">
-		<item>Right-handed</item>
-		<item>Left-handed</item>
-	</string-array>
-
-	<string-array
-		name="settings_entries_color_scheme">
-		<item>@string/settings_color_scheme_light</item>
-		<item>@string/settings_color_scheme_dark</item>
-		<item>@string/settings_color_scheme_solarized_light</item>
-		<item>@string/settings_color_scheme_solarized_dark</item>
-		<item>@string/settings_color_scheme_obsidian</item>
-	</string-array>
 
 	<string-array
 		name="settings_entries_syntax_color">
@@ -235,9 +207,26 @@
 	<string name="dialog_argh">Argh!!</string>\
 	 -->
 
+	<string name="dialog_file_options_title">File options</string>
+	<string name="dialog_file_options_encoding">Encoding</string>
+	<string name="dialog_file_options_endings">Line endings</string>
+
+	<string name="dialog_file_info_encoding">Encoding</string>
+	<string name="dialog_file_info_endings">Line endings</string>
+	<string name="dialog_file_info_path">File path</string>
+	<string name="dialog_file_info_size">File size</string>
+	<string name="dialog_file_info_date">Modification date</string>
+	<string name="dialog_file_info_words">Words</string>
+	<string name="dialog_file_info_lines">Lines</string>
+	<string name="dialog_file_info_whitespaces">Whitespaces</string>
+	<string name="dialog_file_info_symbols">Symbols</string>
+
 	<!--
 	NEW EDITOR SETTINGS
 	-->
+	<string name="settings_view_dark_title">Dark theme</string>
+	<string name="settings_view_dark_summary">The entire interface and syntax highlighting will be painted dark colors</string>
+
 	<string name="settings_view_syntax_highlight_title">Syntax coloring</string>
 	<string name="settings_view_syntax_highlight_summary">Highlight words used in programming languages</string>
 

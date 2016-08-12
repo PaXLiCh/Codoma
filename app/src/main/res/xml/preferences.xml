@@ -2,6 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/settings_group_view">
 		<SwitchPreference
+			android:defaultValue="@bool/settings_view_dark_default"
+			android:key="@string/settings_view_dark_key"
+			android:summary="@string/settings_view_dark_summary"
+			android:title="@string/settings_view_dark_title"/>
+		<SwitchPreference
 			android:defaultValue="@bool/settings_view_syntax_highlight_default"
 			android:key="@string/settings_view_syntax_highlight_key"
 			android:summary="@string/settings_view_syntax_highlight_summary"

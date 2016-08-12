@@ -38,10 +38,10 @@ public class NumberPickerDialog extends DialogFragment {
 				title = R.string.settings_label_font;//font_size;
 				break;
 			case GO_TO_PAGE:
-				title = R.string.menu_go_to_page;
+				title = R.string.menu_main_go_to_page;
 				break;
 			case GO_TO_LINE:
-				title = R.string.menu_go_to_line;
+				title = R.string.menu_main_go_to_line;
 				break;
 			default:
 				title = R.string.app_name;//nome_app_turbo_editor;
