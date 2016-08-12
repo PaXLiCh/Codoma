@@ -47,7 +47,7 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	 */
 	@Override
 	protected Void doInBackground(final Void... voids) {
-		boolean isRootNeeded = false;
+		boolean isRootNeeded;
 
 		try {
 			String filePath = uri.getFilePath();

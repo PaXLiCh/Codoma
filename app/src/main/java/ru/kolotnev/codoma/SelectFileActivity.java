@@ -289,7 +289,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 			dir += PATH_SEPARATOR + part;
 			View buttonView = View.inflate(this, R.layout.breadcrumbs, null);
 			Button b = (Button) buttonView;
-			b.setText((part.isEmpty() ? PATH_SEPARATOR : part) + "   >");
+			b.setText(getString(R.string.breadcrumbs_format, part.isEmpty() ? PATH_SEPARATOR : part));
 			b.setTag(dir);
 			b.setOnClickListener(new View.OnClickListener() {
 				@Override

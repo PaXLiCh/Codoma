@@ -17,7 +17,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 /**
  * Adapter for recycler view with file details.

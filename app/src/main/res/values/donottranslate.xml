@@ -38,42 +38,6 @@
 	<string name="settings_file_encoding_key" translatable="false">file_encoding</string>
 	<string name="settings_file_encoding_fallback_key" translatable="false">file_encoding_fallback</string>
 
-	<string name="settings_chirality_left" translatable="false">Left</string>
-	<string name="settings_chirality_right" translatable="false">Right</string>
-	<string-array
-		name="settings_entry_values_chirality">
-		<item>@string/settings_chirality_right</item>
-		<item>@string/settings_chirality_left</item>
-	</string-array>
-
-	<string name="settings_color_scheme_light" translatable="false">Light</string>
-	<string name="settings_color_scheme_dark" translatable="false">Dark</string>
-	<string name="settings_color_scheme_solarized_light" translatable="false">Solarized Light</string>
-	<string name="settings_color_scheme_solarized_dark" translatable="false">Solarized Dark</string>
-	<string name="settings_color_scheme_obsidian" translatable="false">Obsidian</string>
-	<string-array
-		name="settings_entry_values_color_scheme">
-		<item>@string/settings_color_scheme_light</item>
-		<item>@string/settings_color_scheme_dark</item>
-		<item>@string/settings_color_scheme_solarized_light</item>
-		<item>@string/settings_color_scheme_solarized_dark</item>
-		<item>@string/settings_color_scheme_obsidian</item>
-	</string-array>
-
-	<string name="settings_navigation_method_basic">Basic</string>
-	<string name="settings_navigation_method_trackpad">Trackpad</string>
-	<string name="settings_navigation_method_yoyo">Yo-yo</string>
-	<string name="settings_navigation_method_liquid">Liquid</string>
-	<string name="settings_navigation_method_vol_keys">Volume keys</string>
-	<string-array
-		name="settings_entry_values_navigation_method">
-		<item>@string/settings_navigation_method_basic</item>
-		<item>@string/settings_navigation_method_trackpad</item>
-		<item>@string/settings_navigation_method_yoyo</item>
-		<item>@string/settings_navigation_method_liquid</item>
-		<item>@string/settings_navigation_method_vol_keys</item>
-	</string-array>
-
 	<string name="settings_syntax_none" translatable="false">None</string>
 	<string name="settings_syntax_c" translatable="false">C</string>
 	<string name="settings_syntax_cpp" translatable="false">C++</string>

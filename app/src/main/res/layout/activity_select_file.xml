@@ -113,7 +113,7 @@
 			android:id="@+id/menu_item_create_file"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:src="@drawable/ic_action_file"
+			android:src="@drawable/ic_insert_drive_file_white_24dp"
 			app:fab_label="@string/menu_select_file_fab_create_file"
 			app:fab_size="mini"/>
 
@@ -121,7 +121,7 @@
 			android:id="@+id/menu_item_create_folder"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:src="@drawable/ic_action_folder"
+			android:src="@drawable/ic_folder_white_24dp"
 			app:fab_label="@string/menu_select_file_fab_create_folder"
 			app:fab_size="mini"/>
 

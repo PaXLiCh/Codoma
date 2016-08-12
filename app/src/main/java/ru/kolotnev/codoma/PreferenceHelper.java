@@ -54,7 +54,9 @@ public final class PreferenceHelper {
 
 	/**
 	 * Is interface and syntax highlight must be dark.
+	 *
 	 * @param context
+	 * 		Context for getting preference.
 	 * @return Is color scheme dark.
 	 */
 	public static boolean isDarkTheme(@NonNull final Context context) {

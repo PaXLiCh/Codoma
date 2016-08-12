@@ -68,12 +68,12 @@
 
 		<activity
 			android:name=".CodomaPreferenceActivity"
-			android:label="@string/settings_title">
+			android:label="@string/activity_settings_title">
 		</activity>
 		<activity
 			android:name=".SelectFileActivity"
 			android:exported="true"
-			android:label="@string/title_activity_select_file"
+			android:label="@string/activity_select_file_title"
 			android:parentActivityName=".NewEditorActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"

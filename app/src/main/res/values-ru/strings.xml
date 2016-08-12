@@ -3,23 +3,31 @@
 	<string name="yes">Да</string>
 	<string name="no">Нет</string>
 
+	<string name="activity_select_file_title">Выберите файл</string>
+	<string name="activity_settings_title">Настройки</string>
+
+	<string name="menu_main_save">Сохранить</string>
+	<string name="menu_main_save_as">Сохранить как&#8230;</string>
 	<string name="menu_main_close">Закрыть</string>
-	<string name="menu_main_about">О программе</string>
+	<string name="menu_main_undo">Отменить</string>
+	<string name="menu_main_redo">Повторить</string>
+	<string name="menu_main_find_panel_toggle">Найти/Заменить</string>
+	<string name="menu_main_select_all">Выбрать всё</string>
+	<string name="menu_main_go_to_line">Перейти к строке&#8230;</string>
+	<string name="menu_main_file_info">Свойства</string>
+
+	<string name="menu_main_page_next">Следующая страница</string>
+	<string name="menu_main_page_previous">Предыдущая страница</string>
+	<string name="menu_main_go_to_page">Перейти к странице&#8230;</string>
+
+	<string name="menu_main_recent_files">Недавние</string>
 	<string name="menu_main_new">Создать</string>
 	<string name="menu_main_open">Открыть</string>
 	<string name="menu_main_open_as">Открыть как&#8230;</string>
-	<string name="menu_main_recent_files">Недавние</string>
-	<string name="menu_main_save_as">Сохранить как…</string>
 	<string name="menu_main_settings">Настройки</string>
-	<string name="menu_main_undo">Отменить</string>
-	<string name="menu_main_save">Сохранить</string>
-	<string name="menu_main_select_all">Выбрать всё</string>
-	<string name="menu_main_file_info">Свойства</string>
-	<string name="menu_main_redo">Повторить</string>
-	<string name="menu_main_find_panel_toggle">Найти/Заменить</string>
-	<string name="menu_main_help">Справка</string>
-	<string name="menu_main_go_to_line">Перейти к строке&#8230;</string>
 	<string name="menu_main_input_method">Метод ввода</string>
+	<string name="menu_main_help">Справка</string>
+	<string name="menu_main_about">О программе</string>
 
 	<string name="menu_select_file_select">Выбрать</string>
 	<string name="menu_select_file_set_as_working_folder">Сделать рабочей папкой</string>
@@ -53,17 +61,11 @@
 	<string name="find_panel_replace_label">Заменить</string>
 	<string name="find_panel_options">Настройки поиска</string>
 	<string name="progress_dialog_analyze">Исследование&#8230;</string>
-	<string name="settings_group_view">Вид</string>
-	<string name="settings_group_navigation">Навигация</string>
-	<string name="settings_title">Настройки Codoma</string>
 	<string name="dialog_error_attempt_overwrite_read_only">Запись в выбранный файл запрещена</string>
 	<string name="dialog_error_file_write_denied">Нельзя записать в выбранную папку.</string>
 	<string name="dialog_error_no_file_name">Нужно задать имя файла.</string>
 	<string name="dialog_sorry">Обидно, да.</string>
 	<string name="help_title">Справка по Codoma</string>
-	<string name="settings_group_text_selection">Выделение текста</string>
-	<string name="settings_group_io">Открытие и сохранение</string>
-	<string name="settings_group_formatting">Форматирование</string>
 	<string name="settings_desc_zoom_size">Размер текста</string>
 	<string name="file_picker_file_not_found">%s (недоступен)</string>
 	<string name="dialog_confirm_overwrite">Файл с таким именем уже существует. Заменить файл?</string>
@@ -75,7 +77,6 @@
 	<string name="file_picker_title_enter_filename">Введите имя файла и укажите где его сохранить.</string>
 	<string name="settings_label_font">Шрифт</string>
 	<string name="about_text"><b>TextWarrior 0.93</b>\n for Android\n \n Copyright 2013 Tah Wei Hoon\n This program is made available under the terms of Apache License Version 2.0\n \n \n <b>File browser by</b>\n OpenIntents\n http://www.openintents.org\n Licensed under Apache Version 2.0\n \n \n <b>Icons by</b>\n Everaldo Coelho\n http://www.everaldo.com/crystal\n Licensed under LGPL 2.1\n \n Yusuke Kamiyamane\n http://p.yusukekamiyamane.com\n Licensed under CC-BY 3.0\n \n Lufang Hsiung\n \n \n <b>Fonts by</b>\n Bitstream, Inc.\n \n Tristan Grimmer\n \n \n <b>Translations by</b>\n Tom Arn (German help file)\n \n \n Send feedback, suggestions and bug reports to hoon.tw@gmail.com</string>
-	<string name="settings_navigation_method_vol_keys">Клавиши громкости</string>
 	<string name="settings_desc_font">Шрифт текстового редактора</string>
 	<string name="settings_label_color_scheme">Цветовая тема</string>
 	<string name="settings_label_auto_indent">Автоотступ</string>
@@ -85,21 +86,17 @@
 	<string name="settings_label_file_output_format">Кодировка сохраняемых файлов</string>
 	<string name="find_panel_case_sensitive">С учётом регистра</string>
 	<string name="file_picker_title_pick_file">Выберите файл для открытия</string>
-	<string name="settings_desc_show_nonprinting">Показывает пробелы, табуляцию, концы строк как видимые символы</string>
 	<string name="settings_desc_tab_spaces">Количество пробелов в табуляции</string>
 	<string name="settings_desc_word_wrap">Продолжает текст на следующей строке, если он слишком длинный</string>
-	<string name="settings_desc_navigation_method">Различные способы, как можно перемещать курсор</string>
 	<string name="settings_label_auto_backup">Резервные копии</string>
 	<string name="settings_label_auto_close_clipboard">Автозакрытие буффера</string>
 	<string name="settings_label_auto_display_keyboard">Автопоказ клавиатуры</string>
 	<string name="settings_label_auto_open_clipboard">Автопоказ буффера</string>
 	<string name="settings_label_highlight_current_row">Выделять текущую строку</string>
-	<string name="settings_label_show_nonprinting">Непечатаемые символы</string>
 	<string name="settings_label_word_wrap">Перенос слов</string>
 	<string name="settings_label_zoom_size">Масштаб \u0025</string>
 	<string name="settings_label_line_terminator_style">Концы строк</string>
 	<string name="settings_desc_long_press_capitalize">Делать букву заглавной при долгом удержании клавиши на аппаратной клавиатуре</string>
-	<string name="settings_label_navigation_method">Управление курсором</string>
 	<string name="settings_desc_line_terminator_style">Формат концовок строк</string>
 	<string name="settings_desc_file_input_format">Кодировка по-умолчанию для открываемых файлов</string>
 	<string name="settings_desc_file_output_format">Кодировка по-умолчанию для сохраняемых файлов</string>
@@ -113,7 +110,6 @@
 	<string name="settings_desc_auto_display_keyboard">Показывать виртуальную клавиатуру при касании экрана</string>
 	<string name="dialog_replace_no_selection">Нет выбранного текста для замены</string>
 	<string name="dialog_sorry_backup_disabled">Возможно, что некоторые несохранённые изменения были потеряны, На будущее, убедитесь, что включена опция резервного копирования.</string>
-	<string name="settings_common_option_auto_label">Автовыбор</string>
 
 	<string name="file_saved_with_success">Файл %s сохранён</string>
 	<string name="match_case">С учётом регистра</string>
@@ -121,7 +117,6 @@
 	<string name="rename">Переименовать</string>
 	<string name="replace">Заменить</string>
 	<string name="save_changes">Хотите сохранить изменения в файле %s?</string>
-	<string name="title_activity_select_file">Выберите файл</string>
 	<string name="hint_name">Введите имя</string>
 	<string name="occurrences_found">%d совпадений найдено</string>
 
@@ -143,6 +138,8 @@
 	<!--
 	NEW EDITOR SETTINGS
 	-->
+	<string name="settings_view_group">Вид</string>
+
 	<string name="settings_view_dark_title">Тёмное оформление</string>
 	<string name="settings_view_dark_summary">Интерфейс и подсветка синтаксиса будут в глубоких тёмных тонах</string>
 
@@ -152,29 +149,36 @@
 	<string name="settings_view_line_numbers_title">Номера строк</string>
 	<string name="settings_view_line_numbers_summary">Показывает номера строк на линейке в начале строки</string>
 
-	<string name="settings_view_tab_use_spaces_title">Пробелы вместо табуляции</string>
-	<string name="settings_view_tab_use_spaces_summary">Вместо символов табуляции будут вставляться пробелы в указанном количестве</string>
-
-	<string name="settings_view_tab_width_title">Ширина табуляции</string>
-	<string name="settings_view_tab_width_summary">Ширина символа табуляции в количестве пробелов</string>
-
 	<string name="settings_view_wordwrap_title">Перенос строк</string>
 	<string name="settings_view_wordwrap_summary">Переносить строки</string>
 
 	<string name="settings_view_font_title">Шрифт</string>
 	<string name="settings_view_font_summary">Шрифт редактора</string>
 
+	<string name="settings_view_tab_use_spaces_title">Пробелы вместо табуляции</string>
+	<string name="settings_view_tab_use_spaces_summary">Вместо символов табуляции будут вставляться пробелы в указанном количестве</string>
+
 	<string name="settings_view_font_size_title">Размер шрифта в редаторе</string>
 	<string name="settings_view_font_size_summary">Размер шрифта, используемого в редакторе. Учитываются системные настройки размера текста</string>
 
+	<string name="settings_view_whitespace_title">Непечатаемые символы</string>
+	<string name="settings_view_whitespace_summary">Показывает пробелы, табуляцию, концы строк как видимые символы</string>
+
+	<string name="settings_view_tab_width_title">Ширина табуляции</string>
+	<string name="settings_view_tab_width_summary">Ширина символа табуляции в количестве пробелов</string>
+
 	<string name="settings_view_update_delay_title">Задержка отрисовки</string>
 	<string name="settings_view_update_delay_summary">Задержка перед перерисовкой текста после послденего изменения</string>
+
+	<string name="settings_edit_group">Редактирование</string>
 
 	<string name="settings_edit_tab_to_spaces_title">Заменять табуляцию пробелами</string>
 	<string name="settings_edit_tab_to_spaces_summary">Вместо табуляции отступы будут сделаны пробелам.</string>
 
 	<string name="settings_edit_indent_title">Автоотступы</string>
 	<string name="settings_edit_indent_summary">Автоматически добавлять пробелы/табуляцию при переходе на новую строку</string>
+
+	<string name="settings_file_group">Открытие и сохранение</string>
 
 	<string name="settings_file_encoding_title">Кодировка</string>
 	<string name="settings_file_encoding_summary">Набор символов, с которым будет сохранён созданный новый файл</string>

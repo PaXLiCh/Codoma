@@ -2,4 +2,7 @@
 <resources>
 	<attr name="popup_overlay" format="reference"/>
 	<attr name="appbar_overlay" format="reference"/>
+	<attr name="ic_search" format="reference"/>
+	<attr name="ic_bookmark" format="reference"/>
+	<attr name="ic_bookmark_border" format="reference"/>
 </resources>

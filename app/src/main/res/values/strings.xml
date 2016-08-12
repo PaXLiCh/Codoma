@@ -1,35 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
 	<string name="app_name" translatable="false">Codoma</string>
+
+	<string name="activity_select_file_title">Select file</string>
+	<string name="activity_settings_title">Settings</string>
+
 	<string name="file_info_detail" translatable="false">%s \t\t %s</string>
+	<string name="breadcrumbs_format" translatable="false">"%s     >"</string>
 
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 
-	<string name="menu_main_about">About</string>
-	<string name="menu_main_input_method">Change input method</string>
+	<string name="menu_main_save">Save</string>
+	<string name="menu_main_save_as">Save as&#8230;</string>
+	<string name="menu_main_close">Close</string>
+	<string name="menu_main_undo">Undo</string>
+	<string name="menu_main_redo">Redo</string>
 	<string name="menu_main_find_panel_toggle">Find/Replace</string>
+	<string name="menu_main_select_all">Select all</string>
 	<string name="menu_main_go_to_line">Go to line&#8230;</string>
+	<string name="menu_main_file_info">Properties</string>
+
+	<string name="menu_main_page_next">Go to next page</string>
+	<string name="menu_main_page_previous">Go to previous page</string>
 	<string name="menu_main_go_to_page">Go to page&#8230;</string>
-	<string name="menu_main_help">Help</string>
+
+	<string name="menu_main_recent_files">Recent</string>
 	<string name="menu_main_new">New</string>
 	<string name="menu_main_open">Open</string>
 	<string name="menu_main_open_as">Open as&#8230;</string>
-	<string name="menu_main_recent_files">Recent</string>
-	<string name="menu_main_save">Save</string>
-	<string name="menu_main_save_as">Save as&#8230;</string>
-	<string name="menu_main_select_all">Select all</string>
-	<string name="menu_main_file_info">Properties</string>
 	<string name="menu_main_settings">Settings</string>
-	<string name="menu_main_undo">Undo</string>
-	<string name="menu_main_redo">Redo</string>
-	<string name="menu_main_close">Close</string>
+	<string name="menu_main_input_method">Change input method</string>
+	<string name="menu_main_help">Help</string>
+	<string name="menu_main_about">About</string>
 
 	<string name="menu_select_file_select">Select</string>
-	<string name="menu_select_file_search">Search</string>
 	<string name="menu_select_file_set_as_working_folder">Set as working folder</string>
 	<string name="menu_select_file_is_working_folder">Is working folder</string>
+	<string name="menu_select_file_search">Search</string>
 
 	<string name="menu_select_file_fab_create_file">Create file</string>
 	<string name="menu_select_file_fab_create_folder">Create folder</string>
@@ -101,14 +109,6 @@
 	<string name="dialog_edit_name_title_folder">Name for folder</string>
 	<string name="dialog_edit_name_title_rename">New name</string>
 
-	<string name="settings_title">Codoma Settings</string>
-	<string name="settings_group_view">View</string>
-	<string name="settings_group_navigation">Navigation</string>
-	<string name="settings_group_formatting">Formatting</string>
-	<string name="settings_group_editing">Editing</string>
-	<string name="settings_group_io">Opening and Saving</string>
-	<string name="settings_group_text_selection">Text Selection</string>
-
 	<string name="settings_label_auto_backup">Auto-backup</string>
 	<string name="settings_desc_auto_backup">Allows recovery of unsaved files but slows performance</string>
 	<string name="settings_label_auto_close_clipboard">Auto-close clipboard</string>
@@ -134,10 +134,6 @@
 	<string name="settings_desc_line_terminator_style">Style of line terminators</string>
 	<string name="settings_label_long_press_capitalize">Long-press caps</string>
 	<string name="settings_desc_long_press_capitalize">Capitalize a letter by long-pressing its key on the hardware keyboard</string>
-	<string name="settings_label_navigation_method">Cursor navigation</string>
-	<string name="settings_desc_navigation_method">Ways to move the cursor. See the help file for more details.</string>
-	<string name="settings_label_show_nonprinting">Show non-printing symbols</string>
-	<string name="settings_desc_show_nonprinting">Display spaces, tabs and end of lines as visible symbols</string>
 
 	<string name="settings_desc_tab_spaces">Number of spaces a tab represents</string>
 	<string name="settings_label_word_wrap">Word wrap</string>
@@ -145,18 +141,6 @@
 	<string name="settings_label_zoom_size">Zoom \u0025</string>
 	<string name="settings_desc_zoom_size">Text size</string>
 
-	<string name="settings_chirality_default" translatable="false">Right</string>
-	<string name="settings_color_scheme_default" translatable="false">@string/settings_color_scheme_light</string>
-	<string name="settings_file_input_format_default" translatable="false">auto</string>
-	<string name="settings_file_output_format_default" translatable="false">auto</string>
-	<string name="settings_view_font_default" translatable="false">monospace</string>
-	<string name="settings_line_terminator_style_default" translatable="false">auto</string>
-	<string name="settings_navigation_method_default" translatable="false">@string/settings_navigation_method_trackpad</string>
-	<string name="settings_syntax_color_default" translatable="false">@string/settings_syntax_none</string>
-	<string name="settings_tab_spaces_default" translatable="false">4</string>
-	<string name="settings_zoom_size_default" translatable="false">100</string>
-
-	<string name="settings_common_option_auto_label">Auto</string>
 
 	<string name="file">File</string>
 	<string name="folder">Folder</string>
@@ -193,8 +177,6 @@
 		<item>@string/settings_syntax_ruby</item>
 	</string-array>
 
-	<string name="title_activity_select_file">Select file</string>
-
 	<string name="occurrences_found">%d occurrences found</string>
 
 	<!-- Other setting entries that don't have to be localised are in
@@ -224,6 +206,8 @@
 	<!--
 	NEW EDITOR SETTINGS
 	-->
+	<string name="settings_view_group">View</string>
+
 	<string name="settings_view_dark_title">Dark theme</string>
 	<string name="settings_view_dark_summary">The entire interface and syntax highlighting will be painted dark colors</string>
 
@@ -244,10 +228,10 @@
 
 	<string name="settings_view_font_size_title">Font size</string>
 	<string name="settings_view_font_size_summary">Default size of font</string>
-	<string name="settings_view_font_size_sample">01 TEST text Test TeXt\n02 NEXT line NEXT line\n03 void main() { /* */ }</string>
+	<string name="settings_view_font_size_sample" translatable="false">01 TEST text Test TeXt\n02 NEXT line NEXT line\n03 void main() { /* */ }</string>
 
-	<string name="settings_view_whitespace_title">Show whitespaces</string>
-	<string name="settings_view_whitespace_summary">Not printable characters may be shown with special symbols.</string>
+	<string name="settings_view_whitespace_title">Show non-printing symbols</string>
+	<string name="settings_view_whitespace_summary">Display spaces, tabs and end of lines as visible symbols</string>
 
 	<string name="settings_view_tab_width_title">Tab width</string>
 	<string name="settings_view_tab_width_summary">Width of tab symbol in amount of spaces</string>
@@ -255,11 +239,15 @@
 	<string name="settings_view_update_delay_title">Update delay</string>
 	<string name="settings_view_update_delay_summary">Delay before updating view after last changes in text</string>
 
+	<string name="settings_edit_group">Editing</string>
+
 	<string name="settings_edit_tab_to_spaces_title">Tabulate with spaces</string>
 	<string name="settings_edit_tab_to_spaces_summary">Convert tabs to spaces.</string>
 
-	<string name="settings_edit_indent_title">Autoindent</string>
+	<string name="settings_edit_indent_title">Auto-indent</string>
 	<string name="settings_edit_indent_summary">Automatically add spaces or tabs on new line</string>
+
+	<string name="settings_file_group">Opening and Saving</string>
 
 	<string name="settings_file_encoding_title">Encoding</string>
 	<string name="settings_file_encoding_summary">Default encoding for new files</string>
