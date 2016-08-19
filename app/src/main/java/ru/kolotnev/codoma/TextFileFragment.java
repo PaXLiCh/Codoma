@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -316,6 +317,10 @@ public class TextFileFragment extends Fragment implements
 		textFile.goToPage(page);
 		editText.replaceTextKeepCursor(textFile.getCurrentPageText());
 		editText.smoothScrollTo(0, 0);
+	}
+
+	public void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		editText.find(text, isCaseSensitive, isWholeWord, isRegex);
 	}
 
 	@Override

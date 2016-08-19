@@ -52,6 +52,10 @@ public abstract class SyntaxColor {
 		return Color.WHITE;
 	}
 
+	public int getSearchResultColor() {
+		return Color.LTGRAY;
+	}
+
 	public int getSelectionColor() {
 		return Color.GRAY;
 	}

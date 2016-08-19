@@ -326,6 +326,11 @@ public class Base16TomorrowDaySyntaxColor extends SyntaxColor {
 	}
 
 	@Override
+	public int getSearchResultColor() {
+		return very_light_gray;
+	}
+
+	@Override
 	public int getSelectionColor() {
 		return syntax_selection_color;
 	}

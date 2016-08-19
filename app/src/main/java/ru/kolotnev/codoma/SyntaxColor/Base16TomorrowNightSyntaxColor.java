@@ -38,7 +38,7 @@ public class Base16TomorrowNightSyntaxColor extends SyntaxColor {
 	// General colors
 	private static final int syntax_text_color = very_light_gray;
 	private static final int syntax_cursor_color = white;
-	private static final int syntax_selection_color = dark_gray;
+	private static final int syntax_selection_color = very_dark_gray;
 	private static final int syntax_selection_flash_color = very_light_gray;
 	private static final int syntax_background_color = black;
 
@@ -323,6 +323,11 @@ public class Base16TomorrowNightSyntaxColor extends SyntaxColor {
 	@Override
 	public int getBackgroundColor() {
 		return syntax_background_color;
+	}
+
+	@Override
+	public int getSearchResultColor() {
+		return dark_gray;
 	}
 
 	@Override

@@ -57,6 +57,7 @@ public final class PreferenceHelper {
 	 *
 	 * @param context
 	 * 		Context for getting preference.
+	 *
 	 * @return Is color scheme dark.
 	 */
 	public static boolean isDarkTheme(@NonNull final Context context) {
@@ -79,6 +80,12 @@ public final class PreferenceHelper {
 		return getBoolean(context,
 				R.string.settings_view_line_numbers_key,
 				R.bool.settings_view_line_numbers_default);
+	}
+
+	private static boolean getHighlightCurrentRow(@NonNull final Context context) {
+		return getBoolean(context,
+				R.string.settings_view_highlight_current_row_key,
+				R.bool.settings_view_highlight_current_row_default);
 	}
 
 	/**
@@ -194,6 +201,12 @@ public final class PreferenceHelper {
 		return getString(context,
 				R.string.settings_file_encoding_fallback_key,
 				R.string.settings_file_encoding_fallback_default);
+	}
+
+	private boolean getAutoBackup(@NonNull final Context context) {
+		return getBoolean(context,
+				R.string.settings_file_auto_backup_key,
+				R.bool.settings_file_auto_backup_default);
 	}
 
 	// endregion

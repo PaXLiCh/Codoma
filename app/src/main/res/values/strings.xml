@@ -47,7 +47,6 @@
 	<string name="dialog_file_save_success">File saved</string>
 	<string name="dialog_find_no_results">No results found</string>
 	<string name="dialog_replace_all_result">Replacements:\u0020</string>
-	<string name="dialog_replace_no_selection">No selected text to replace</string>
 	<string name="dialog_go_to_line" translatable="false">@string/menu_main_go_to_line</string>
 	<string name="dialog_go_to_line_text_hint">Line number</string>
 	<string name="dialog_recent_files" translatable="false">@string/menu_main_recent_files</string>
@@ -100,46 +99,12 @@
 	<string name="find_panel_find_label">Find</string>
 	<string name="find_panel_replace_label">Replace</string>
 	<string name="find_panel_options">Find Options</string>
-	<string name="find_panel_case_sensitive">Case-sensitive</string>
-	<string name="find_panel_match_whole_word">Whole word</string>
 
 	<string name="help_title">Codoma Help</string>
 
 	<string name="dialog_edit_name_title_file">Name for file</string>
 	<string name="dialog_edit_name_title_folder">Name for folder</string>
 	<string name="dialog_edit_name_title_rename">New name</string>
-
-	<string name="settings_label_auto_backup">Auto-backup</string>
-	<string name="settings_desc_auto_backup">Allows recovery of unsaved files but slows performance</string>
-	<string name="settings_label_auto_close_clipboard">Auto-close clipboard</string>
-	<string name="settings_desc_auto_close_clipboard">Hide clipboard options when selection cancelled</string>
-	<string name="settings_label_auto_display_keyboard">Auto-display keyboard</string>
-	<string name="settings_desc_auto_display_keyboard">Show virtual keyboard when screen is tapped</string>
-	<string name="settings_label_auto_indent">Auto-indent</string>
-	<string name="settings_desc_auto_indent">Start a new line with the same level of indent as the previous line</string>
-	<string name="settings_label_auto_open_clipboard">Auto-open clipboard</string>
-	<string name="settings_desc_auto_open_clipboard">Display clipboard options when selection made</string>
-	<string name="settings_label_color_scheme">Color scheme</string>
-	<string name="settings_desc_color_scheme">Color schemes</string>
-	<string name="settings_label_drag_select">Drag select</string>
-	<string name="settings_desc_drag_select">Select text when cursor is dragged</string>
-	<string name="settings_label_file_input_format">File input encoding</string>
-	<string name="settings_desc_file_input_format">Default encoding for opening files</string>
-	<string name="settings_label_file_output_format">File output encoding</string>
-	<string name="settings_desc_file_output_format">Default encoding for saving files</string>
-	<string name="settings_label_font">Font</string>
-	<string name="settings_desc_font">Font for text editor</string>
-	<string name="settings_label_highlight_current_row">Underline current row</string>
-	<string name="settings_label_line_terminator_style">Line terminator style</string>
-	<string name="settings_desc_line_terminator_style">Style of line terminators</string>
-	<string name="settings_label_long_press_capitalize">Long-press caps</string>
-	<string name="settings_desc_long_press_capitalize">Capitalize a letter by long-pressing its key on the hardware keyboard</string>
-
-	<string name="settings_desc_tab_spaces">Number of spaces a tab represents</string>
-	<string name="settings_label_word_wrap">Word wrap</string>
-	<string name="settings_desc_word_wrap">Continues text on the next line if it is too long</string>
-	<string name="settings_label_zoom_size">Zoom \u0025</string>
-	<string name="settings_desc_zoom_size">Text size</string>
 
 
 	<string name="file">File</string>
@@ -149,35 +114,12 @@
 	<string name="hint_name">Enter name</string>
 	<string name="is_the_working_folder">Is the working folder</string>
 	<string name="text_to_find">Text to find</string>
-	<string name="regular_expression">Regular expression</string>
-	<string name="match_case">Match case</string>
 	<string name="replace">Replace</string>
 	<string name="text_to_replace">Text to replace</string>
 	<string name="file_saved_with_success">file %s saved with success</string>
 	<string name="err_occurred">Error occurred</string>
 	<string name="file_cant_read">Can\'t read file</string>
 	<string name="save_changes">Do you want to save the changes to the file %s?</string>
-
-	<!-- If modifying the order or number of entries for the following arrays,
-		 don't forget to make corresponding modifications in the array
-		 settings_entry_values_<name> in string_keys.xml
-	  -->
-
-	<string-array
-		name="settings_entries_syntax_color">
-		<item>@string/settings_syntax_none</item>
-		<item>@string/settings_syntax_c</item>
-		<item>@string/settings_syntax_cpp</item>
-		<item>@string/settings_syntax_csharp</item>
-		<item>@string/settings_syntax_java</item>
-		<item>@string/settings_syntax_javascript</item>
-		<item>@string/settings_syntax_objc</item>
-		<item>@string/settings_syntax_php</item>
-		<item>@string/settings_syntax_python</item>
-		<item>@string/settings_syntax_ruby</item>
-	</string-array>
-
-	<string name="occurrences_found">%d occurrences found</string>
 
 	<!-- Other setting entries that don't have to be localised are in
 		strings_not_for_localization.xml and in EncodingScheme.java -->
@@ -203,6 +145,16 @@
 	<string name="dialog_file_info_whitespaces">Whitespaces</string>
 	<string name="dialog_file_info_symbols">Symbols</string>
 
+	<string name="dialog_search_options_case">Case-sensitive</string>
+	<string name="dialog_search_options_whole">Whole word</string>
+	<string name="dialog_search_options_regexp">Regular expression</string>
+
+	<string name="search_occurrences_found_zero">No occurrences found</string>
+	<plurals name="search_occurrences_found">
+		<item quantity="one">One occurrence found</item>
+		<item quantity="few">%d occurrences found</item>
+	</plurals>
+
 	<!--
 	NEW EDITOR SETTINGS
 	-->
@@ -217,14 +169,14 @@
 	<string name="settings_view_line_numbers_title">Line numbers</string>
 	<string name="settings_view_line_numbers_summary">Show line numbers on ruler</string>
 
-	<string name="settings_view_tab_use_spaces_title">Use spaces instead tabs</string>
-	<string name="settings_view_tab_use_spaces_summary">Insert spaces instead of tabs</string>
+	<string name="settings_view_highlight_current_row_title">Highlight current row</string>
+	<string name="settings_view_highlight_current_row_summary">Highlights the current line in the color slightly other than the main background</string>
 
-	<string name="settings_view_wordwrap_title">Wordwrap</string>
-	<string name="settings_view_wordwrap_summary">Wrap long lines</string>
+	<string name="settings_view_wordwrap_title">Word wrap</string>
+	<string name="settings_view_wordwrap_summary">Continues text on the next line if it is too long</string>
 
 	<string name="settings_view_font_title">Font</string>
-	<string name="settings_view_font_summary">Default font in editor</string>
+	<string name="settings_view_font_summary">Font for text editor</string>
 
 	<string name="settings_view_font_size_title">Font size</string>
 	<string name="settings_view_font_size_summary">Default size of font</string>
@@ -242,10 +194,10 @@
 	<string name="settings_edit_group">Editing</string>
 
 	<string name="settings_edit_tab_to_spaces_title">Tabulate with spaces</string>
-	<string name="settings_edit_tab_to_spaces_summary">Convert tabs to spaces.</string>
+	<string name="settings_edit_tab_to_spaces_summary">Insert spaces instead of tabs</string>
 
 	<string name="settings_edit_indent_title">Auto-indent</string>
-	<string name="settings_edit_indent_summary">Automatically add spaces or tabs on new line</string>
+	<string name="settings_edit_indent_summary">Start a new line with the same level of indent as the previous line</string>
 
 	<string name="settings_file_group">Opening and Saving</string>
 
@@ -263,6 +215,14 @@
 
 	<string name="settings_file_line_endings_title">Line endings</string>
 	<string name="settings_file_line_endings_summary">Default line endings for new files</string>
+
+	<string name="settings_file_auto_backup_title">Auto-backup</string>
+	<string name="settings_file_auto_backup_summary">Allows recovery of unsaved files but slows performance</string>
+
+	<!-- If modifying the order or number of entries for the following arrays,
+		 don't forget to make corresponding modifications in the array
+		 settings_<name>_values in string_keys.xml
+	  -->
 
 	<string-array name="settings_view_tab_width_entries">
 		<item>1 space</item>

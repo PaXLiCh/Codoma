@@ -35,7 +35,7 @@ public class NumberPickerDialog extends DialogFragment {
 		int title;
 		switch (action) {
 			case FONT_SIZE:
-				title = R.string.settings_label_font;//font_size;
+				title = R.string.settings_view_font_size_title;
 				break;
 			case GO_TO_PAGE:
 				title = R.string.menu_main_go_to_page;

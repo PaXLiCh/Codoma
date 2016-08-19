@@ -14,18 +14,18 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:checked="false"
-		android:text="@string/find_panel_case_sensitive"/>
+		android:text="@string/dialog_search_options_case"/>
 
 	<CheckBox
 		android:id="@+id/find_panel_match_whole_word"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:checked="false"
-		android:text="@string/find_panel_match_whole_word"/>
+		android:text="@string/dialog_search_options_whole"/>
 
 	<CheckBox
 		android:id="@+id/find_panel_regex"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Regular expression"/>
+		android:text="@string/dialog_search_options_regexp"/>
 </LinearLayout>

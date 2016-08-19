@@ -3,116 +3,87 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:orientation="vertical"
-	android:visibility="gone">
+	android:orientation="vertical">
 
-	<RelativeLayout
+	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
 
-		<CheckBox
-			android:id="@+id/find_panel_replace_bar_toggle"
-			android:layout_width="wrap_content"
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:layout_alignBaseline="@+id/find_panel_search_text"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true"
-			android:layout_centerVertical="true"
-			android:text="Replace"/>
+			android:layout_weight="1">
 
-		<!-- TODO subclass EditText to intercept imeAction and do a find action
+			<android.support.design.widget.TextInputEditText
+				android:id="@+id/find_panel_search_text"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/text_to_find"
+				android:imeActionId="@id/find_panel_search_text"
 				android:imeActionLabel="@string/find_panel_find_label"
-				android:imeActionId="@id/find_panel_search_text" -->
-		<EditText
-			android:id="@+id/find_panel_search_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toEndOf="@+id/find_panel_replace_bar_toggle"
-			android:layout_toLeftOf="@+id/find_panel_find_prev"
-			android:layout_toRightOf="@+id/find_panel_replace_bar_toggle"
-			android:layout_toStartOf="@+id/find_panel_find_prev"
-			android:hint="@string/find_panel_find_label"
-			android:imeOptions="actionDone|flagNoExtractUi"
-			android:singleLine="true"/>
+				android:imeOptions="actionDone|flagNoExtractUi"
+				android:inputType="textNoSuggestions|textFilter|textVisiblePassword"
+				android:singleLine="true"/>
+		</android.support.design.widget.TextInputLayout>
 
 		<ImageButton
 			android:id="@+id/find_panel_find_next"
+			style="@style/Widget.AppCompat.ActionButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentEnd="true"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentRight="true"
-			android:layout_alignParentStart="true"
-			android:layout_alignParentTop="true"
 			android:contentDescription="Next"
-			android:src="@drawable/find_forwards"/>
-
-		<ImageButton
-			android:id="@+id/find_panel_find_prev"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_toLeftOf="@+id/find_panel_find_next"
-			android:layout_toStartOf="@+id/find_panel_find_next"
-			android:contentDescription="Prev"
-			android:src="@drawable/find_backwards"/>
-
-	</RelativeLayout>
-
-
-	<RelativeLayout
-		android:id="@+id/find_panel_replace_bar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+			android:src="?ic_search"/>
 
 		<ImageButton
 			android:id="@+id/find_panel_settings"
+			style="@style/Widget.AppCompat.ActionButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true"
-			android:layout_alignParentTop="true"
-			android:contentDescription="Opts"
-			android:src="@drawable/ic_action_settings"
-			/>
-		<!-- TODO subclass EditText to intercept imeAction and do a replace action
+			android:contentDescription="Optis"
+			android:src="?ic_settings"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1">
+
+			<android.support.design.widget.TextInputEditText
+				android:id="@+id/find_panel_replace_text"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/text_to_replace"
+				android:imeActionId="@id/find_panel_replace_text"
 				android:imeActionLabel="@string/find_panel_replace_label"
-				android:imeActionId="@id/find_panel_replace_text" -->
-		<EditText
-			android:id="@+id/find_panel_replace_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignBottom="@+id/find_panel_settings"
-			android:layout_alignTop="@+id/find_panel_settings"
-			android:layout_toEndOf="@+id/find_panel_settings"
-			android:layout_toLeftOf="@+id/find_panel_replace"
-			android:layout_toRightOf="@+id/find_panel_settings"
-			android:layout_toStartOf="@+id/find_panel_replace"
-			android:hint="@string/find_panel_replace_label"
-			android:imeOptions="actionDone|flagNoExtractUi"
-			android:singleLine="true"/>
+				android:imeOptions="actionDone|flagNoExtractUi"
+				android:inputType="textNoSuggestions|textFilter|textVisiblePassword"
+				android:singleLine="true"/>
+		</android.support.design.widget.TextInputLayout>
 
 		<ImageButton
 			android:id="@+id/find_panel_replace"
+			style="@style/Widget.AppCompat.ActionButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_toLeftOf="@+id/find_panel_replace_all"
-			android:layout_toStartOf="@+id/find_panel_replace_all"
 			android:contentDescription="Replace"
-			android:src="@drawable/replace"/>
+			android:src="?ic_find_replace"/>
 
 		<ImageButton
 			android:id="@+id/find_panel_replace_all"
+			style="@style/Widget.AppCompat.ActionButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentEnd="true"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentRight="true"
-			android:layout_alignParentStart="true"
-			android:layout_alignParentTop="true"
 			android:contentDescription="Replace all"
-			android:src="@drawable/replace_all"/>
-	</RelativeLayout>
+			android:src="?ic_done_all"/>
+	</LinearLayout>
 
 </LinearLayout>

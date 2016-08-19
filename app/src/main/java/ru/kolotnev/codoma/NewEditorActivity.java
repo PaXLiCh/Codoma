@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -28,6 +29,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		TextFileFragment.OnFragmentInteractionListener,
 		LoadTextFileTask.LoadTextFileListener,
 		TextFile.PageSystemListener,
+		FindReplaceFragment.Callbacks,
 		FileOptionsDialogFragment.Callbacks,
 		RecentFilesDialogFragment.Callbacks {
 
@@ -40,6 +42,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 	private ActionBar actionBar;
 	private ViewPager viewPager;
 	private ScreenSlidePagerAdapter pagerAdapter;
+	private FindReplaceFragment _findPanel;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,9 @@ public class NewEditorActivity extends AppCompatActivity implements
 		// Bind the tabs to the ViewPager
 		TabLayout tabs = (TabLayout) findViewById(android.R.id.tabs);
 		tabs.setupWithViewPager(viewPager);
+
+		_findPanel = (FindReplaceFragment) getSupportFragmentManager().findFragmentById(R.id.find_replace);
+		_findPanel.setCallback(this);
 
 		updateTitle();
 
@@ -160,6 +166,9 @@ public class NewEditorActivity extends AppCompatActivity implements
 				startActivityForResult(i, REQUEST_CODE_PREFERENCES);
 				return true;
 
+			case R.id.find_panel_toggle:
+				toggleFindPanel();
+				return true;
 
 			// Pages
 			case R.id.action_page_previous:
@@ -270,7 +279,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		if (keyCode == KeyEvent.KEYCODE_SEARCH &&
 				!event.isCanceled() &&
 				event.isTracking()) {
-//			toggleFindPanel();
+			toggleFindPanel();
 			return true;
 		}
 
@@ -309,6 +318,36 @@ public class NewEditorActivity extends AppCompatActivity implements
 		parseIntent(intent);
 	}
 
+	private void toggleFindPanel() {
+		View v = _findPanel.getView();
+		if (v == null) return;
+		if (v.getVisibility() == View.VISIBLE) {
+			v.setVisibility(View.GONE);
+		} else {
+			v.setVisibility(View.VISIBLE);
+			v.requestFocus();
+		}
+	}
+
+	/**
+	 * Switch focus between the find panel and the main editing area
+	 *
+	 * @return If the focus was switched successfully between the
+	 * find panel and main editing area
+	 */
+	private boolean togglePanelFocus() {
+		View v = _findPanel.getView();
+		if (v == null) return false;
+		if (v.getVisibility() == View.VISIBLE) {
+			//if (_editField.isFocused()) {
+				v.requestFocus();
+			//} else {
+			//	_editField.requestFocus();
+			//}
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Parses the intent
@@ -533,6 +572,21 @@ public class NewEditorActivity extends AppCompatActivity implements
 	@Override
 	public void onRecentFileSelected(Uri uri) {
 		textFileByUri(uri, null, null);
+	}
+
+	@Override
+	public void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).find(text, isCaseSensitive, isWholeWord, isRegex);
+	}
+
+	@Override
+	public void replace(@NonNull String text, @Nullable String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+
+	}
+
+	@Override
+	public void replaceAll(@NonNull String text, @Nullable String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+
 	}
 
 	/**

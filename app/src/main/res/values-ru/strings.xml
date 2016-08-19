@@ -50,7 +50,6 @@
 	<string name="dialog_go_to_line_text_hint">Номер строки</string>
 	<string name="dialog_recent_files_none">Нет недавних файлов.</string>
 	<string name="find_panel_find_label">Найти</string>
-	<string name="find_panel_match_whole_word">Слово целиком</string>
 	<string name="file_picker_inform_empty">Папка пустая.</string>
 	<string name="progress_dialog_find">Поиск&#8230;</string>
 	<string name="dialog_find_no_results">Ничего не найдено</string>
@@ -66,7 +65,6 @@
 	<string name="dialog_error_no_file_name">Нужно задать имя файла.</string>
 	<string name="dialog_sorry">Обидно, да.</string>
 	<string name="help_title">Справка по Codoma</string>
-	<string name="settings_desc_zoom_size">Размер текста</string>
 	<string name="file_picker_file_not_found">%s (недоступен)</string>
 	<string name="dialog_confirm_overwrite">Файл с таким именем уже существует. Заменить файл?</string>
 	<string name="dialog_error_attempt_overwrite_recovery">Файл в системной директории. Сохранение невозможно.</string>
@@ -75,51 +73,17 @@
 	<string name="dialog_error_file_open">Ошибка открытия файла:\u0020</string>
 	<string name="dialog_error_file_save">Ошибка сохранения файла:\u0020</string>
 	<string name="file_picker_title_enter_filename">Введите имя файла и укажите где его сохранить.</string>
-	<string name="settings_label_font">Шрифт</string>
 	<string name="about_text"><b>TextWarrior 0.93</b>\n for Android\n \n Copyright 2013 Tah Wei Hoon\n This program is made available under the terms of Apache License Version 2.0\n \n \n <b>File browser by</b>\n OpenIntents\n http://www.openintents.org\n Licensed under Apache Version 2.0\n \n \n <b>Icons by</b>\n Everaldo Coelho\n http://www.everaldo.com/crystal\n Licensed under LGPL 2.1\n \n Yusuke Kamiyamane\n http://p.yusukekamiyamane.com\n Licensed under CC-BY 3.0\n \n Lufang Hsiung\n \n \n <b>Fonts by</b>\n Bitstream, Inc.\n \n Tristan Grimmer\n \n \n <b>Translations by</b>\n Tom Arn (German help file)\n \n \n Send feedback, suggestions and bug reports to hoon.tw@gmail.com</string>
-	<string name="settings_desc_font">Шрифт текстового редактора</string>
-	<string name="settings_label_color_scheme">Цветовая тема</string>
-	<string name="settings_label_auto_indent">Автоотступ</string>
-	<string name="settings_desc_auto_indent">Новая строка будет с тем же отступом, что и предыдушая</string>
-	<string name="settings_desc_drag_select">Выделять текст при перемещении курсора</string>
-	<string name="settings_label_file_input_format">Кодировка открываемых файлов</string>
-	<string name="settings_label_file_output_format">Кодировка сохраняемых файлов</string>
-	<string name="find_panel_case_sensitive">С учётом регистра</string>
 	<string name="file_picker_title_pick_file">Выберите файл для открытия</string>
-	<string name="settings_desc_tab_spaces">Количество пробелов в табуляции</string>
-	<string name="settings_desc_word_wrap">Продолжает текст на следующей строке, если он слишком длинный</string>
-	<string name="settings_label_auto_backup">Резервные копии</string>
-	<string name="settings_label_auto_close_clipboard">Автозакрытие буффера</string>
-	<string name="settings_label_auto_display_keyboard">Автопоказ клавиатуры</string>
-	<string name="settings_label_auto_open_clipboard">Автопоказ буффера</string>
-	<string name="settings_label_highlight_current_row">Выделять текущую строку</string>
-	<string name="settings_label_word_wrap">Перенос слов</string>
-	<string name="settings_label_zoom_size">Масштаб \u0025</string>
-	<string name="settings_label_line_terminator_style">Концы строк</string>
-	<string name="settings_desc_long_press_capitalize">Делать букву заглавной при долгом удержании клавиши на аппаратной клавиатуре</string>
-	<string name="settings_desc_line_terminator_style">Формат концовок строк</string>
-	<string name="settings_desc_file_input_format">Кодировка по-умолчанию для открываемых файлов</string>
-	<string name="settings_desc_file_output_format">Кодировка по-умолчанию для сохраняемых файлов</string>
-	<string name="settings_label_long_press_capitalize">Заглавные при удержании</string>
-	<string name="settings_label_drag_select">Выделять перемещением</string>
-	<string name="settings_desc_auto_open_clipboard">Автоматически открывает панель буфера обмена при выделении текста</string>
-	<string name="settings_desc_color_scheme">Наборы цветов для оформления текста</string>
 	<string name="dialog_replace_all_result">Замен:\u0020</string>
-	<string name="settings_desc_auto_backup">Помогает восстанавливать несохранённые файлы, но уменьшает производительность</string>
-	<string name="settings_desc_auto_close_clipboard">Скрывать панель буфера обмена после снятия выделения с текста</string>
-	<string name="settings_desc_auto_display_keyboard">Показывать виртуальную клавиатуру при касании экрана</string>
 	<string name="dialog_replace_no_selection">Нет выбранного текста для замены</string>
 	<string name="dialog_sorry_backup_disabled">Возможно, что некоторые несохранённые изменения были потеряны, На будущее, убедитесь, что включена опция резервного копирования.</string>
 
 	<string name="file_saved_with_success">Файл %s сохранён</string>
-	<string name="match_case">С учётом регистра</string>
-	<string name="regular_expression">Регулярное выражение</string>
 	<string name="rename">Переименовать</string>
 	<string name="replace">Заменить</string>
 	<string name="save_changes">Хотите сохранить изменения в файле %s?</string>
 	<string name="hint_name">Введите имя</string>
-	<string name="occurrences_found">%d совпадений найдено</string>
-
 
 	<string name="dialog_file_options_title">Параметры файла</string>
 	<string name="dialog_file_options_encoding">Кодировка</string>
@@ -135,6 +99,18 @@
 	<string name="dialog_file_info_whitespaces">Пробелов</string>
 	<string name="dialog_file_info_symbols">Символов</string>
 
+	<string name="dialog_search_options_case">С учётом регистра</string>
+	<string name="dialog_search_options_whole">Слово целиком</string>
+	<string name="dialog_search_options_regexp">Регулярное выражение</string>
+
+	<string name="search_occurrences_found_zero">Совпадений не найдено</string>
+	<plurals name="search_occurrences_found">
+		<item quantity="one">%d совпадение найдено</item>
+		<item quantity="few">%d совпадения найдено</item>
+		<item quantity="many">%d совпадений найдено</item>
+	</plurals>
+
+
 	<!--
 	NEW EDITOR SETTINGS
 	-->
@@ -149,14 +125,14 @@
 	<string name="settings_view_line_numbers_title">Номера строк</string>
 	<string name="settings_view_line_numbers_summary">Показывает номера строк на линейке в начале строки</string>
 
+	<string name="settings_view_highlight_current_row_title">Подсвечивать текущую строку</string>
+	<string name="settings_view_highlight_current_row_summary">Подсвечивает текущую строку цветом чуть отличным от основного фонового</string>
+
 	<string name="settings_view_wordwrap_title">Перенос строк</string>
-	<string name="settings_view_wordwrap_summary">Переносить строки</string>
+	<string name="settings_view_wordwrap_summary">Продолжает текст на следующей строке, если он слишком длинный</string>
 
 	<string name="settings_view_font_title">Шрифт</string>
-	<string name="settings_view_font_summary">Шрифт редактора</string>
-
-	<string name="settings_view_tab_use_spaces_title">Пробелы вместо табуляции</string>
-	<string name="settings_view_tab_use_spaces_summary">Вместо символов табуляции будут вставляться пробелы в указанном количестве</string>
+	<string name="settings_view_font_summary">Шрифт текстового редактора</string>
 
 	<string name="settings_view_font_size_title">Размер шрифта в редаторе</string>
 	<string name="settings_view_font_size_summary">Размер шрифта, используемого в редакторе. Учитываются системные настройки размера текста</string>
@@ -165,7 +141,7 @@
 	<string name="settings_view_whitespace_summary">Показывает пробелы, табуляцию, концы строк как видимые символы</string>
 
 	<string name="settings_view_tab_width_title">Ширина табуляции</string>
-	<string name="settings_view_tab_width_summary">Ширина символа табуляции в количестве пробелов</string>
+	<string name="settings_view_tab_width_summary">Количество пробелов в табуляции</string>
 
 	<string name="settings_view_update_delay_title">Задержка отрисовки</string>
 	<string name="settings_view_update_delay_summary">Задержка перед перерисовкой текста после послденего изменения</string>
@@ -173,10 +149,10 @@
 	<string name="settings_edit_group">Редактирование</string>
 
 	<string name="settings_edit_tab_to_spaces_title">Заменять табуляцию пробелами</string>
-	<string name="settings_edit_tab_to_spaces_summary">Вместо табуляции отступы будут сделаны пробелам.</string>
+	<string name="settings_edit_tab_to_spaces_summary">Вместо символов табуляции будут вставляться пробелы в указанном количестве</string>
 
 	<string name="settings_edit_indent_title">Автоотступы</string>
-	<string name="settings_edit_indent_summary">Автоматически добавлять пробелы/табуляцию при переходе на новую строку</string>
+	<string name="settings_edit_indent_summary">Новая строка будет с тем же отступом, что и предыдушая</string>
 
 	<string name="settings_file_group">Открытие и сохранение</string>
 
@@ -186,11 +162,17 @@
 	<string name="settings_file_encoding_fallback_title">Аварийная кодировка</string>
 	<string name="settings_file_encoding_fallback_summary">Набор символов, который будет выбрана если не удастся определить кодировку файла</string>
 
+	<string name="settings_file_page_title">Постранично</string>
+	<string name="settings_file_page_summary">Загружать и редактировать большие файлы постранично</string>
+
 	<string name="settings_file_saf_title">Storage access framework</string>
 	<string name="settings_file_saf_summary">SAF — это новый API, появившийся в Android 4.4. Он упрощает пользователю доступ к файлам. Менее функционален, чем встроенный в Codoma проводник по файлам, но местами удобнее</string>
 
 	<string name="settings_file_line_endings_title">Концы строк</string>
 	<string name="settings_file_line_endings_summary">Концы строк, с которыми будет сохранён созданный новый файл</string>
+
+	<string name="settings_file_auto_backup_title">Резервные копии</string>
+	<string name="settings_file_auto_backup_summary">Помогает восстанавливать несохранённые файлы, но уменьшает производительность</string>
 
 	<string-array name="settings_view_tab_width_entries">
 		<item>1 пробел</item>
@@ -213,6 +195,7 @@
 		<item>CRLF — Windows</item>
 		<item>CR — Mac OS 9</item>
 	</string-array>
-	<string name="settings_file_page_summary">Загружать и редактировать большие файлы постранично</string>
-	<string name="settings_file_page_title">Постранично</string>
+
+	<string name="text_to_find">Что нужно найти</string>
+	<string name="text_to_replace">Чем заменить</string>
 </resources>

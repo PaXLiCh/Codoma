@@ -427,7 +427,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 				adapter.setFiles(names);
 				listView.scrollToPosition(0);
 			}
-			textViewEmpty.setVisibility(names == null || names.size() < 1 ? View.VISIBLE : View.GONE);
+			textViewEmpty.setVisibility(names == null || names.size() < 2 ? View.VISIBLE : View.GONE);
 			if (exceptionMessage != null) {
 				Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
 			}

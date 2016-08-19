@@ -1,29 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="settings_key_auto_backup" translatable="false">auto_backup</string>
-	<string name="settings_key_auto_close_clipboard" translatable="false">auto_close_clipboard</string>
-	<string name="settings_key_auto_display_keyboard" translatable="false">auto_display_keyboard</string>
-	<string name="settings_key_auto_indent" translatable="false">auto_indent</string>
-	<string name="settings_key_auto_open_clipboard" translatable="false">auto_open_clipboard</string>
-	<string name="settings_key_chirality" translatable="false">editor_navigation_chirality</string>
-	<string name="settings_key_color_scheme" translatable="false">editor_appearance_color_scheme</string>
-	<string name="settings_key_drag_select" translatable="false">editor_navigation_drag_select</string>
-	<string name="settings_key_file_input_format" translatable="false">file_encoding_input</string>
-	<string name="settings_key_file_output_format" translatable="false">file_encoding_output</string>
-	<string name="settings_key_font" translatable="false">editor_appearance_font</string>
-	<string name="settings_key_highlight_current_row" translatable="false">editor_appearance_row_current</string>
-	<string name="settings_key_line_terminator_style" translatable="false">file_line_terminator_style</string>
-	<string name="settings_key_long_press_capitalize" translatable="false">editor_input_longpress_capitalize</string>
-	<string name="settings_key_navigation_method" translatable="false">editor_navigation_cursor</string>
-	<string name="settings_key_show_nonprinting" translatable="false">editor_appearance_nonprinting</string>
-	<string name="settings_key_show_row_number" translatable="false">editor_appearance_row_current_number</string>
-	<string name="settings_key_tab_spaces" translatable="false">editor_appearance_tab_size</string>
-	<string name="settings_key_word_wrap" translatable="false">editor_appearance_word_wrap</string>
-	<string name="settings_key_zoom_size" translatable="false">editor_appearance_zoom</string>
-
 	<string name="settings_view_dark_key" translatable="false">view_dark</string>
 	<string name="settings_view_syntax_highlight_key" translatable="false">view_syntax_highlight</string>
 	<string name="settings_view_line_numbers_key" translatable="false">view_line_numbers</string>
+	<string name="settings_view_highlight_current_row_key" translatable="false">view_highlight_current_row</string>
 	<string name="settings_view_wordwrap_key" translatable="false">view_wordwrap</string>
 	<string name="settings_view_font_key" translatable="false">view_font</string>
 	<string name="settings_view_font_size_key" translatable="false">view_font_size</string>
@@ -37,6 +17,7 @@
 	<string name="settings_file_line_endings_key" translatable="false">file_line_endings</string>
 	<string name="settings_file_encoding_key" translatable="false">file_encoding</string>
 	<string name="settings_file_encoding_fallback_key" translatable="false">file_encoding_fallback</string>
+	<string name="settings_file_auto_backup_key" translatable="false">file_auto_backup</string>
 
 	<string name="settings_syntax_none" translatable="false">None</string>
 	<string name="settings_syntax_c" translatable="false">C</string>
@@ -48,8 +29,9 @@
 	<string name="settings_syntax_php" translatable="false">PHP</string>
 	<string name="settings_syntax_python" translatable="false">Python</string>
 	<string name="settings_syntax_ruby" translatable="false">Ruby</string>
+
 	<string-array
-		name="settings_entry_values_syntax_color">
+		name="settings_entries_syntax_color">
 		<item>@string/settings_syntax_none</item>
 		<item>@string/settings_syntax_c</item>
 		<item>@string/settings_syntax_cpp</item>

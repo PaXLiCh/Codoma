@@ -9,6 +9,16 @@
 
 package ru.kolotnev.codoma;
 
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * When there are unsaved changes to a file and the app is forced to close by
  * the system, RecoveryManager can save a copy of the changed file.
@@ -29,70 +39,69 @@ public class RecoveryManager {
 	 * no recovery file needed because the head file was unchanged
 	 */
 
-//	public static final int ERROR_NONE = 0;
-//	private int _recoveryErrorCode = ERROR_NONE; // the error code of the latest recovery action
-//	public static final int ERROR_RECOVERY_DISABLED = 1;
-//	public static final int ERROR_FILE_NOT_FOUND = 2;
-//	public static final int ERROR_READ = 3;
-//	public static final int ERROR_WRITE = 4;
-//	private final static int MAX_BACKUP_FILES = 10;
-//
-//	static {
+	public static final int ERROR_NONE = 0;
+	private int _recoveryErrorCode = ERROR_NONE; // the error code of the latest recovery action
+	public static final int ERROR_RECOVERY_DISABLED = 1;
+	public static final int ERROR_FILE_NOT_FOUND = 2;
+	public static final int ERROR_READ = 3;
+	public static final int ERROR_WRITE = 4;
+	private final static int MAX_BACKUP_FILES = 10;
+
+	static {
 //		TextWarriorException.assertVerbose(MAX_BACKUP_FILES > 0,
 //				"MAX_BACKUP_FILES should be at least 1");
-//	}
-//
-//	// keys for saving and restoring application state
-//	private final static String PREFS_RECOVERY = "recoveryPrefs";
-//	private final static String STATE_ID_COUNTER = "recoveryIdCounter";
-//	private final static String STATE_PATH = "recoveryPath";
-//	private final static String STATE_HEAD_PATH = "recoveryHeadPath";
-//	private final static String STATE_ENCODING = "recoveryEncoding";
-//	private final static String STATE_EOL = "recoveryEOL";
-//
-//	/*
-//	private void deleteAllBackupFiles() {
-//		final String[] backupDirectories = { getInternalRecoveryDir(), getExternalRecoveryDir() };
-//		for (String dirPath : backupDirectories) {
-//			File dir = new File(dirPath);
-//
-//			if(dir.exists() && dir.isDirectory()) {
-//				for(File backupFile : dir.listFiles()) {
-//					backupFile.delete();
-//				}
-//			}
-//		}
-//	}*/
-//
-//	private final static String STATE_BACKUP_RESULT = "recoveryBackupResult";
-//	private static final int BACKUP_SUCCESS = 0;
-//
-//	/**
-//	 * recovery file saved successfully
-//	 */
-//	private static final int BACKUP_NONE = 1;
-//
-//	/**
-//	 * no attempt to create a recovery file
-//	 */
-//	private static final int BACKUP_FAILED = 2;
-//
-//	/**
-//	 * attempted to create a recovery file but failed
-//	 */
-//	private static final int BACKUP_NO_CHANGES = 3;
-//	private final static String RECOVERY_BASE_FILENAME = "backup";
-//	private final static String RECOVERY_FILENAME_EXTENSION = ".txt";
-//	private final static String SAFEKEEPING_FILENAME = "recovered.txt";
-//	private final static String RECOVERY_EXT_STORAGE_DIR = "/Android/data/com.myopicmobile.textwarrior.android/files";
-//	private final MainActivity _app;
-//	private final SharedPreferences _persistence;
-//
-//	public RecoveryManager(MainActivity app) {
-//		_app = app;
-//		_persistence = _app.getSharedPreferences(PREFS_RECOVERY, 0);
-//	}
-//
+	}
+
+	// keys for saving and restoring application state
+	private final static String PREFS_RECOVERY = "recoveryPrefs";
+	private final static String STATE_ID_COUNTER = "recoveryIdCounter";
+	private final static String STATE_PATH = "recoveryPath";
+	private final static String STATE_HEAD_PATH = "recoveryHeadPath";
+	private final static String STATE_ENCODING = "recoveryEncoding";
+	private final static String STATE_EOL = "recoveryEOL";
+
+	private void deleteAllBackupFiles() {
+		final String[] backupDirectories = { getInternalRecoveryDir(), getExternalRecoveryDir() };
+		for (String dirPath : backupDirectories) {
+			File dir = new File(dirPath);
+
+			if(dir.exists() && dir.isDirectory()) {
+				for(File backupFile : dir.listFiles()) {
+					backupFile.delete();
+				}
+			}
+		}
+	}
+
+	private final static String STATE_BACKUP_RESULT = "recoveryBackupResult";
+	private static final int BACKUP_SUCCESS = 0;
+
+	/**
+	 * recovery file saved successfully
+	 */
+	private static final int BACKUP_NONE = 1;
+
+	/**
+	 * no attempt to create a recovery file
+	 */
+	private static final int BACKUP_FAILED = 2;
+
+	/**
+	 * attempted to create a recovery file but failed
+	 */
+	private static final int BACKUP_NO_CHANGES = 3;
+	private final static String RECOVERY_BASE_FILENAME = "backup";
+	private final static String RECOVERY_FILENAME_EXTENSION = ".txt";
+	private final static String SAFEKEEPING_FILENAME = "recovered.txt";
+	private final static String RECOVERY_EXT_STORAGE_DIR = "/Android/data/com.myopicmobile.textwarrior.android/files";
+	private final CodomaApplication _app;
+	private final SharedPreferences _persistence;
+
+	public RecoveryManager(CodomaApplication app) {
+		_app = app;
+		_persistence = _app.getSharedPreferences(PREFS_RECOVERY, 0);
+	}
+
 //	/**
 //	 * Writes a backup of the working file.
 //	 * <p/>
@@ -296,104 +305,104 @@ public class RecoveryManager {
 //				statistics.getSecond());
 //		return doc;
 //	}
-//
-//	// no further action is taken if this method fails
-//	private void copyToExternalStorage(File srcFile) {
-//		String state = Environment.getExternalStorageState();
-//		if(!Environment.MEDIA_MOUNTED.equals(state)) {
-//			Log.e(this.toString(), "Could not copy recovery file to external storage for user to access.");
-//			return;
-//		}
-//
-//		createExternalStorageDirectory();
-//		FileInputStream src = null;
-//		FileOutputStream dest = null;
-//		try {
-//			src = new FileInputStream(srcFile);
-//			dest = new FileOutputStream(getSafekeepingFileAbsolutePath());
-//
-//			byte[] buf = new byte[1024];
-//			int len;
-//			while((len = src.read(buf)) > 0) {
-//				dest.write(buf, 0, len);
-//			}
-//		} catch(IOException ex) {
-//			/* do nothing */
-//		} finally {
-//			if(src != null) {
-//				try { src.close(); } catch(IOException ex) { /* do nothing */ }
-//			}
-//			if(dest != null) {
-//				try { dest.close(); } catch(IOException ex) { /* do nothing */ }
-//			}
-//		}
-//	}
-//
-//	// Does nothing if the directory is already created
-//	private void createExternalStorageDirectory() {
-//		String dirName = getExternalRecoveryDir();
-//		File dir = new File(dirName);
-//
-//		if(!dir.exists()) {
-//			dir.mkdirs();
-//		}
-//	}
-//
-//	private String combinePath(String dirName, String filename) {
-//		return dirName + File.separator + filename;
-//	}
-//
-//	/**
-//	 * Clears metadata associated with file recovery.
-//	 * Leaves the recovery files on disk. Note that these files will eventually
-//	 * get overwritten when backup() is called repeatedly.
-//	 */
-//	public void clearRecoveryState() {
-//		SharedPreferences.Editor editor = _persistence.edit();
-//		editor.putString(STATE_PATH, "");
-//		editor.putString(STATE_HEAD_PATH, "");
-//		editor.putInt(STATE_BACKUP_RESULT, BACKUP_NONE);
-//		editor.apply();
-//	}
-//
-//	public int getRecoveryErrorCode() { return _recoveryErrorCode; }
-//
-//	private String getNextFilename() {
-//		int currentId = _persistence.getInt(STATE_ID_COUNTER, 0);
-//		return RECOVERY_BASE_FILENAME + currentId + RECOVERY_FILENAME_EXTENSION;
-//	}
-//
-//	private void setRecoveryFilePath(String absPath) {
-//		SharedPreferences.Editor editor = _persistence.edit();
-//		editor.putString(STATE_PATH, absPath);
-//		editor.apply();
-//	}
-//
-//	private void incrementRecoveryId() {
-//		int currentId = _persistence.getInt(STATE_ID_COUNTER, 0);
-//
-//		SharedPreferences.Editor editor = _persistence.edit();
-//		editor.putInt(STATE_ID_COUNTER, (currentId + 1) % MAX_BACKUP_FILES);
-//		editor.apply();
-//	}
-//
-//	private String getInternalRecoveryDir() { return _app.getFilesDir().getAbsolutePath(); }
-//
-//	public String getExternalRecoveryDir() {
-//		return Environment.getExternalStorageDirectory().getPath() + RECOVERY_EXT_STORAGE_DIR;
-//	}
-//
-//	public String getSafekeepingFileAbsolutePath() {
-//		return getExternalRecoveryDir() + File.separator + SAFEKEEPING_FILENAME;
-//	}
-//
-//	public boolean isInRecoveryPath(File file) {
-//		String dir = file.getParent();
-//		if(dir == null) {
-//			dir = "";
-//		}
-//		// no need to check getInternalRecoveryPath() because
-//		// regular users can't access it
-//		return dir.equals(getExternalRecoveryDir());
-//	}
+
+	// no further action is taken if this method fails
+	private void copyToExternalStorage(File srcFile) {
+		String state = Environment.getExternalStorageState();
+		if (!Environment.MEDIA_MOUNTED.equals(state)) {
+			Log.e(this.toString(), "Could not copy recovery file to external storage for user to access.");
+			return;
+		}
+
+		createExternalStorageDirectory();
+		FileInputStream src = null;
+		FileOutputStream dest = null;
+		try {
+			src = new FileInputStream(srcFile);
+			dest = new FileOutputStream(getSafekeepingFileAbsolutePath());
+
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = src.read(buf)) > 0) {
+				dest.write(buf, 0, len);
+			}
+		} catch (IOException ex) {
+			/* do nothing */
+		} finally {
+			if (src != null) {
+				try { src.close(); } catch (IOException ex) { /* do nothing */ }
+			}
+			if (dest != null) {
+				try { dest.close(); } catch (IOException ex) { /* do nothing */ }
+			}
+		}
+	}
+
+	// Does nothing if the directory is already created
+	private void createExternalStorageDirectory() {
+		String dirName = getExternalRecoveryDir();
+		File dir = new File(dirName);
+
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+	}
+
+	private String combinePath(@NonNull String dirName, @NonNull String filename) {
+		return dirName + File.separator + filename;
+	}
+
+	/**
+	 * Clears metadata associated with file recovery.
+	 * Leaves the recovery files on disk. Note that these files will eventually
+	 * get overwritten when backup() is called repeatedly.
+	 */
+	public void clearRecoveryState() {
+		SharedPreferences.Editor editor = _persistence.edit();
+		editor.putString(STATE_PATH, "");
+		editor.putString(STATE_HEAD_PATH, "");
+		editor.putInt(STATE_BACKUP_RESULT, BACKUP_NONE);
+		editor.apply();
+	}
+
+	public int getRecoveryErrorCode() { return _recoveryErrorCode; }
+
+	private String getNextFilename() {
+		int currentId = _persistence.getInt(STATE_ID_COUNTER, 0);
+		return RECOVERY_BASE_FILENAME + currentId + RECOVERY_FILENAME_EXTENSION;
+	}
+
+	private void setRecoveryFilePath(String absPath) {
+		SharedPreferences.Editor editor = _persistence.edit();
+		editor.putString(STATE_PATH, absPath);
+		editor.apply();
+	}
+
+	private void incrementRecoveryId() {
+		int currentId = _persistence.getInt(STATE_ID_COUNTER, 0);
+
+		SharedPreferences.Editor editor = _persistence.edit();
+		editor.putInt(STATE_ID_COUNTER, (currentId + 1) % MAX_BACKUP_FILES);
+		editor.apply();
+	}
+
+	private String getInternalRecoveryDir() { return _app.getFilesDir().getAbsolutePath(); }
+
+	public String getExternalRecoveryDir() {
+		return Environment.getExternalStorageDirectory().getPath() + RECOVERY_EXT_STORAGE_DIR;
+	}
+
+	public String getSafekeepingFileAbsolutePath() {
+		return getExternalRecoveryDir() + File.separator + SAFEKEEPING_FILENAME;
+	}
+
+	public boolean isInRecoveryPath(File file) {
+		String dir = file.getParent();
+		if (dir == null) {
+			dir = "";
+		}
+		// no need to check getInternalRecoveryPath() because
+		// regular users can't access it
+		return dir.equals(getExternalRecoveryDir());
+	}
 }

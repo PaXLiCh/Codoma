@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -33,6 +34,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -103,6 +105,8 @@ public class ColoredEditText extends EditText {
 	private int tabWidthInPixels = 0;
 	private int spaceWidthInPixels = 0;
 	private boolean isWhitespaces = false;
+	@Nullable
+	private SearchResult searchResult;
 
 	@Nullable
 	public TextSyntax textSyntax;
@@ -137,10 +141,10 @@ public class ColoredEditText extends EditText {
 		public void afterTextChanged(Editable s) {
 			cancelUpdate();
 			convertTabs(s, start, count);
+			textSyntax = null;
 
 			updateHandler.postDelayed(colorUpdater, updateDelay);
 
-			//updateTextSyntax(updateDelay);
 			// TODO: send correct invalidate
 			((Activity) getContext()).invalidateOptionsMenu();
 		}
@@ -513,11 +517,12 @@ public class ColoredEditText extends EditText {
 	//region Other
 
 	public void updateLines(Layout layout) {
-		if (0 == getLineCount()
-				|| lineCount != getLineCount()
+		int lines = getLineCount();
+		if (lines == 0
+				|| lineCount != lines
 				|| startingLine != textFile.getStartingLine()) {
 			startingLine = textFile.getStartingLine();
-			lineCount = getLineCount();
+			lineCount = lines;
 			if (lineCount == 0)
 				lineCount = 1;
 
@@ -660,6 +665,160 @@ public class ColoredEditText extends EditText {
 		startingLine = 0;
 	}
 
+	// region Search
+	private SearchTask taskSearch;
+
+	public void find(@NonNull String what,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		boolean isSameResult;
+		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
+		if (searchResult == null) {
+			isSameResult = false;
+		} else {
+			if (isCaseSensitive || isRegex) {
+				isSameResult = searchResult.whatToSearch.equals(whatToSearch);
+			} else {
+				isSameResult = searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
+			}
+		}
+		if (isSameResult) {
+			// Results was not reset, go to next result
+			searchResult.cycle();
+			SearchResult.SearchItem item = searchResult.getCurrentItem();
+			if (item != null) {
+				requestFocus();
+				setSelection(item.start, item.end);
+			}
+		} else {
+			int selectionStart = getSelectionStart();
+			int selectionEnd = getSelectionEnd();
+			if (selectionStart == selectionEnd) {
+				selectionEnd = length();
+			}
+			if (taskSearch != null)
+				taskSearch.cancel(true);
+			taskSearch = new SearchTask(
+					whatToSearch,
+					isCaseSensitive,
+					selectionStart,
+					selectionEnd);
+
+			taskSearch.execute();
+		}
+	}
+
+	public void replaceText(@NonNull String what, @Nullable String replacementText,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		taskSearch = new SearchTask(
+				compileSearchText(what, isWholeWord, isRegex),
+				isCaseSensitive,
+				getSelectionStart(),
+				getSelectionEnd());
+
+		taskSearch.execute();
+	}
+
+	public void replaceAll(@NonNull String what, @Nullable String replacementText,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		taskSearch = new SearchTask(
+				compileSearchText(what, isWholeWord, isRegex),
+				isCaseSensitive,
+				getSelectionStart(),
+				getSelectionEnd());
+
+		taskSearch.execute();
+	}
+
+	/**
+	 * Prepare regular expression pattern by parameters.
+	 *
+	 * @param whatToSearch
+	 * 		Text to search.
+	 * @param isWord
+	 * 		Search whole word.
+	 * @param isRegex
+	 * 		Already prepared regular expression.
+	 *
+	 * @return Prepared regular expression.
+	 */
+	@NonNull
+	private static String compileSearchText(@NonNull String whatToSearch, boolean isWord, boolean isRegex) {
+		String preparedString;
+		if (!isRegex) {
+			preparedString = Pattern.quote(whatToSearch);
+			if (isWord) {
+				preparedString = "\\b" + preparedString + "\\b";
+			}
+		} else {
+			preparedString = whatToSearch;
+		}
+		return preparedString;
+	}
+
+	public class SearchTask extends AsyncTask<String, Void, SearchResult> {
+		@NonNull
+		private String whatToSearch;
+		private boolean isCase;
+		private int start;
+		private int end;
+		private CharSequence str;
+
+		public SearchTask(@NonNull String whatToSearch, boolean caseSensitive,
+				int start, int end) {
+			this.start = start;
+			this.end = end;
+			this.whatToSearch = whatToSearch;
+			this.isCase = caseSensitive;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			searchResult = null;
+			str = getText();
+		}
+
+		@Override
+		protected SearchResult doInBackground(String... params) {
+			try {
+				int flags = Pattern.MULTILINE;
+				if (isCase)
+					flags |= Pattern.CASE_INSENSITIVE;
+				Matcher matcher = Pattern.compile(whatToSearch, flags).matcher(str);
+				matcher = matcher.region(start, end);
+				SearchResult result = new SearchResult(whatToSearch);
+				while (matcher.find()) {
+					result.addResult(matcher.start(), matcher.end());
+				}
+				return result;
+			} catch (Exception e) {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(SearchResult result) {
+			super.onPostExecute(result);
+			if (result == null) return;
+			searchResult = result;
+			int amount = result.getAmount();
+			String msg = amount == 0
+					? getContext().getString(R.string.search_occurrences_found_zero)
+					: getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+			Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+			if (amount > 0) {
+				SearchResult.SearchItem item = result.getCurrentItem();
+				if (item != null) {
+					setSelection(item.start, item.end);
+					requestFocus();
+				}
+			}
+			replaceTextKeepCursor(null);
+		}
+	}
+
+	// endregion
+
 	public LineUtils getLineUtils() {
 		return lineUtils;
 	}
@@ -667,18 +826,22 @@ public class ColoredEditText extends EditText {
 	private void colorize(@NonNull Editable e, @NonNull CharSequence textToHighlight, int start) {
 		if (textSyntax == null) return;
 
-		for(Map.Entry<String, Pattern> pair : textSyntax.getPatterns()) {
+		for (Map.Entry<String, Pattern> pair : textSyntax.getPatterns()) {
 			setSpan(pair.getValue(), textToHighlight, start, e, pair.getKey());
+		}
+		if (searchResult != null) {
+			for (SearchResult.SearchItem item : searchResult.getItems()) {
+				e.setSpan(new SearchResultSpan(colorScheme.getTextColor(), colorScheme.getSearchResultColor()), item.start, item.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			}
 		}
 	}
 
 	private void setSpan(
-			Pattern p,
-			CharSequence textToHighlight,
+			@NonNull Pattern p,
+			@NonNull CharSequence textToHighlight,
 			int start,
-			Editable e,
-			String patternName) {
-		if (p == null) return;
+			@NonNull Editable e,
+			@NonNull String patternName) {
 		SyntaxColor.Style style = colorScheme.getStyle(patternName);
 		for (Matcher m = p.matcher(textToHighlight); m.find(); ) {
 			int from = start + m.start();
@@ -747,10 +910,9 @@ public class ColoredEditText extends EditText {
 	}
 
 	private void convertWhitespaces(@NonNull Editable e, int start, int count) {
-
 		String s = e.toString();
 		int stop = start + count;
-		for (;(start = s.indexOf(" ", start)) > -1 && start < stop; ++start) {
+		for (; (start = s.indexOf(" ", start)) > -1 && start < stop; ++start) {
 			e.setSpan(
 					new SpaceSpan(),
 					start,
@@ -827,7 +989,7 @@ public class ColoredEditText extends EditText {
 				int y,
 				int bottom,
 				Paint paint) {
-			paint.setColor(0xFF666666);
+			paint.setColor(styleWhitespaces.color);
 			canvas.drawText("¬", x, y, paint);
 		}
 	}
@@ -856,6 +1018,36 @@ public class ColoredEditText extends EditText {
 				Paint paint) {
 			paint.setColor(styleWhitespaces.color);
 			canvas.drawText("·", x, y, paint);
+		}
+	}
+
+	public class SearchResultSpan extends ReplacementSpan {
+		private int CORNER_RADIUS = 8;
+		private int backgroundColor = 0;
+		private int textColor = 0;
+
+		public SearchResultSpan(int textColor, int backgroundColor) {
+			super();
+			this.backgroundColor = backgroundColor;
+			this.textColor = textColor;
+		}
+
+		@Override
+		public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+			RectF rect = new RectF(x, top, x + measureText(paint, text, start, end), bottom);
+			paint.setColor(backgroundColor);
+			canvas.drawRoundRect(rect, CORNER_RADIUS, CORNER_RADIUS, paint);
+			paint.setColor(textColor);
+			canvas.drawText(text, start, end, x, y, paint);
+		}
+
+		@Override
+		public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+			return Math.round(paint.measureText(text, start, end));
+		}
+
+		private float measureText(Paint paint, CharSequence text, int start, int end) {
+			return paint.measureText(text, start, end);
 		}
 	}
 

@@ -1,35 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="AppTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
-		<item name="colorPrimary">#E9EAEC</item>
-		<item name="colorPrimaryDark">#D4D5D8</item>
-		<item name="colorAccent">#608CD6</item>
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
+	<style name="AppTheme.Light" parent="AppTheme.Light.Base">
 		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 		<item name="android:statusBarColor">@android:color/transparent</item>
-		<item name="popup_overlay">@style/ThemeOverlay.AppCompat.Light</item>
-		<item name="appbar_overlay">@style/ThemeOverlay.AppCompat.ActionBar</item>
-
-		<item name="alertDialogTheme">@style/AppCompatAlertDialogStyle.Light</item>
-		<item name="ic_search">@drawable/ic_search_black_24dp</item>
-		<item name="ic_bookmark">@drawable/ic_bookmark_black_24dp</item>
-		<item name="ic_bookmark_border">@drawable/ic_bookmark_border_black_24dp</item>
 	</style>
 
-	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorPrimary">#232426</item>
-		<item name="colorPrimaryDark">#1D1D1F</item>
-		<item name="colorAccent">#6FA4FF</item>
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
+	<style name="AppTheme.Dark" parent="AppTheme.Dark.Base">
 		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 		<item name="android:statusBarColor">@android:color/transparent</item>
-		<item name="popup_overlay">@style/ThemeOverlay.AppCompat</item>
-		<item name="appbar_overlay">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-
-		<item name="ic_search">@drawable/ic_search_white_24dp</item>
-		<item name="ic_bookmark">@drawable/ic_bookmark_white_24dp</item>
-		<item name="ic_bookmark_border">@drawable/ic_bookmark_border_white_24dp</item>
 	</style>
 </resources>

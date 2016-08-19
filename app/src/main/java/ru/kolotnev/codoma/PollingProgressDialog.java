@@ -49,7 +49,6 @@ public class PollingProgressDialog extends ProgressDialog
 			setProgress(_min);
 			setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			setTitle(msg);
-			setIcon(android.R.drawable.ic_dialog_info);
 			_pollActive = true;
 		} else {
 			setMessage(msg);

@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<bool name="settings_auto_backup_default">true</bool>
-	<bool name="settings_highlight_current_row_default">false</bool>
-	<bool name="settings_long_press_capitalize_default">false</bool>
-
 	<bool name="settings_view_dark_default">false</bool>
-
-	<bool name="settings_view_wordwrap_default">true</bool>
 	<bool name="settings_view_syntax_highlight_default">true</bool>
 	<bool name="settings_view_line_numbers_default">true</bool>
-
+	<bool name="settings_view_highlight_current_row_default">false</bool>
+	<bool name="settings_view_wordwrap_default">true</bool>
 	<string name="settings_view_font_default" translatable="false">monospace</string>
 	<integer name="settings_view_font_size_default">12</integer>
 	<bool name="settings_view_whitespace_default">false</bool>
 	<string name="settings_view_update_delay_default" translatable="false">1000</string>
 	<string name="settings_view_tab_width_default" translatable="false">4</string>
+
 	<bool name="settings_edit_tab_to_spaces_default">false</bool>
 	<bool name="settings_edit_indent_default">true</bool>
 
@@ -23,4 +19,5 @@
 	<string name="settings_file_line_endings_default" translatable="false">LF</string>
 	<string name="settings_file_encoding_default" translatable="false">UTF-8</string>
 	<string name="settings_file_encoding_fallback_default" translatable="false">UTF-8</string>
+	<bool name="settings_file_auto_backup_default">true</bool>
 </resources>
