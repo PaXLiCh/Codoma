@@ -103,6 +103,7 @@
 	<string name="dialog_search_options_whole">Слово целиком</string>
 	<string name="dialog_search_options_regexp">Регулярное выражение</string>
 
+	<string name="search_occurrences_error">Ошибка при поиске</string>
 	<string name="search_occurrences_found_zero">Совпадений не найдено</string>
 	<plurals name="search_occurrences_found">
 		<item quantity="one">%d совпадение найдено</item>

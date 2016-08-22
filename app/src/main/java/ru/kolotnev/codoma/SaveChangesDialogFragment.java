@@ -43,7 +43,6 @@ public class SaveChangesDialogFragment extends DialogFragment {
 		final String fileName = getArguments().getString(ARG_FILE_NAME);
 
 		return new AlertDialog.Builder(context)
-				.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_action_content_save))
 				.setTitle(R.string.menu_main_save)
 				.setMessage(getString(R.string.save_changes, fileName))
 				.setPositiveButton(R.string.menu_main_save,

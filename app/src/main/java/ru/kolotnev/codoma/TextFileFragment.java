@@ -323,6 +323,14 @@ public class TextFileFragment extends Fragment implements
 		editText.find(text, isCaseSensitive, isWholeWord, isRegex);
 	}
 
+	public void replace(@NonNull String text, @NonNull String replaceWith, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		editText.replaceText(text, replaceWith, isCaseSensitive, isWholeWord, isRegex);
+	}
+
+	public void replaceAll(@NonNull String text, @NonNull String replaceWith, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		editText.replaceAll(text, replaceWith, isCaseSensitive, isWholeWord, isRegex);
+	}
+
 	@Override
 	public void userWantToSave() {
 		save();

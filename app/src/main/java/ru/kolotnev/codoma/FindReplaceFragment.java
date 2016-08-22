@@ -75,29 +75,22 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 
 	@Override
 	public void onClick(View v) {
-		String strFind;
+		String strFind = editTextFind.getText().toString();
+		String strReplace = editTextReplace.getText().toString();
 		switch (v.getId()) {
 			case R.id.find_panel_find_next:
-				strFind = editTextFind.getText().toString();
-				if (strFind.length() > 0 && callback != null) {
-					callback.find(editTextFind.getText().toString(),
-							isCase, isWholeWord, isRegex);
+				if (!strFind.isEmpty() && callback != null) {
+					callback.find(strFind, isCase, isWholeWord, isRegex);
 				}
 				break;
 			case R.id.find_panel_replace:
-				strFind = editTextFind.getText().toString();
-				if (strFind.length() > 0 && callback != null) {
-					callback.replace(editTextReplace.getText().toString(),
-							editTextReplace.getText().toString(),
-							isCase, isWholeWord, isRegex);
+				if (!strFind.isEmpty() && callback != null) {
+					callback.replace(strFind, strReplace, isCase, isWholeWord, isRegex);
 				}
 				break;
 			case R.id.find_panel_replace_all:
-				strFind = editTextFind.getText().toString();
-				if (strFind.length() > 0 && callback != null) {
-					callback.replaceAll(editTextFind.getText().toString(),
-							editTextReplace.getText().toString(),
-							isCase, isWholeWord, isRegex);
+				if (!strFind.isEmpty() && callback != null) {
+					callback.replaceAll(strFind, strReplace, isCase, isWholeWord, isRegex);
 				}
 				break;
 			case R.id.find_panel_settings:
@@ -133,15 +126,16 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 						isRegex = checkRegex.isChecked();
 					}
 				})
-				.show();	}
+				.show();
+	}
 
 	public void setCallback(Callbacks c) { callback = c; }
 
 	public interface Callbacks {
 		void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);
 
-		void replace(@NonNull String text, @Nullable String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);
+		void replace(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);
 
-		void replaceAll(@NonNull String text, @Nullable String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);
+		void replaceAll(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);
 	}
 }

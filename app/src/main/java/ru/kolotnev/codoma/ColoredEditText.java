@@ -107,6 +107,7 @@ public class ColoredEditText extends EditText {
 	private boolean isWhitespaces = false;
 	@Nullable
 	private SearchResult searchResult;
+	private boolean isEditedNotBySearch = true;
 
 	@Nullable
 	public TextSyntax textSyntax;
@@ -140,8 +141,10 @@ public class ColoredEditText extends EditText {
 		@Override
 		public void afterTextChanged(Editable s) {
 			cancelUpdate();
-			convertTabs(s, start, count);
-			textSyntax = null;
+			if (isEditedNotBySearch) {
+				convertTabs(s, start, count);
+				searchResult = null;
+			}
 
 			updateHandler.postDelayed(colorUpdater, updateDelay);
 
@@ -684,49 +687,157 @@ public class ColoredEditText extends EditText {
 		if (isSameResult) {
 			// Results was not reset, go to next result
 			searchResult.cycle();
-			SearchResult.SearchItem item = searchResult.getCurrentItem();
-			if (item != null) {
-				requestFocus();
-				setSelection(item.start, item.end);
-			}
+			doSearch();
 		} else {
 			int selectionStart = getSelectionStart();
 			int selectionEnd = getSelectionEnd();
 			if (selectionStart == selectionEnd) {
 				selectionEnd = length();
 			}
-			if (taskSearch != null)
+			OnSearchResultListener listener = new OnSearchResultListener() {
+				@Override
+				public void onResult() {
+					doSearch();
+				}
+			};
+			if (taskSearch != null) {
 				taskSearch.cancel(true);
+			}
 			taskSearch = new SearchTask(
 					whatToSearch,
 					isCaseSensitive,
 					selectionStart,
-					selectionEnd);
-
+					selectionEnd,
+					listener);
 			taskSearch.execute();
 		}
 	}
 
-	public void replaceText(@NonNull String what, @Nullable String replacementText,
-			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		taskSearch = new SearchTask(
-				compileSearchText(what, isWholeWord, isRegex),
-				isCaseSensitive,
-				getSelectionStart(),
-				getSelectionEnd());
-
-		taskSearch.execute();
+	private void doSearch() {
+		if (searchResult == null)
+			return;
+		SearchResult.SearchItem item = searchResult.getCurrentItem();
+		if (item != null) {
+			requestFocus();
+			setSelection(item.start, item.end);
+		}
 	}
 
-	public void replaceAll(@NonNull String what, @Nullable String replacementText,
+	public void replaceText(@NonNull String what, @NonNull final String replacementText,
 			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		taskSearch = new SearchTask(
-				compileSearchText(what, isWholeWord, isRegex),
-				isCaseSensitive,
-				getSelectionStart(),
-				getSelectionEnd());
+		boolean isSameResult;
+		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
+		if (searchResult == null) {
+			isSameResult = false;
+		} else {
+			if (isCaseSensitive || isRegex) {
+				isSameResult = searchResult.whatToSearch.equals(whatToSearch);
+			} else {
+				isSameResult = searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
+			}
+		}
+		if (isSameResult) {
+			// Results was not reset, go to next result
+			//searchResult.cycle();
+			doReplace(replacementText);
+		} else {
+			int selectionStart = getSelectionStart();
+			int selectionEnd = getSelectionEnd();
+			if (selectionStart == selectionEnd) {
+				selectionEnd = length();
+			}
+			OnSearchResultListener listener = new OnSearchResultListener() {
+				@Override
+				public void onResult() {
+					doReplace(replacementText);
+				}
+			};
+			if (taskSearch != null) {
+				taskSearch.cancel(true);
+			}
+			taskSearch = new SearchTask(
+					whatToSearch,
+					isCaseSensitive,
+					selectionStart,
+					selectionEnd,
+					listener);
+			taskSearch.execute();
+		}
 
-		taskSearch.execute();
+	}
+
+	public void replaceAll(@NonNull String what, @NonNull final String replacementText,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		boolean isSameResult;
+		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
+		if (searchResult == null) {
+			isSameResult = false;
+		} else {
+			if (isCaseSensitive || isRegex) {
+				isSameResult = searchResult.whatToSearch.equals(whatToSearch);
+			} else {
+				isSameResult = searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
+			}
+		}
+		if (isSameResult) {
+			doReplaceAll(replacementText);
+		} else {
+			int selectionStart = getSelectionStart();
+			int selectionEnd = getSelectionEnd();
+			if (selectionStart == selectionEnd) {
+				selectionEnd = length();
+			}
+			OnSearchResultListener listener = new OnSearchResultListener() {
+				@Override
+				public void onResult() {
+					doReplaceAll(replacementText);
+				}
+			};
+			if (taskSearch != null) {
+				taskSearch.cancel(true);
+			}
+			taskSearch = new SearchTask(
+					whatToSearch,
+					isCaseSensitive,
+					selectionStart,
+					selectionEnd,
+					listener);
+			taskSearch.execute();
+		}
+	}
+
+	private void doReplace(@NonNull String replacementText) {
+		if (searchResult == null)
+			return;
+		SearchResult.SearchItem item = searchResult.getCurrentItem();
+		if (item == null) return;
+		searchResult.replace(replacementText);
+		isEditedNotBySearch = false;
+		getEditableText().replace(item.start, item.end, replacementText);
+		isEditedNotBySearch = true;
+		SearchResult.SearchItem itemNext = searchResult.getCurrentItem();
+		if (itemNext != null) {
+			setSelection(itemNext.start, itemNext.end);
+		} else {
+			setSelection(item.start, item.start + replacementText.length());
+		}
+		requestFocus();
+		updateHandler.postDelayed(colorUpdater, SYNTAX_DELAY_MILLIS_SHORT);
+		if (searchResult.getAmount() == 0)
+			searchResult = null;
+	}
+
+	private void doReplaceAll(@NonNull String replacementText) {
+		if(searchResult == null) return;
+		SearchResult.SearchItem item;
+		isEditedNotBySearch = false;
+		while ((item = searchResult.getCurrentItem()) != null) {
+			searchResult.replace(replacementText);
+			getEditableText().replace(item.start, item.end, replacementText);
+		}
+		isEditedNotBySearch = true;
+		updateHandler.postDelayed(colorUpdater, SYNTAX_DELAY_MILLIS_SHORT);
+		searchResult = null;
 	}
 
 	/**
@@ -735,7 +846,7 @@ public class ColoredEditText extends EditText {
 	 * @param whatToSearch
 	 * 		Text to search.
 	 * @param isWord
-	 * 		Search whole word.
+	 * 		Search the whole word.
 	 * @param isRegex
 	 * 		Already prepared regular expression.
 	 *
@@ -755,6 +866,13 @@ public class ColoredEditText extends EditText {
 		return preparedString;
 	}
 
+	public interface OnSearchResultListener {
+		void onResult();
+	}
+
+	/**
+	 * Task for searching by specified pattern in the text.
+	 */
 	public class SearchTask extends AsyncTask<String, Void, SearchResult> {
 		@NonNull
 		private String whatToSearch;
@@ -762,13 +880,15 @@ public class ColoredEditText extends EditText {
 		private int start;
 		private int end;
 		private CharSequence str;
+		private OnSearchResultListener listener;
 
 		public SearchTask(@NonNull String whatToSearch, boolean caseSensitive,
-				int start, int end) {
+				int start, int end, OnSearchResultListener listener) {
 			this.start = start;
 			this.end = end;
 			this.whatToSearch = whatToSearch;
 			this.isCase = caseSensitive;
+			this.listener = listener;
 		}
 
 		@Override
@@ -799,20 +919,21 @@ public class ColoredEditText extends EditText {
 		@Override
 		protected void onPostExecute(SearchResult result) {
 			super.onPostExecute(result);
-			if (result == null) return;
-			searchResult = result;
-			int amount = result.getAmount();
-			String msg = amount == 0
-					? getContext().getString(R.string.search_occurrences_found_zero)
-					: getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
-			Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-			if (amount > 0) {
-				SearchResult.SearchItem item = result.getCurrentItem();
-				if (item != null) {
-					setSelection(item.start, item.end);
-					requestFocus();
+			String msg;
+			if (result == null) {
+				msg = getContext().getString(R.string.search_occurrences_error);
+			} else {
+				int amount = result.getAmount();
+				if (amount > 0) {
+					searchResult = result;
+					if (listener != null)
+						listener.onResult();
+					msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+				} else {
+					msg = getContext().getString(R.string.search_occurrences_found_zero);
 				}
 			}
+			Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
 			replaceTextKeepCursor(null);
 		}
 	}

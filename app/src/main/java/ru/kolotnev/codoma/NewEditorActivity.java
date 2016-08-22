@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -580,13 +579,13 @@ public class NewEditorActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void replace(@NonNull String text, @Nullable String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-
+	public void replace(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).replace(text, replace, isCaseSensitive, isWholeWord, isRegex);
 	}
 
 	@Override
-	public void replaceAll(@NonNull String text, @Nullable String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-
+	public void replaceAll(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).replaceAll(text, replace, isCaseSensitive, isWholeWord, isRegex);
 	}
 
 	/**

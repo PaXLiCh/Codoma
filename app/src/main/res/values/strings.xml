@@ -149,6 +149,7 @@
 	<string name="dialog_search_options_whole">Whole word</string>
 	<string name="dialog_search_options_regexp">Regular expression</string>
 
+	<string name="search_occurrences_error">Error during search</string>
 	<string name="search_occurrences_found_zero">No occurrences found</string>
 	<plurals name="search_occurrences_found">
 		<item quantity="one">One occurrence found</item>
