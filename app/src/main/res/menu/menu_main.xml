@@ -82,6 +82,6 @@
 		android:title="@string/menu_main_help"/>
 	<item
 		android:id="@+id/about"
-		android:icon="@drawable/ic_action_paypal"
+		android:icon="@drawable/ic_action_help"
 		android:title="@string/menu_main_about"/>
 </menu>

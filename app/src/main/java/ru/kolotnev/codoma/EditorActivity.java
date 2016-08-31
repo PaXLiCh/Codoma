@@ -24,7 +24,7 @@ import android.widget.Toast;
 /**
  * New editor.
  */
-public class NewEditorActivity extends AppCompatActivity implements
+public class EditorActivity extends AppCompatActivity implements
 		TextFileFragment.OnFragmentInteractionListener,
 		LoadTextFileTask.LoadTextFileListener,
 		TextFile.PageSystemListener,
@@ -71,6 +71,10 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 		_findPanel = (FindReplaceFragment) getSupportFragmentManager().findFragmentById(R.id.find_replace);
 		_findPanel.setCallback(this);
+		View findPanelView = _findPanel.getView();
+		if (findPanelView != null) {
+			findPanelView.setVisibility(View.GONE);
+		}
 
 		updateTitle();
 
@@ -110,7 +114,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		boolean isTextFileOpened = textFile != null;
 
 		menu.setGroupVisible(R.id.menu_group_file, isTextFileOpened);
-		menu.setGroupVisible(R.id.menu_group_file_page, textFile != null && textFile.pageSystemEnabled);
+		menu.setGroupVisible(R.id.menu_group_file_page, textFile != null && textFile.isSplitIntoPages);
 		if (isTextFileOpened) {
 			menu.findItem(R.id.action_save).setEnabled(textFile.isModified());
 			menu.findItem(R.id.action_undo).setEnabled(textFile.getCanUndo());
@@ -484,7 +488,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 		TextFile textFile = new TextFile();
 		textFile.encoding = PreferenceHelper.getEncoding(this);
 		textFile.eol = PreferenceHelper.getLineEnding(this);
-		textFile.text = text;
+		textFile.setupPageSystem(text, PreferenceHelper.getSplitText(this));
 		onFileLoaded(textFile);
 	}
 
@@ -580,7 +584,7 @@ public class NewEditorActivity extends AppCompatActivity implements
 
 	@Override
 	public void replace(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).replace(text, replace, isCaseSensitive, isWholeWord, isRegex);
+		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).replaceText(text, replace, isCaseSensitive, isWholeWord, isRegex);
 	}
 
 	@Override

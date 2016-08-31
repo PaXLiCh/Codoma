@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
+
+import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
  * create an instance of this fragment.
  */
 public class TextFileFragment extends Fragment implements
+		SaveTextFileTask.SaveTextFileListener,
 		SaveChangesDialogFragment.SaveChangesInFileDialogListener,
 		NumberPickerDialog.INumberPickerDialog,
 		FileOptionsDialogFragment.Callbacks {
@@ -40,7 +44,7 @@ public class TextFileFragment extends Fragment implements
 			ID_UNDO = R.id.action_undo,
 			ID_REDO = R.id.action_redo;
 	private TextFile textFile;
-	private NewEditorActivity activity;
+	private EditorActivity activity;
 	private ColoredEditText editText;
 	private OnFragmentInteractionListener mListener;
 
@@ -82,7 +86,7 @@ public class TextFileFragment extends Fragment implements
 			throw new ClassCastException(context.toString()
 					+ " must implement OnFragmentInteractionListener");
 		}
-		this.activity = (NewEditorActivity) context;
+		this.activity = (EditorActivity) context;
 		Log.e(TAG, "TextFileFragment onAttach");
 	}
 
@@ -99,11 +103,11 @@ public class TextFileFragment extends Fragment implements
 			tempTextField = "loaded";
 		} else {
 			textFile = new TextFile();
-			textFile.text = "public static void main(String args..) {\n\tint i = 0;\n}\n";
+			textFile.setupPageSystem("public static void main(String args..) {\n\tint i = 0;\n}\n", PreferenceHelper.getSplitText(activity));
 			Log.e(TAG, "TextFileFragment no text files");
 			tempTextField = "created";
 		}
-		textFile.setupPageSystem(PreferenceHelper.getSplitText(getContext()), activity);
+		textFile.setPageSystemListener(activity);
 		Log.e(TAG, "loaded file with encoding " + textFile.encoding + " eol " + textFile.eol);
 		//}
 		Log.e(TAG, "content of temp text field: " + tempTextField);
@@ -126,7 +130,8 @@ public class TextFileFragment extends Fragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		textFile.text = textFile.getAllText(editText.getText().toString());
+		textFile.setPageSystemListener(null);
+		textFile.setCurrentPageText(editText.getText().toString());
 		//Log.e("Codoma", "destroying text file fragment which contains " + textFile.text);
 	}
 
@@ -176,21 +181,23 @@ public class TextFileFragment extends Fragment implements
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	public void preferencesChanged() {
-		editText.setupEditor();
-	}
+	@Override
+	public void onFileSaved() {
+		// TODO: update list of recent and currents
+		/*if (updateList) {
+			refreshList(uri, true, false);
+			arrayAdapter.selectPosition(uri);
+		}*/
 
-	public void savedAFile(GreatUri uri, boolean updateList) {
-		if (uri != null) {
-			// TODO: update list of recent and currents
-			/*if (updateList) {
-				refreshList(uri, true, false);
-				arrayAdapter.selectPosition(uri);
-			}*/
-		}
+		Toast.makeText(activity, getString(R.string.file_saved_with_success, textFile.greatUri.getFileName()), Toast.LENGTH_LONG).show();
 
 		textFile.fileSaved();
 		activity.updateTitle();
+	}
+
+	@Override
+	public void onFileSaveError(String message) {
+		Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
 	}
 
 	private void showKeyboard() {
@@ -235,16 +242,8 @@ public class TextFileFragment extends Fragment implements
 	 * Write file by current path.
 	 */
 	private void saveFile() {
-		new SaveTextFileTask(activity,
-				textFile.greatUri,
-				textFile.getAllText(editText.getText().toString()),
-				textFile.encoding,
-				new SaveTextFileTask.SaveTextFileListener() {
-					@Override
-					public void fileSaved(Boolean success) {
-						savedAFile(textFile.greatUri, false);
-					}
-				}).execute();
+		textFile.setCurrentPageText(editText.getText().toString());
+		new SaveTextFileTask(activity, this).execute(textFile);
 	}
 
 	private void selectFileToSave(int requestCode) {
@@ -313,23 +312,224 @@ public class TextFileFragment extends Fragment implements
 	 */
 	public void setCurrentPage(int page) {
 		if (page == textFile.getCurrentPage()) return;
-		textFile.savePage(editText.getText().toString());
+		textFile.setCurrentPageText(editText.getText().toString());
 		textFile.goToPage(page);
 		editText.replaceTextKeepCursor(textFile.getCurrentPageText());
 		editText.smoothScrollTo(0, 0);
 	}
 
-	public void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		editText.find(text, isCaseSensitive, isWholeWord, isRegex);
+	// region Search
+	private SearchTask taskSearch;
+
+	public void find(@NonNull String what,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		boolean isSameResult;
+		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
+		if (editText.searchResult == null) {
+			isSameResult = false;
+		} else {
+			if (isCaseSensitive || isRegex) {
+				isSameResult = editText.searchResult.whatToSearch.equals(whatToSearch);
+			} else {
+				isSameResult = editText.searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
+			}
+		}
+		if (isSameResult) {
+			// Results was not reset, go to next result
+			editText.searchResult.cycle();
+			doSearch();
+		} else {
+			int selectionStart = editText.getSelectionStart();
+			int selectionEnd = editText.getSelectionEnd();
+			if (selectionStart == selectionEnd) {
+				selectionEnd = editText.length();
+			}
+			SearchTask.OnSearchResultListener listener = new SearchTask.OnSearchResultListener() {
+				@Override
+				public void onResult(SearchResult result) {
+					editText.searchResult = result;
+					String msg;
+					if (result == null) {
+						msg = getContext().getString(R.string.search_occurrences_error);
+					} else {
+						int amount = result.getAmount();
+						if (amount > 0) {
+							doSearch();
+							msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+						} else {
+							msg = getContext().getString(R.string.search_occurrences_found_zero);
+						}
+					}
+					Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+					editText.replaceTextKeepCursor(null);
+				}
+			};
+			if (taskSearch != null) {
+				taskSearch.cancel(true);
+			}
+			taskSearch = new SearchTask(
+					activity,
+					whatToSearch,
+					isCaseSensitive,
+					selectionStart,
+					selectionEnd,
+					listener);
+			taskSearch.execute(editText.getText().toString());
+		}
 	}
 
-	public void replace(@NonNull String text, @NonNull String replaceWith, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		editText.replaceText(text, replaceWith, isCaseSensitive, isWholeWord, isRegex);
+	private void doSearch() {
+		if (editText.searchResult == null)
+			return;
+		SearchResult.SearchItem item = editText.searchResult.getCurrentItem();
+		if (item != null) {
+			editText.requestFocus();
+			editText.setSelection(item.start, item.end);
+		}
 	}
 
-	public void replaceAll(@NonNull String text, @NonNull String replaceWith, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		editText.replaceAll(text, replaceWith, isCaseSensitive, isWholeWord, isRegex);
+	public void replaceText(@NonNull String what, @NonNull final String replacementText,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		boolean isSameResult;
+		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
+		if (editText.searchResult == null) {
+			isSameResult = false;
+		} else {
+			if (isCaseSensitive || isRegex) {
+				isSameResult = editText.searchResult.whatToSearch.equals(whatToSearch);
+			} else {
+				isSameResult = editText.searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
+			}
+		}
+		if (isSameResult) {
+			// Results was not reset, go to next result
+			//searchResult.cycle();
+			editText.doReplace(replacementText);
+		} else {
+			int selectionStart = editText.getSelectionStart();
+			int selectionEnd = editText.getSelectionEnd();
+			if (selectionStart == selectionEnd) {
+				selectionEnd = editText.length();
+			}
+			SearchTask.OnSearchResultListener listener = new SearchTask.OnSearchResultListener() {
+				@Override
+				public void onResult(SearchResult result) {
+					editText.searchResult = result;
+					String msg;
+					if (result == null) {
+						msg = getContext().getString(R.string.search_occurrences_error);
+					} else {
+						int amount = result.getAmount();
+						if (amount > 0) {
+							editText.doReplace(replacementText);
+							msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+						} else {
+							msg = getContext().getString(R.string.search_occurrences_found_zero);
+						}
+					}
+					Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+					editText.replaceTextKeepCursor(null);
+				}
+			};
+			if (taskSearch != null) {
+				taskSearch.cancel(true);
+			}
+			taskSearch = new SearchTask(
+					activity,
+					whatToSearch,
+					isCaseSensitive,
+					selectionStart,
+					selectionEnd,
+					listener);
+			taskSearch.execute(editText.getText().toString());
+		}
+
 	}
+
+	public void replaceAll(@NonNull String what, @NonNull final String replacementText,
+			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		boolean isSameResult;
+		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
+		if (editText.searchResult == null) {
+			isSameResult = false;
+		} else {
+			if (isCaseSensitive || isRegex) {
+				isSameResult = editText.searchResult.whatToSearch.equals(whatToSearch);
+			} else {
+				isSameResult = editText.searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
+			}
+		}
+		if (isSameResult) {
+			editText.doReplaceAll(replacementText);
+		} else {
+			int selectionStart = editText.getSelectionStart();
+			int selectionEnd = editText.getSelectionEnd();
+			if (selectionStart == selectionEnd) {
+				selectionEnd = editText.length();
+			}
+			SearchTask.OnSearchResultListener listener = new SearchTask.OnSearchResultListener() {
+				@Override
+				public void onResult(SearchResult result) {
+					editText.searchResult = result;
+					String msg;
+					if (result == null) {
+						msg = getContext().getString(R.string.search_occurrences_error);
+					} else {
+						int amount = result.getAmount();
+						if (amount > 0) {
+							editText.doReplaceAll(replacementText);
+							msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+						} else {
+							msg = getContext().getString(R.string.search_occurrences_found_zero);
+						}
+					}
+					Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+					editText.replaceTextKeepCursor(null);
+				}
+			};
+			if (taskSearch != null) {
+				taskSearch.cancel(true);
+			}
+			taskSearch = new SearchTask(
+					activity,
+					whatToSearch,
+					isCaseSensitive,
+					selectionStart,
+					selectionEnd,
+					listener);
+			taskSearch.execute(editText.getText().toString());
+		}
+	}
+
+
+	/**
+	 * Prepare regular expression pattern by parameters.
+	 *
+	 * @param whatToSearch
+	 * 		Text to search.
+	 * @param isWord
+	 * 		Search the whole word.
+	 * @param isRegex
+	 * 		Already prepared regular expression.
+	 *
+	 * @return Prepared regular expression.
+	 */
+	@NonNull
+	private static String compileSearchText(@NonNull String whatToSearch, boolean isWord, boolean isRegex) {
+		String preparedString;
+		if (!isRegex) {
+			preparedString = Pattern.quote(whatToSearch);
+			if (isWord) {
+				preparedString = "\\b" + preparedString + "\\b";
+			}
+		} else {
+			preparedString = whatToSearch;
+		}
+		return preparedString;
+	}
+
+
+	// endregion
 
 	@Override
 	public void userWantToSave() {

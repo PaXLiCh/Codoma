@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="about_text">
+		<b>Codoma&#160;0.6</b>\n
+		\n
+		Текстовый редактор программиста\n
+		\n
+		https://github.com/PaXLiCh/Codoma\n
+		\n
+		&#0169; П. А. Колотнев, 2016\n
+		Эта программа распространяется под условиями стандартной общественной лицензии GNU версии 3
+	</string>
+
 	<string name="yes">Да</string>
 	<string name="no">Нет</string>
 
 	<string name="activity_select_file_title">Выберите файл</string>
-	<string name="activity_settings_title">Настройки</string>
 
 	<string name="menu_main_save">Сохранить</string>
 	<string name="menu_main_save_as">Сохранить как&#8230;</string>
@@ -73,10 +83,8 @@
 	<string name="dialog_error_file_open">Ошибка открытия файла:\u0020</string>
 	<string name="dialog_error_file_save">Ошибка сохранения файла:\u0020</string>
 	<string name="file_picker_title_enter_filename">Введите имя файла и укажите где его сохранить.</string>
-	<string name="about_text"><b>TextWarrior 0.93</b>\n for Android\n \n Copyright 2013 Tah Wei Hoon\n This program is made available under the terms of Apache License Version 2.0\n \n \n <b>File browser by</b>\n OpenIntents\n http://www.openintents.org\n Licensed under Apache Version 2.0\n \n \n <b>Icons by</b>\n Everaldo Coelho\n http://www.everaldo.com/crystal\n Licensed under LGPL 2.1\n \n Yusuke Kamiyamane\n http://p.yusukekamiyamane.com\n Licensed under CC-BY 3.0\n \n Lufang Hsiung\n \n \n <b>Fonts by</b>\n Bitstream, Inc.\n \n Tristan Grimmer\n \n \n <b>Translations by</b>\n Tom Arn (German help file)\n \n \n Send feedback, suggestions and bug reports to hoon.tw@gmail.com</string>
 	<string name="file_picker_title_pick_file">Выберите файл для открытия</string>
 	<string name="dialog_replace_all_result">Замен:\u0020</string>
-	<string name="dialog_replace_no_selection">Нет выбранного текста для замены</string>
 	<string name="dialog_sorry_backup_disabled">Возможно, что некоторые несохранённые изменения были потеряны, На будущее, убедитесь, что включена опция резервного копирования.</string>
 
 	<string name="file_saved_with_success">Файл %s сохранён</string>
@@ -103,12 +111,22 @@
 	<string name="dialog_search_options_whole">Слово целиком</string>
 	<string name="dialog_search_options_regexp">Регулярное выражение</string>
 
+	<string name="dialog_progress_load_text_message">Подождите пока загрузится файл…</string>
+	<string name="dialog_progress_save_text_message">Подождите пока сохранится файл…</string>
+	<string name="dialog_progress_search_message">Подождите пока выполнится поиск…</string>
+
 	<string name="search_occurrences_error">Ошибка при поиске</string>
 	<string name="search_occurrences_found_zero">Совпадений не найдено</string>
 	<plurals name="search_occurrences_found">
 		<item quantity="one">%d совпадение найдено</item>
 		<item quantity="few">%d совпадения найдено</item>
 		<item quantity="many">%d совпадений найдено</item>
+	</plurals>
+
+	<plurals name="dialog_progress_files_amount">
+		<item quantity="one">%2$d из %1$d файла</item>
+		<item quantity="few">%2$d из %1$d файлов</item>
+		<item quantity="many">%2$d из %1$d файлов</item>
 	</plurals>
 
 

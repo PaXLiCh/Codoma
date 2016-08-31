@@ -1,11 +1,11 @@
 package ru.kolotnev.codoma;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.spazedog.lib.rootfw4.RootFW;
 import com.spazedog.lib.rootfw4.utils.Filesystem;
@@ -18,73 +18,74 @@ import java.nio.charset.Charset;
 /**
  * Asynchronous saving file.
  */
-public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
-	private final Activity activity;
-	private final GreatUri uri;
-	private final String newContent;
-	private final String encoding;
-	private String message;
-	private String positiveMessage;
+public class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
+	private final AppCompatActivity activity;
 	private SaveTextFileListener listener;
+	private ProgressDialogFragment progressDialog;
 	private boolean isSuccessful = false;
+	private String fileTotalSize;
+	private String errorMessage = "";
 
-	public SaveTextFileTask(Activity activity, GreatUri uri, String newContent, String encoding, SaveTextFileListener listener) {
+	public SaveTextFileTask(@NonNull AppCompatActivity activity, SaveTextFileListener listener) {
 		this.activity = activity;
-		this.uri = uri;
-		this.newContent = newContent;
-		this.encoding = encoding;
 		this.listener = listener;
 	}
 
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		positiveMessage = activity.getString(R.string.file_saved_with_success, uri.getFileName());
+		progressDialog = ProgressDialogFragment.newInstance(0, R.string.dialog_progress_save_text_message, 0, R.plurals.dialog_progress_files_amount);
+		progressDialog.show(activity.getSupportFragmentManager(), "dialog_progress_save_text");
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Void doInBackground(final Void... voids) {
-		boolean isRootNeeded;
+	protected Void doInBackground(final TextFile... textFiles) {
+		for (int i = 0; i < textFiles.length; ++i) {
+			TextFile textFile = textFiles[i];
+			String newContent = textFile.getAllText();
 
-		try {
-			String filePath = uri.getFilePath();
-			// if the uri has no path
-			if (TextUtils.isEmpty(filePath)) {
-				writeUri(uri.getUri(), newContent, encoding);
-			} else {
-				isRootNeeded = !uri.isWritable();
-				if (!isRootNeeded) {
-					writeUri(uri.getUri(), newContent, encoding);
+			try {
+				String filePath = textFile.greatUri.getFilePath();
+				// if the uri has no path
+				if (TextUtils.isEmpty(filePath)) {
+					writeUri(textFile.greatUri.getUri(), newContent, textFile.encoding);
 				} else {
-					// if we can read the file associated with the uri
-					if (RootFW.connect()) {
-						Filesystem.Disk systemPart = RootFW.getDisk(uri.getParentFolder());
-						systemPart.mount(new String[] { "rw" });
+					boolean isRootNeeded;
+					isRootNeeded = !textFile.greatUri.isWritable();
+					if (!isRootNeeded) {
+						writeUri(textFile.greatUri.getUri(), newContent, textFile.encoding);
+					} else {
+						// if we can read the file associated with the uri
+						if (RootFW.connect()) {
+							Filesystem.Disk systemPart = RootFW.getDisk(textFile.greatUri.getParentFolder());
+							systemPart.mount(new String[] { "rw" });
 
-						FileWriter file = RootFW.getFileWriter(uri.getFilePath(), false);
-						file.write(newContent.getBytes(Charset.forName(encoding)));
+							FileWriter file = RootFW.getFileWriter(textFile.greatUri.getFilePath(), false);
+							file.write(newContent.getBytes(Charset.forName(textFile.encoding)));
 
-						RootFW.disconnect();
+							RootFW.disconnect();
+						}
 					}
 				}
-			}
 
-			message = positiveMessage;
-			isSuccessful = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			message = e.getMessage();
+				isSuccessful = true;
+			} catch (Exception e) {
+				errorMessage = e.getMessage();
+			}
 		}
 		return null;
 	}
 
-	private void writeUri(Uri uri, String newContent, String encoding) throws IOException {
+	private void writeUri(@NonNull Uri uri, @NonNull String newContent, @NonNull String encoding) throws IOException {
 		ParcelFileDescriptor pfd = activity.getContentResolver().openFileDescriptor(uri, "w");
 		FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
-		fileOutputStream.write(newContent.getBytes(Charset.forName(encoding)));
+		byte[] bytes = newContent.getBytes(Charset.forName(encoding));
+		fileOutputStream.write(bytes);
+		publishProgress(bytes.length, bytes.length);
+		fileTotalSize = org.apache.commons.io.FileUtils.byteCountToDisplaySize(bytes.length);
 		fileOutputStream.close();
 		pfd.close();
 	}
@@ -95,13 +96,31 @@ public class SaveTextFileTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected void onPostExecute(final Void aVoid) {
 		super.onPostExecute(aVoid);
-		Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+		progressDialog.dismiss();
 
-		if (listener != null)
-			listener.fileSaved(isSuccessful);
+		if (listener != null) {
+			if (isSuccessful) {
+				listener.onFileSaved();
+			} else {
+				listener.onFileSaveError(errorMessage);
+			}
+		}
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onProgressUpdate(Integer... values) {
+		super.onProgressUpdate(values);
+		progressDialog.setProgress(values[0], values[1],
+				org.apache.commons.io.FileUtils.byteCountToDisplaySize(values[0]) + " / " + fileTotalSize);
 	}
 
 	public interface SaveTextFileListener {
-		void fileSaved(Boolean success);
+		void onFileSaved();
+
+		void onFileSaveError(String message);
 	}
 }

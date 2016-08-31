@@ -18,7 +18,7 @@
 		android:supportsRtl="true"
 		android:theme="@style/AppTheme.Light">
 		<activity
-			android:name=".NewEditorActivity"
+			android:name=".EditorActivity"
 			android:label="@string/app_name"
 			android:launchMode="singleTop"
 			android:screenOrientation="portrait"
@@ -74,10 +74,10 @@
 			android:name=".SelectFileActivity"
 			android:exported="true"
 			android:label="@string/activity_select_file_title"
-			android:parentActivityName=".NewEditorActivity">
+			android:parentActivityName=".EditorActivity">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
-				android:value=".NewEditorActivity"/>
+				android:value=".EditorActivity"/>
 
 			<intent-filter>
 				<action android:name="android.intent.action.GET_CONTENT"/>

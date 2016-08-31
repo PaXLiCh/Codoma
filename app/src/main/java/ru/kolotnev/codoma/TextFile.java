@@ -22,11 +22,10 @@ public class TextFile implements TextWatcher {
 	 * The edit history.
 	 */
 	private final EditHistory mEditHistory = new EditHistory();
-	public String text = "";
 	public GreatUri greatUri;
 	public String encoding = PreferenceHelper.DEFAULT_ENCODING;
 	public LineReader.LineEnding eol = LineReader.LineEnding.LF;
-	public boolean pageSystemEnabled;
+	public boolean isSplitIntoPages;
 
 	/**
 	 * Is undo/redo being performed? This member
@@ -312,11 +311,9 @@ public class TextFile implements TextWatcher {
 	private int currentPage = 0;
 	private PageSystemListener pageSystemListener;
 
-	public void setupPageSystem(boolean pageSystemEnabled, @Nullable PageSystemListener pageSystemListener) {
+	public void setupPageSystem(@NonNull String text, boolean pageSystemEnabled) {
 		final int charForPage = 20000;
 		final int firstPageChars = 50000;
-
-		this.pageSystemListener = pageSystemListener;
 
 		final int textLength = text.length();
 
@@ -341,7 +338,11 @@ public class TextFile implements TextWatcher {
 		startingLines = new int[pages.size()];
 		setStartingLines();
 
-		this.pageSystemEnabled = pageSystemEnabled && pages.size() > 1;
+		this.isSplitIntoPages = pageSystemEnabled && pages.size() > 1;
+	}
+
+	public void setPageSystemListener(@Nullable PageSystemListener pageSystemListener) {
+		this.pageSystemListener = pageSystemListener;
 	}
 
 	public int getStartingLine() {
@@ -364,7 +365,7 @@ public class TextFile implements TextWatcher {
 		return stringBuilder.toString();
 	}
 
-	public void savePage(String currentText) {
+	public void setCurrentPageText(@NonNull String currentText) {
 		pages.set(currentPage, currentText);
 	}
 
@@ -426,8 +427,7 @@ public class TextFile implements TextWatcher {
 		return currentPage;
 	}
 
-	public String getAllText(String currentPageText) {
-		savePage(currentPageText);
+	public String getAllText() {
 		int i;
 		StringBuilder allText = new StringBuilder();
 		for (i = 0; i < pages.size(); ++i) {

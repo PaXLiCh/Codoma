@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity=""
+	android:gravity="center_vertical"
+	android:padding="16dp"
+	android:orientation="vertical">
+
+	<TextView
+		android:paddingBottom="16dp"
+		android:id="@android:id/message"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+		android:text="@string/app_name"/>
+
+	<LinearLayout
+		android:orientation="vertical"
+		android:id="@android:id/primary"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<ProgressBar
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+			android:id="@android:id/secondaryProgress"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:indeterminate="false"
+			android:progress="10"
+			android:max="30"/>
+
+		<TextView
+			android:id="@android:id/text2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="end"
+			android:text="10/10"/>
+	</LinearLayout>
+	<ProgressBar
+		style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+		android:id="@android:id/progress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:indeterminate="false"
+		android:progress="10"
+		android:max="30"/>
+
+	<TextView
+		android:id="@android:id/text1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="end"
+		android:text="10/10"/>
+</LinearLayout>

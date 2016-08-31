@@ -1,10 +1,9 @@
 package ru.kolotnev.codoma;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import com.spazedog.lib.rootfw4.RootFW;
@@ -17,18 +16,21 @@ import java.io.InputStreamReader;
 /**
  * Async task for opening text files.
  */
-public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
-	private final Activity activity;
+public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
+	private final AppCompatActivity activity;
 
 	private String message = "";
 	private boolean isRootRequired = false;
-	private ProgressDialog progressDialog;
+	private ProgressDialogFragment progressDialog;
 	private TextFile[] textFiles;
 	private LoadTextFileListener listener;
+	private String fileTotalSize = "";
+	private boolean splitIntoPages = false;
 
-	public LoadTextFileTask(Activity activity) {
+	public LoadTextFileTask(@NonNull AppCompatActivity activity) {
 		super();
 		this.activity = activity;
+		splitIntoPages = PreferenceHelper.getSplitText(activity);
 
 		try {
 			this.listener = (LoadTextFileListener) activity;
@@ -43,21 +45,25 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		// Close the drawer
-		//mDrawerLayout.closeDrawer(Gravity.START);
-		progressDialog = new ProgressDialog(activity);
-		//progressDialog.setMessage(getString(R.string.please_wait));
-		progressDialog.setMessage("Please wait");
-		progressDialog.show();
+		progressDialog = ProgressDialogFragment.newInstance(0, R.string.dialog_progress_load_text_message, 0, R.plurals.dialog_progress_files_amount);
+		progressDialog.show(activity.getSupportFragmentManager(), "dialog_progress_load_text");
 	}
+
+	private int totalFiles = 0;
+	private int currentFile = 0;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Long doInBackground(TextFile... params) {
+	protected Void doInBackground(TextFile... params) {
 		textFiles = params;
-		for (TextFile textFile : params) {
+		//progressDialog.setTotal(params.length > 1);
+		totalFiles = textFiles.length;
+		for (int i = 0; i < textFiles.length; ++i) {
+			currentFile = i;
+			publishProgress(0, 0);
+			TextFile textFile = params[currentFile];
 			// TODO: add ability to open many files and display progress with 2 bars on dialog
 			GreatUri newUri = textFile.greatUri;
 
@@ -84,19 +90,25 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 			} catch (Exception e) {
 				message = e.getMessage();
 			}
-
 		}
 
 		// TODO: replace with real file sizes.
-		return (long) 0;
+		return null;
 	}
 
 	private void readUri(@NonNull TextFile textFile, Uri uri, String path, boolean asRoot) throws IOException {
 		LineReader lineReader = null;
 		StringBuilder stringBuilder = new StringBuilder();
-		String line;
 		FileReader reader = null;
 		InputStreamReader streamReader = null;
+		int fileSize = 0;
+
+		if (textFile.encoding == null || textFile.encoding.isEmpty()) {
+			textFile.encoding = FileUtils.detectEncoding(activity.getContentResolver().openInputStream(uri));
+			if (textFile.encoding.isEmpty()) {
+				textFile.encoding = PreferenceHelper.getEncodingFallback(activity);
+			}
+		}
 
 		if (asRoot) {
 			// Connect the shared connection
@@ -105,26 +117,21 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 				lineReader = new LineReader(reader);
 			}
 		} else {
-			if (textFile.encoding == null || textFile.encoding.isEmpty()) {
-				textFile.encoding = FileUtils.detectEncoding(activity.getContentResolver().openInputStream(uri));
-				if (textFile.encoding.isEmpty()) {
-					textFile.encoding = PreferenceHelper.getEncodingFallback(activity);
-				}
-			}
-
 			InputStream inputStream = activity.getContentResolver().openInputStream(uri);
 			if (inputStream != null) {
 				streamReader = new InputStreamReader(inputStream, textFile.encoding);
 				lineReader = new LineReader(streamReader);
+				fileSize = inputStream.available();
+				fileTotalSize = org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize);
 			}
 		}
 
-		// TODO: make real loading progress
-		//publishProgress((int) ((i / (float) count) * 100));
-		publishProgress(10);
-
+		int readBytes = 0;
 		if (lineReader != null) {
+			String line;
 			while ((line = lineReader.readLine()) != null) {
+				readBytes += line.length() + 1;
+				publishProgress(readBytes, fileSize);
 				stringBuilder.append(line);
 				stringBuilder.append("\n");
 			}
@@ -132,7 +139,7 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 				streamReader.close();
 			if (reader != null)
 				reader.close();
-			textFile.text = stringBuilder.toString();
+			textFile.setupPageSystem(stringBuilder.toString(), splitIntoPages);
 			if (textFile.eol == null)
 				textFile.eol = lineReader.getLineEndings();
 		}
@@ -145,7 +152,7 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onPostExecute(Long result) {
+	protected void onPostExecute(Void result) {
 		super.onPostExecute(result);
 		progressDialog.dismiss();
 
@@ -154,7 +161,6 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 		} else {
 			listener.onFileLoaded(textFiles);
 		}
-
 	}
 
 	/**
@@ -163,7 +169,9 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Long> {
 	@Override
 	protected void onProgressUpdate(Integer... values) {
 		super.onProgressUpdate(values);
-		progressDialog.setProgress(values[0]);
+		progressDialog.setProgress(values[0], values[1],
+				org.apache.commons.io.FileUtils.byteCountToDisplaySize(values[0]) + " / " + fileTotalSize);
+		progressDialog.setProgressTotal(currentFile + 1, totalFiles);
 	}
 
 	/**

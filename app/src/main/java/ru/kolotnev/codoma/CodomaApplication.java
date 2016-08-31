@@ -28,6 +28,14 @@ public class CodomaApplication extends Application {
 
 	private static final List<TextFile> textFiles = new ArrayList<>();
 
+	private RecoveryManager recoveryManager;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		recoveryManager = new RecoveryManager(this);
+	}
+
 	public static int amountOfOpenedFiles() {
 		return textFiles.size();
 	}

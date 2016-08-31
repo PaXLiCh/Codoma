@@ -34,7 +34,6 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -106,7 +105,7 @@ public class ColoredEditText extends EditText {
 	private int spaceWidthInPixels = 0;
 	private boolean isWhitespaces = false;
 	@Nullable
-	private SearchResult searchResult;
+	public SearchResult searchResult;
 	private boolean isEditedNotBySearch = true;
 
 	@Nullable
@@ -668,145 +667,7 @@ public class ColoredEditText extends EditText {
 		startingLine = 0;
 	}
 
-	// region Search
-	private SearchTask taskSearch;
-
-	public void find(@NonNull String what,
-			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		boolean isSameResult;
-		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
-		if (searchResult == null) {
-			isSameResult = false;
-		} else {
-			if (isCaseSensitive || isRegex) {
-				isSameResult = searchResult.whatToSearch.equals(whatToSearch);
-			} else {
-				isSameResult = searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
-			}
-		}
-		if (isSameResult) {
-			// Results was not reset, go to next result
-			searchResult.cycle();
-			doSearch();
-		} else {
-			int selectionStart = getSelectionStart();
-			int selectionEnd = getSelectionEnd();
-			if (selectionStart == selectionEnd) {
-				selectionEnd = length();
-			}
-			OnSearchResultListener listener = new OnSearchResultListener() {
-				@Override
-				public void onResult() {
-					doSearch();
-				}
-			};
-			if (taskSearch != null) {
-				taskSearch.cancel(true);
-			}
-			taskSearch = new SearchTask(
-					whatToSearch,
-					isCaseSensitive,
-					selectionStart,
-					selectionEnd,
-					listener);
-			taskSearch.execute();
-		}
-	}
-
-	private void doSearch() {
-		if (searchResult == null)
-			return;
-		SearchResult.SearchItem item = searchResult.getCurrentItem();
-		if (item != null) {
-			requestFocus();
-			setSelection(item.start, item.end);
-		}
-	}
-
-	public void replaceText(@NonNull String what, @NonNull final String replacementText,
-			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		boolean isSameResult;
-		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
-		if (searchResult == null) {
-			isSameResult = false;
-		} else {
-			if (isCaseSensitive || isRegex) {
-				isSameResult = searchResult.whatToSearch.equals(whatToSearch);
-			} else {
-				isSameResult = searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
-			}
-		}
-		if (isSameResult) {
-			// Results was not reset, go to next result
-			//searchResult.cycle();
-			doReplace(replacementText);
-		} else {
-			int selectionStart = getSelectionStart();
-			int selectionEnd = getSelectionEnd();
-			if (selectionStart == selectionEnd) {
-				selectionEnd = length();
-			}
-			OnSearchResultListener listener = new OnSearchResultListener() {
-				@Override
-				public void onResult() {
-					doReplace(replacementText);
-				}
-			};
-			if (taskSearch != null) {
-				taskSearch.cancel(true);
-			}
-			taskSearch = new SearchTask(
-					whatToSearch,
-					isCaseSensitive,
-					selectionStart,
-					selectionEnd,
-					listener);
-			taskSearch.execute();
-		}
-
-	}
-
-	public void replaceAll(@NonNull String what, @NonNull final String replacementText,
-			boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		boolean isSameResult;
-		String whatToSearch = compileSearchText(what, isWholeWord, isRegex);
-		if (searchResult == null) {
-			isSameResult = false;
-		} else {
-			if (isCaseSensitive || isRegex) {
-				isSameResult = searchResult.whatToSearch.equals(whatToSearch);
-			} else {
-				isSameResult = searchResult.whatToSearch.equalsIgnoreCase(whatToSearch);
-			}
-		}
-		if (isSameResult) {
-			doReplaceAll(replacementText);
-		} else {
-			int selectionStart = getSelectionStart();
-			int selectionEnd = getSelectionEnd();
-			if (selectionStart == selectionEnd) {
-				selectionEnd = length();
-			}
-			OnSearchResultListener listener = new OnSearchResultListener() {
-				@Override
-				public void onResult() {
-					doReplaceAll(replacementText);
-				}
-			};
-			if (taskSearch != null) {
-				taskSearch.cancel(true);
-			}
-			taskSearch = new SearchTask(
-					whatToSearch,
-					isCaseSensitive,
-					selectionStart,
-					selectionEnd,
-					listener);
-			taskSearch.execute();
-		}
-	}
-
-	private void doReplace(@NonNull String replacementText) {
+	public void doReplace(@NonNull String replacementText) {
 		if (searchResult == null)
 			return;
 		SearchResult.SearchItem item = searchResult.getCurrentItem();
@@ -827,7 +688,7 @@ public class ColoredEditText extends EditText {
 			searchResult = null;
 	}
 
-	private void doReplaceAll(@NonNull String replacementText) {
+	public void doReplaceAll(@NonNull String replacementText) {
 		if(searchResult == null) return;
 		SearchResult.SearchItem item;
 		isEditedNotBySearch = false;
@@ -839,106 +700,6 @@ public class ColoredEditText extends EditText {
 		updateHandler.postDelayed(colorUpdater, SYNTAX_DELAY_MILLIS_SHORT);
 		searchResult = null;
 	}
-
-	/**
-	 * Prepare regular expression pattern by parameters.
-	 *
-	 * @param whatToSearch
-	 * 		Text to search.
-	 * @param isWord
-	 * 		Search the whole word.
-	 * @param isRegex
-	 * 		Already prepared regular expression.
-	 *
-	 * @return Prepared regular expression.
-	 */
-	@NonNull
-	private static String compileSearchText(@NonNull String whatToSearch, boolean isWord, boolean isRegex) {
-		String preparedString;
-		if (!isRegex) {
-			preparedString = Pattern.quote(whatToSearch);
-			if (isWord) {
-				preparedString = "\\b" + preparedString + "\\b";
-			}
-		} else {
-			preparedString = whatToSearch;
-		}
-		return preparedString;
-	}
-
-	public interface OnSearchResultListener {
-		void onResult();
-	}
-
-	/**
-	 * Task for searching by specified pattern in the text.
-	 */
-	public class SearchTask extends AsyncTask<String, Void, SearchResult> {
-		@NonNull
-		private String whatToSearch;
-		private boolean isCase;
-		private int start;
-		private int end;
-		private CharSequence str;
-		private OnSearchResultListener listener;
-
-		public SearchTask(@NonNull String whatToSearch, boolean caseSensitive,
-				int start, int end, OnSearchResultListener listener) {
-			this.start = start;
-			this.end = end;
-			this.whatToSearch = whatToSearch;
-			this.isCase = caseSensitive;
-			this.listener = listener;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			searchResult = null;
-			str = getText();
-		}
-
-		@Override
-		protected SearchResult doInBackground(String... params) {
-			try {
-				int flags = Pattern.MULTILINE;
-				if (isCase)
-					flags |= Pattern.CASE_INSENSITIVE;
-				Matcher matcher = Pattern.compile(whatToSearch, flags).matcher(str);
-				matcher = matcher.region(start, end);
-				SearchResult result = new SearchResult(whatToSearch);
-				while (matcher.find()) {
-					result.addResult(matcher.start(), matcher.end());
-				}
-				return result;
-			} catch (Exception e) {
-				return null;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(SearchResult result) {
-			super.onPostExecute(result);
-			String msg;
-			if (result == null) {
-				msg = getContext().getString(R.string.search_occurrences_error);
-			} else {
-				int amount = result.getAmount();
-				if (amount > 0) {
-					searchResult = result;
-					if (listener != null)
-						listener.onResult();
-					msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
-				} else {
-					msg = getContext().getString(R.string.search_occurrences_found_zero);
-				}
-			}
-			Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-			replaceTextKeepCursor(null);
-		}
-	}
-
-	// endregion
 
 	public LineUtils getLineUtils() {
 		return lineUtils;
@@ -1157,7 +918,11 @@ public class ColoredEditText extends EditText {
 		public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
 			RectF rect = new RectF(x, top, x + measureText(paint, text, start, end), bottom);
 			paint.setColor(backgroundColor);
+			Paint.Style oldStyle = paint.getStyle();
+			paint.setStyle(Paint.Style.STROKE);
+			paint.setStrokeWidth(2.0f);
 			canvas.drawRoundRect(rect, CORNER_RADIUS, CORNER_RADIUS, paint);
+			paint.setStyle(oldStyle);
 			paint.setColor(textColor);
 			canvas.drawText(text, start, end, x, y, paint);
 		}

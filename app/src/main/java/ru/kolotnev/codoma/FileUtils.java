@@ -24,9 +24,6 @@ import java.util.SortedMap;
  * File utils.
  */
 public class FileUtils {
-	/** TAG for log messages. */
-	static final String TAG = "FileUtils";
-
 	/**
 	 * Detect encoding in specified stream.
 	 *
@@ -50,7 +47,7 @@ public class FileUtils {
 
 		if (cm != null) {
 			charset = cm.getName();
-			Log.i("Codoma", "encoding " + charset + " confidence " + cm.getConfidence() + "%");
+			Log.i(CodomaApplication.TAG, "encoding " + charset + " confidence " + cm.getConfidence() + "%");
 		} else {
 			Log.e("CharsetDetector", "CharsetMatch == null");
 		}
@@ -113,28 +110,6 @@ public class FileUtils {
 	 */
 	public static boolean isLocal(String uri) {
 		return uri != null && !uri.startsWith("http://");
-	}
-
-	/**
-	 * Gets the extension of a file name, like ".png" or ".jpg".
-	 *
-	 * @param uri
-	 *
-	 * @return Extension including the dot("."); "" if there is no extension;
-	 * null if uri was null.
-	 */
-	public static String getExtension(String uri) {
-		if (uri == null) {
-			return null;
-		}
-
-		int dot = uri.lastIndexOf(".");
-		if (dot >= 0) {
-			return uri.substring(dot);
-		} else {
-			// No extension.
-			return "";
-		}
 	}
 
 	/**

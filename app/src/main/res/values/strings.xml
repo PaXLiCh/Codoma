@@ -2,6 +2,17 @@
 <resources>
 	<string name="app_name" translatable="false">Codoma</string>
 
+	<string name="about_text">
+		<b>Codoma&#160;0.6</b>\n
+		\n
+		Programmer\'s text editor for android\n
+		\n
+		https://github.com/PaXLiCh/Codoma\n
+		\n
+		The copyright on this software is owned by Pavel Kolotnev\n
+		This software is made available under terms of the GNU General Public License Version 3
+	</string>
+
 	<string name="activity_select_file_title">Select file</string>
 	<string name="activity_settings_title">Settings</string>
 
@@ -149,11 +160,20 @@
 	<string name="dialog_search_options_whole">Whole word</string>
 	<string name="dialog_search_options_regexp">Regular expression</string>
 
+	<string name="dialog_progress_load_text_message">Please wait…</string>
+	<string name="dialog_progress_save_text_message">Please wait…</string>
+	<string name="dialog_progress_search_message">Please wait…</string>
+
 	<string name="search_occurrences_error">Error during search</string>
 	<string name="search_occurrences_found_zero">No occurrences found</string>
 	<plurals name="search_occurrences_found">
 		<item quantity="one">One occurrence found</item>
 		<item quantity="few">%d occurrences found</item>
+	</plurals>
+
+	<plurals name="dialog_progress_files_amount">
+		<item quantity="one">One file</item>
+		<item quantity="few">%2$d of %1$d files</item>
 	</plurals>
 
 	<!--
