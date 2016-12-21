@@ -2,6 +2,7 @@ package ru.kolotnev.codoma;
 
 import android.app.Application;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,45 @@ public class CodomaApplication extends Application {
 
 	private static final List<TextFile> textFiles = new ArrayList<>();
 
-	private RecoveryManager recoveryManager;
+	public RecoveryManager recoveryManager;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		recoveryManager = new RecoveryManager(this);
+
+		final Thread.UncaughtExceptionHandler defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+		Thread.setDefaultUncaughtExceptionHandler( new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread thread, Throwable exception) {
+				// Save the fact we crashed out.
+				//getSharedPreferences(TAG , Context.MODE_PRIVATE).edit()
+				//		.putBoolean(KEY_APP_CRASHED, true).apply();
+				Log.e(TAG, "onException");
+				// Chain default exception handler.
+				if (defaultHandler != null) {
+					defaultHandler.uncaughtException(thread, exception);
+				}
+			}
+		} );
+	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		Log.e(TAG, "onTrimMemory level (" + level + ")");
+	}
+
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+		Log.e(TAG, "onLowMemory");
+	}
+
+	@Override
+	public void onTerminate() {
+		super.onTerminate();
+		Log.e(TAG, "onTerminate");
 	}
 
 	public static int amountOfOpenedFiles() {
@@ -61,4 +95,7 @@ public class CodomaApplication extends Application {
 		return textFiles.indexOf(textFile);
 	}
 
+	public void saveFiles() {
+		recoveryManager.backupTextFiles(textFiles);
+	}
 }

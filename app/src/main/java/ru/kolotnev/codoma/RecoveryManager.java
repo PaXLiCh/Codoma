@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.List;
 
 /**
  * When there are unsaved changes to a file and the app is forced to close by
@@ -57,16 +59,16 @@ public class RecoveryManager {
 	 * attempted to create a recovery file but failed
 	 */
 	private static final int BACKUP_NO_CHANGES = 3;
-	private final static String RECOVERY_FILENAME_EXTENSION = ".old";
-	private final CodomaApplication app;
+	@NonNull
+	public final CodomaApplication app;
 
 	public RecoveryManager(@NonNull CodomaApplication app) {
 		this.app = app;
 	}
 
 	@NonNull
-	private static String getNextFilename(@NonNull String fileName) {
-		return "recovery/" + fileName + " - " + new Date(System.currentTimeMillis()).toString() + RECOVERY_FILENAME_EXTENSION;
+	private static String getNextFilename(@NonNull String fileName, @NonNull String fileExtension) {
+		return "recovery/" + fileName + "_" + new Date(System.currentTimeMillis()).toString() + "." + fileExtension;
 	}
 
 	private void showRecoveryFailedDialog(@NonNull AppCompatActivity activity) {
@@ -115,21 +117,56 @@ public class RecoveryManager {
 		}
 	}
 
+	public void GetListOfRecoveredFiles(
+			@NonNull AppCompatActivity activity,
+			@NonNull GetListOfRecoveredFilesListener listener) {
+		GetListOfRecoveredFilesAsyncTask asyncTask = new GetListOfRecoveredFilesAsyncTask(activity, listener);
+		asyncTask.execute();
+	}
+
+	public interface GetListOfRecoveredFilesListener {
+		void onResult(File[] files);
+	}
+
 	/**
 	 * List of files which can be recovered.
 	 */
-	public class GetListOfRecoveredFilesAsyncTask extends AsyncTask<Void, Void, File[]> {
+	private class GetListOfRecoveredFilesAsyncTask extends AsyncTask<Void, Void, File[]> {
 		private AppCompatActivity activity;
+		private GetListOfRecoveredFilesListener listener;
+		private IndeterminateProgressDialogFragment dialog;
 
-		public GetListOfRecoveredFilesAsyncTask(@NonNull AppCompatActivity activity) {
+		public GetListOfRecoveredFilesAsyncTask(
+				@NonNull AppCompatActivity activity,
+				@NonNull GetListOfRecoveredFilesListener listener) {
 			this.activity = activity;
+			this.listener = listener;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			dialog = IndeterminateProgressDialogFragment.newInstance(R.string.app_name);
+			dialog.show(activity.getSupportFragmentManager(), "dialog");
 		}
 
 		@Override
 		protected File[] doInBackground(Void... voids) {
-			File recoveryDir = new File(RecoveryManager.this.app.getFilesDir(), "recovery");
+			File recoveryDir = new File(app.getFilesDir(), "recovery");
 			return recoveryDir.listFiles();
 		}
+
+		@Override
+		protected void onPostExecute(File[] files) {
+			super.onPostExecute(files);
+			listener.onResult(files);
+			dialog.dismiss();
+		}
+	}
+
+	public void backupTextFiles(@NonNull List<TextFile> textFiles) {
+		BackupTextFileAsyncTask task = new BackupTextFileAsyncTask();
+		task.execute(textFiles.toArray(new TextFile[textFiles.size()]));
 	}
 
 	/**
@@ -142,8 +179,13 @@ public class RecoveryManager {
 	 * A backup will only be made if there are unsaved changes. If the working
 	 * file has not been edited yet, STATE_TYPE will be set to TYPE_NO_CHANGES.
 	 */
-	public class BackupTextFileAsyncTask extends AsyncTask<TextFile, Void, Integer> {
+	public class BackupTextFileAsyncTask extends AsyncTask<TextFile, Integer, Integer> {
+		@Nullable
 		private AppCompatActivity activity;
+
+		public BackupTextFileAsyncTask() {
+			/**/
+		}
 
 		public BackupTextFileAsyncTask(@NonNull AppCompatActivity activity) {
 			this.activity = activity;
@@ -153,17 +195,21 @@ public class RecoveryManager {
 		protected Integer doInBackground(TextFile... textFiles) {
 			int resultCode = BACKUP_SUCCESS;
 			for (TextFile textFile : textFiles) {
+				if (!textFile.isModified()) continue;
 				try {
-					String filename;
+					String fileName;
+					String fileExtension;
 					if (textFile.greatUri != null && textFile.greatUri.getUri() != Uri.EMPTY) {
-						filename = textFile.greatUri.getFileName();
+						fileName = textFile.greatUri.getFileName();
+						fileExtension = textFile.greatUri.getFileExtension();
 					} else {
-						filename = "untitled";
+						fileName = "untitled";
+						fileExtension = "";
 					}
 					byte[] bytes = textFile.getAllText().getBytes(Charset.forName(textFile.encoding));
-					FileOutputStream outputStream = app.openFileOutput(getNextFilename(filename), Context.MODE_PRIVATE);
+					FileOutputStream outputStream = app.openFileOutput(getNextFilename(fileName, fileExtension), Context.MODE_PRIVATE);
 					outputStream.write(bytes);
-					//publishProgress(bytes.length, bytes.length);
+					publishProgress(bytes.length, bytes.length);
 					outputStream.close();
 					//backupToExternalStorage(textFile);
 				} catch (IOException e) {
@@ -183,7 +229,7 @@ public class RecoveryManager {
 	 *
 	 * @return Whether the recover was successful
 	 */
-	public class RecoverTextFileAsyncTask extends AsyncTask<File, Void, TextFile[]> {
+	public class RecoverTextFileAsyncTask extends AsyncTask<File, Integer, TextFile[]> {
 		private AppCompatActivity activity;
 		private boolean splitIntoPages = false;
 		private int recoveryErrorCode = ERROR_NONE; // the error code of the latest recovery action
@@ -219,7 +265,7 @@ public class RecoveryManager {
 					String line;
 					while ((line = lineReader.readLine()) != null) {
 						readBytes += line.length() + 1;
-						//publishProgress(readBytes, fileSize);
+						publishProgress(readBytes, fileSize);
 						stringBuilder.append(line);
 						stringBuilder.append("\n");
 					}

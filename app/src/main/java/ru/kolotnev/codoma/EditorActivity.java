@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import java.io.File;
+
 /**
  * New editor.
  */
@@ -61,6 +63,15 @@ public class EditorActivity extends AppCompatActivity implements
 		pagerAdapter = new ScreenSlidePagerAdapter();
 		viewPager.setAdapter(pagerAdapter);
 
+		((CodomaApplication)getApplication())
+				.recoveryManager
+				.GetListOfRecoveredFiles(this, new RecoveryManager.GetListOfRecoveredFilesListener() {
+			 @Override
+			 public void onResult(File[] files) {
+				 if (files == null) return;
+				 textFileByUri(Uri.fromFile(files[0]), null, null);
+			 }
+		 });
 		if (CodomaApplication.amountOfOpenedFiles() == 0) {
 			textFileFromText("welcome to Codoma!");
 		}
@@ -93,6 +104,7 @@ public class EditorActivity extends AppCompatActivity implements
 	protected void onPause() {
 		super.onPause();
 		RecentFilesProvider.save(this);
+		Log.e(CodomaApplication.TAG, "EditorActivity.onPause");
 	}
 
 	@Override
