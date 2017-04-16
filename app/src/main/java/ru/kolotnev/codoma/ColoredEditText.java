@@ -32,7 +32,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -50,6 +49,7 @@ import ru.kolotnev.codoma.TextSyntax.GLSLTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.HTMLTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.JavaTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.LUATextSyntax;
+import ru.kolotnev.codoma.TextSyntax.ObjectiveCTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.PHPTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.PlainTextSyntax;
 import ru.kolotnev.codoma.TextSyntax.PythonTextSyntax;
@@ -59,7 +59,7 @@ import ru.kolotnev.codoma.TextSyntax.TextSyntax;
 /**
  * Syntax colored EditText widget.
  */
-public class ColoredEditText extends EditText {
+public class ColoredEditText extends android.support.v7.widget.AppCompatEditText {
 	//region VARIABLES
 	private static final String TAG = "ColoredEditText";
 	private static final int
@@ -433,6 +433,8 @@ public class ColoredEditText extends EditText {
 				|| fileExtension.equals("hpp")
 				|| fileExtension.equals("h")) {
 			textSyntax = new CppTextSyntax();
+		} else if (fileExtension.equals("m")) {
+			textSyntax = new ObjectiveCTextSyntax();
 		} else if (fileExtension.equals("java")) {
 			textSyntax = new JavaTextSyntax();
 		} else if (fileExtension.equals("cs")) {
@@ -689,7 +691,7 @@ public class ColoredEditText extends EditText {
 	}
 
 	public void doReplaceAll(@NonNull String replacementText) {
-		if(searchResult == null) return;
+		if (searchResult == null) return;
 		SearchResult.SearchItem item;
 		isEditedNotBySearch = false;
 		while ((item = searchResult.getCurrentItem()) != null) {
@@ -807,7 +809,7 @@ public class ColoredEditText extends EditText {
 	private static class LineSpan implements LineBackgroundSpan {
 		private final int color;
 
-		public LineSpan(int color) {
+		LineSpan(int color) {
 			this.color = color;
 		}
 
@@ -824,7 +826,7 @@ public class ColoredEditText extends EditText {
 	private class TabWidthSpan extends ReplacementSpan {
 		@Override
 		public int getSize(
-				Paint paint,
+				@NonNull Paint paint,
 				CharSequence text,
 				int start,
 				int end,
@@ -834,7 +836,7 @@ public class ColoredEditText extends EditText {
 
 		@Override
 		public void draw(
-				Canvas canvas,
+				@NonNull Canvas canvas,
 				CharSequence text,
 				int start,
 				int end,
@@ -842,7 +844,7 @@ public class ColoredEditText extends EditText {
 				int top,
 				int y,
 				int bottom,
-				Paint paint) {
+				@NonNull Paint paint) {
 			paint.setColor(styleWhitespaces.color);
 			if (isWhitespaces)
 				canvas.drawText("»", x, y, paint);
@@ -852,7 +854,7 @@ public class ColoredEditText extends EditText {
 	private class NewLineSpan extends ReplacementSpan {
 		@Override
 		public int getSize(
-				Paint paint,
+				@NonNull Paint paint,
 				CharSequence text,
 				int start,
 				int end,
@@ -862,7 +864,7 @@ public class ColoredEditText extends EditText {
 
 		@Override
 		public void draw(
-				Canvas canvas,
+				@NonNull Canvas canvas,
 				CharSequence text,
 				int start,
 				int end,
@@ -870,7 +872,7 @@ public class ColoredEditText extends EditText {
 				int top,
 				int y,
 				int bottom,
-				Paint paint) {
+				@NonNull Paint paint) {
 			paint.setColor(styleWhitespaces.color);
 			canvas.drawText("¬", x, y, paint);
 		}
@@ -879,7 +881,7 @@ public class ColoredEditText extends EditText {
 	private class SpaceSpan extends ReplacementSpan {
 		@Override
 		public int getSize(
-				Paint paint,
+				@NonNull Paint paint,
 				CharSequence text,
 				int start,
 				int end,
@@ -889,7 +891,7 @@ public class ColoredEditText extends EditText {
 
 		@Override
 		public void draw(
-				Canvas canvas,
+				@NonNull Canvas canvas,
 				CharSequence text,
 				int start,
 				int end,
@@ -897,25 +899,25 @@ public class ColoredEditText extends EditText {
 				int top,
 				int y,
 				int bottom,
-				Paint paint) {
+				@NonNull Paint paint) {
 			paint.setColor(styleWhitespaces.color);
 			canvas.drawText("·", x, y, paint);
 		}
 	}
 
-	public class SearchResultSpan extends ReplacementSpan {
+	private class SearchResultSpan extends ReplacementSpan {
 		private int CORNER_RADIUS = 8;
 		private int backgroundColor = 0;
 		private int textColor = 0;
 
-		public SearchResultSpan(int textColor, int backgroundColor) {
+		SearchResultSpan(int textColor, int backgroundColor) {
 			super();
 			this.backgroundColor = backgroundColor;
 			this.textColor = textColor;
 		}
 
 		@Override
-		public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+		public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
 			RectF rect = new RectF(x, top, x + measureText(paint, text, start, end), bottom);
 			paint.setColor(backgroundColor);
 			Paint.Style oldStyle = paint.getStyle();
@@ -928,7 +930,7 @@ public class ColoredEditText extends EditText {
 		}
 
 		@Override
-		public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+		public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
 			return Math.round(paint.measureText(text, start, end));
 		}
 
@@ -945,7 +947,7 @@ public class ColoredEditText extends EditText {
 		private int lastVisibleIndex;
 		private int firstColoredIndex;
 
-		public ColorUpdaterAsyncTask(@Nullable String s) {
+		ColorUpdaterAsyncTask(@Nullable String s) {
 			super();
 			textToUpdate = s;
 		}
@@ -1077,7 +1079,7 @@ public class ColoredEditText extends EditText {
 					e.length(),
 					ForegroundColorSpan.class);
 
-			for (int n = spans.length; n-- > 0; )
+			for (int n = spans.length; --n > 0; )
 				e.removeSpan(spans[n]);
 		}
 
@@ -1088,7 +1090,7 @@ public class ColoredEditText extends EditText {
 					e.length(),
 					BackgroundColorSpan.class);
 
-			for (int n = spans.length; n-- > 0; )
+			for (int n = spans.length; --n > 0; )
 				e.removeSpan(spans[n]);
 		}
 	}

@@ -168,7 +168,7 @@ public class TextFileFragment extends Fragment implements
 						final Uri uri = data.getData();
 						FileOptionsDialogFragment fileOptionsDialogFragment = FileOptionsDialogFragment.newInstance(uri, textFile.encoding, textFile.eol);
 						fileOptionsDialogFragment.setTargetFragment(this, REQUEST_CODE_SAVE_CHANGES);
-						fileOptionsDialogFragment.show(getFragmentManager().beginTransaction(), FileOptionsDialogFragment.TAG);
+						fileOptionsDialogFragment.show(getFragmentManager(), FileOptionsDialogFragment.TAG);
 						break;
 					case Activity.RESULT_CANCELED:
 						break;
@@ -272,7 +272,7 @@ public class TextFileFragment extends Fragment implements
 		NumberPickerDialog dialog = NumberPickerDialog.newInstance
 				(NumberPickerDialog.Actions.GO_TO_LINE, min, min, max);
 		dialog.setTargetFragment(this, 0);
-		dialog.show(getFragmentManager().beginTransaction(), "dialog");
+		dialog.show(getFragmentManager(), "dialog");
 	}
 
 	/**
@@ -283,7 +283,7 @@ public class TextFileFragment extends Fragment implements
 		if (textFile != null && textFile.isModified()) {
 			SaveChangesDialogFragment dialog = SaveChangesDialogFragment.newInstance(textFile.getTitle());
 			dialog.setTargetFragment(this, REQUEST_CODE_SAVE_CHANGES);
-			dialog.show(getFragmentManager().beginTransaction(), "dialog");
+			dialog.show(getFragmentManager(), "dialog");
 		} else {
 			mListener.onClose(textFile);
 		}
@@ -301,7 +301,7 @@ public class TextFileFragment extends Fragment implements
 		NumberPickerDialog dialog = NumberPickerDialog.newInstance
 				(NumberPickerDialog.Actions.GO_TO_PAGE, 1, textFile.getCurrentPage() + 1, textFile.getMaxPage() + 1);
 		dialog.setTargetFragment(this, 0);
-		dialog.show(getFragmentManager().beginTransaction(), "dialog");
+		dialog.show(getFragmentManager(), "dialog");
 	}
 
 	/**

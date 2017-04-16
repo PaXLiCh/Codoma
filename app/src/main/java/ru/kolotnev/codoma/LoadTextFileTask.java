@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 /**
  * Async task for opening text files.
  */
-public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
+class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private final AppCompatActivity activity;
 
 	private String message = "";
@@ -27,7 +27,7 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private String fileTotalSize = "";
 	private boolean splitIntoPages = false;
 
-	public LoadTextFileTask(@NonNull AppCompatActivity activity) {
+	LoadTextFileTask(@NonNull AppCompatActivity activity) {
 		super();
 		this.activity = activity;
 		splitIntoPages = PreferenceHelper.getSplitText(activity);
@@ -177,7 +177,7 @@ public class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	/**
 	 * Callbacks to activity.
 	 */
-	public interface LoadTextFileListener {
+	interface LoadTextFileListener {
 		void onFileLoaded(TextFile... textFile);
 
 		void onFileLoadError(String message);

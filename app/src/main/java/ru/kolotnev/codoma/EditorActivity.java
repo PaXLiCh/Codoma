@@ -560,7 +560,6 @@ public class EditorActivity extends AppCompatActivity implements
 	/**
 	 * Closes the soft keyboard.
 	 *
-	 * @throws NullPointerException
 	 */
 	private void closeKeyBoard() {
 		// Central system API to the overall input method framework (IMF) architecture
@@ -607,8 +606,8 @@ public class EditorActivity extends AppCompatActivity implements
 	/**
 	 * Adapter for pages with opened files.
 	 */
-	public class ScreenSlidePagerAdapter extends SmartFragmentPagerAdapter<TextFileFragment> {
-		public ScreenSlidePagerAdapter() {
+	private class ScreenSlidePagerAdapter extends SmartFragmentPagerAdapter<TextFileFragment> {
+		ScreenSlidePagerAdapter() {
 			super(getSupportFragmentManager(), TextFileFragment.class);
 		}
 

@@ -70,7 +70,7 @@ public class AccessStorageApi {
 	 * @param uri
 	 * 		The Uri to query.
 	 */
-	public static String getPath(final Context context, final Uri uri) {
+	static String getPath(final Context context, final Uri uri) {
 		String path = "";
 
 		if (uri == null || uri.equals(Uri.EMPTY))
@@ -138,7 +138,7 @@ public class AccessStorageApi {
 		return path;
 	}
 
-	public static String getName(Context context, Uri uri) {
+	private static String getName(Context context, Uri uri) {
 		if (uri == null || uri.equals(Uri.EMPTY))
 			return "";
 

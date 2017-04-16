@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
 public class SaveChangesDialogFragment extends DialogFragment {
@@ -75,7 +74,7 @@ public class SaveChangesDialogFragment extends DialogFragment {
 				.create();
 	}
 
-	public interface SaveChangesInFileDialogListener {
+	interface SaveChangesInFileDialogListener {
 		void userWantToSave();
 
 		void userDoesNotWantToSave();

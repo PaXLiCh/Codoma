@@ -40,7 +40,7 @@ public final class RecentFilesProvider {
 			+ KEY_RECENT_RANK + " integer unique not null);";
 	private static final LinkedList<RecentFile> _recentFiles = new LinkedList<>();
 
-	public static List<RecentFile> getRecentFiles() { return _recentFiles; }
+	static List<RecentFile> getRecentFiles() { return _recentFiles; }
 
 	/**
 	 * Adds filename to the top of the recent history list.
@@ -50,7 +50,7 @@ public final class RecentFilesProvider {
 	 * @param filename
 	 * 		Full path of file to add to the recent history list
 	 */
-	public static void addRecentFile(String filename) {
+	static void addRecentFile(String filename) {
 		RecentFile recentFile = getRecentFile(filename);
 
 		if (recentFile == null) {
@@ -86,7 +86,7 @@ public final class RecentFilesProvider {
 	 * @throws SQLException
 	 * 		if the database could be neither opened or created
 	 */
-	public static void loadFromPersistentStore(Context context) throws SQLException {
+	static void loadFromPersistentStore(Context context) throws SQLException {
 		_recentFiles.clear();
 		RecentFilesDbHelper dbHelper = new RecentFilesDbHelper(context);
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -163,16 +163,16 @@ public final class RecentFilesProvider {
 	/**
 	 * Record of recent file.
 	 */
-	public static class RecentFile implements Comparable<RecentFile> {
+	static class RecentFile implements Comparable<RecentFile> {
 		private final String _fileName;
 		private int _scrollX = 0;
 		private int _scrollY = 0;
 		private int _caretPosition = 0;
 		private long _timestamp = 0; // UNIX timestamp of when viewport settings were saved
 
-		public RecentFile(String name) { _fileName = name; }
+		RecentFile(String name) { _fileName = name; }
 
-		public RecentFile(String name, long timestamp, int scrollX, int scrollY, int caretPosition) {
+		RecentFile(String name, long timestamp, int scrollX, int scrollY, int caretPosition) {
 			_fileName = name;
 			saveViewportSettings(timestamp, scrollX, scrollY, caretPosition);
 		}
@@ -196,7 +196,7 @@ public final class RecentFilesProvider {
 		 * @param caretPosition
 		 * 		The character position the caret is on
 		 */
-		public void saveViewportSettings(long timestamp, int scrollX, int scrollY, int caretPosition) {
+		void saveViewportSettings(long timestamp, int scrollX, int scrollY, int caretPosition) {
 			_timestamp = timestamp;
 			_scrollX = scrollX;
 			_scrollY = scrollY;

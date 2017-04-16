@@ -1,39 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+	<!ENTITY nbsp "&#0160;">
+	<!ENTITY mdash "\u2014">
+	<!ENTITY ellipsis "\u2026">
+	<!ENTITY copy "&#0169;">
+	]>
 <resources>
 	<string name="about_text">
-		<b>Codoma&#160;0.6</b>\n
+		<b>Codoma&nbsp;0.6</b>\n
 		\n
 		Текстовый редактор программиста\n
 		\n
 		https://github.com/PaXLiCh/Codoma\n
 		\n
-		&#0169; П. А. Колотнев, 2016\n
+		&copy; П. А. Колотнев, 2017\n
 		Эта программа распространяется под условиями стандартной общественной лицензии GNU версии 3
 	</string>
 
 	<string name="yes">Да</string>
 	<string name="no">Нет</string>
 
+	<string name="activity_settings_title">Настройки</string>
+
 	<string name="activity_select_file_title">Выберите файл</string>
+	<string name="activity_select_file_error_cant_read_folder">Невозможно прочитать папку %s</string>
+	<string name="activity_select_file_folder_detail">Папка \t\t %s</string>
 
 	<string name="menu_main_save">Сохранить</string>
-	<string name="menu_main_save_as">Сохранить как&#8230;</string>
+	<string name="menu_main_save_as">Сохранить как&ellipsis;</string>
 	<string name="menu_main_close">Закрыть</string>
 	<string name="menu_main_undo">Отменить</string>
 	<string name="menu_main_redo">Повторить</string>
 	<string name="menu_main_find_panel_toggle">Найти/Заменить</string>
 	<string name="menu_main_select_all">Выбрать всё</string>
-	<string name="menu_main_go_to_line">Перейти к строке&#8230;</string>
+	<string name="menu_main_go_to_line">Перейти к строке&ellipsis;</string>
 	<string name="menu_main_file_info">Свойства</string>
 
 	<string name="menu_main_page_next">Следующая страница</string>
 	<string name="menu_main_page_previous">Предыдущая страница</string>
-	<string name="menu_main_go_to_page">Перейти к странице&#8230;</string>
+	<string name="menu_main_go_to_page">Перейти к странице&ellipsis;</string>
 
 	<string name="menu_main_recent_files">Недавние</string>
 	<string name="menu_main_new">Создать</string>
 	<string name="menu_main_open">Открыть</string>
-	<string name="menu_main_open_as">Открыть как&#8230;</string>
+	<string name="menu_main_open_as">Открыть как&ellipsis;</string>
 	<string name="menu_main_settings">Настройки</string>
 	<string name="menu_main_input_method">Метод ввода</string>
 	<string name="menu_main_help">Справка</string>
@@ -55,21 +65,21 @@
 	<string name="dialog_button_go_back">Назад</string>
 	<string name="dialog_button_overwrite">Заменить</string>
 	<string name="dialog_about">О программе</string>
-	<string name="dialog_button_save_different_name">Сохранить как&#8230;</string>
+	<string name="dialog_button_save_different_name">Сохранить как&ellipsis;</string>
 	<string name="dialog_file_save_success">Файл сохранён</string>
 	<string name="dialog_go_to_line_text_hint">Номер строки</string>
 	<string name="dialog_recent_files_none">Нет недавних файлов.</string>
 	<string name="find_panel_find_label">Найти</string>
 	<string name="file_picker_inform_empty">Папка пустая.</string>
-	<string name="progress_dialog_find">Поиск&#8230;</string>
+	<string name="progress_dialog_find">Поиск&ellipsis;</string>
 	<string name="dialog_find_no_results">Ничего не найдено</string>
-	<string name="progress_dialog_save">Сохранение&#8230;</string>
-	<string name="progress_dialog_open">Открытие&#8230;</string>
-	<string name="progress_dialog_message">Подождите&#8230;</string>
-	<string name="progress_dialog_replace">Замена&#8230;</string>
+	<string name="progress_dialog_save">Сохранение&ellipsis;</string>
+	<string name="progress_dialog_open">Открытие&ellipsis;</string>
+	<string name="progress_dialog_message">Подождите&ellipsis;</string>
+	<string name="progress_dialog_replace">Замена&ellipsis;</string>
 	<string name="find_panel_replace_label">Заменить</string>
 	<string name="find_panel_options">Настройки поиска</string>
-	<string name="progress_dialog_analyze">Исследование&#8230;</string>
+	<string name="progress_dialog_analyze">Исследование&ellipsis;</string>
 	<string name="dialog_error_attempt_overwrite_read_only">Запись в выбранный файл запрещена</string>
 	<string name="dialog_error_file_write_denied">Нельзя записать в выбранную папку.</string>
 	<string name="dialog_error_no_file_name">Нужно задать имя файла.</string>
@@ -80,11 +90,11 @@
 	<string name="dialog_error_attempt_overwrite_recovery">Файл в системной директории. Сохранение невозможно.</string>
 	<string name="dialog_error_not_a_file">С таким именем уже есть папка. Задайте другое имя.</string>
 	<string name="dialog_prompt_save">Сохранить изменения?</string>
-	<string name="dialog_error_file_open">Ошибка открытия файла:\u0020</string>
-	<string name="dialog_error_file_save">Ошибка сохранения файла:\u0020</string>
+	<string name="dialog_error_file_open">Ошибка открытия файла:\n</string>
+	<string name="dialog_error_file_save">Ошибка сохранения файла:\n</string>
 	<string name="file_picker_title_enter_filename">Введите имя файла и укажите где его сохранить.</string>
 	<string name="file_picker_title_pick_file">Выберите файл для открытия</string>
-	<string name="dialog_replace_all_result">Замен:\u0020</string>
+	<string name="dialog_replace_all_result">Замен:&nbsp;</string>
 	<string name="dialog_sorry_backup_disabled">Возможно, что некоторые несохранённые изменения были потеряны, На будущее, убедитесь, что включена опция резервного копирования.</string>
 
 	<string name="file_saved_with_success">Файл %s сохранён</string>
@@ -111,9 +121,9 @@
 	<string name="dialog_search_options_whole">Слово целиком</string>
 	<string name="dialog_search_options_regexp">Регулярное выражение</string>
 
-	<string name="dialog_progress_load_text_message">Подождите пока загрузится файл…</string>
-	<string name="dialog_progress_save_text_message">Подождите пока сохранится файл…</string>
-	<string name="dialog_progress_search_message">Подождите пока выполнится поиск…</string>
+	<string name="dialog_progress_load_text_message">Подождите, пока загрузится файл&ellipsis;</string>
+	<string name="dialog_progress_save_text_message">Подождите, пока сохранится файл&ellipsis;</string>
+	<string name="dialog_progress_search_message">Подождите, пока выполнится поиск&ellipsis;</string>
 
 	<string name="search_occurrences_error">Ошибка при поиске</string>
 	<string name="search_occurrences_found_zero">Совпадений не найдено</string>
@@ -131,7 +141,7 @@
 
 
 	<!--
-	NEW EDITOR SETTINGS
+	SETTINGS
 	-->
 	<string name="settings_view_group">Вид</string>
 
@@ -175,17 +185,17 @@
 
 	<string name="settings_file_group">Открытие и сохранение</string>
 
-	<string name="settings_file_encoding_title">Кодировка</string>
-	<string name="settings_file_encoding_summary">Набор символов, с которым будет сохранён созданный новый файл</string>
+	<string name="settings_file_encoding_title">Новая кодировка</string>
+	<string name="settings_file_encoding_summary">Набор символов, с которым будет сохранён новый созданный файл</string>
 
 	<string name="settings_file_encoding_fallback_title">Аварийная кодировка</string>
-	<string name="settings_file_encoding_fallback_summary">Набор символов, который будет выбрана если не удастся определить кодировку файла</string>
+	<string name="settings_file_encoding_fallback_summary">Набор символов, c которым будет открыт файл, если не удалось определить его кодировку</string>
 
 	<string name="settings_file_page_title">Постранично</string>
 	<string name="settings_file_page_summary">Загружать и редактировать большие файлы постранично</string>
 
 	<string name="settings_file_saf_title">Storage access framework</string>
-	<string name="settings_file_saf_summary">SAF — это новый API, появившийся в Android 4.4. Он упрощает пользователю доступ к файлам. Менее функционален, чем встроенный в Codoma проводник по файлам, но местами удобнее</string>
+	<string name="settings_file_saf_summary">SAF &mdash; это новый способ доступа к хранилищу, появившийся в Android&nbsp;4.4. В отличие от встроенного в Codoma проводника по файлам, не позволяет видеть всё дерево каталогов на устройствах, зато даёт доступ к файлам, которые могут быть предоставлены другими приложениями</string>
 
 	<string name="settings_file_line_endings_title">Концы строк</string>
 	<string name="settings_file_line_endings_summary">Концы строк, с которыми будет сохранён созданный новый файл</string>
@@ -210,11 +220,11 @@
 	</string-array>
 
 	<string-array name="settings_file_line_endings_entries">
-		<item>LF — Unix и macOS</item>
-		<item>CRLF — Windows</item>
-		<item>CR — Mac OS 9</item>
+		<item>LF &mdash; Unix и macOS</item>
+		<item>CRLF &mdash; Windows</item>
+		<item>CR &mdash; Mac OS 9</item>
 	</string-array>
 
-	<string name="text_to_find">Что нужно найти</string>
+	<string name="text_to_find">Что найти</string>
 	<string name="text_to_replace">Чем заменить</string>
 </resources>

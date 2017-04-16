@@ -131,7 +131,7 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 
 	public void setCallback(Callbacks c) { callback = c; }
 
-	public interface Callbacks {
+	interface Callbacks {
 		void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);
 
 		void replace(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex);

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -161,7 +160,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_select_file, menu);
 		mSearchViewMenuItem = menu.findItem(R.id.im_search);
-		searchView = (SearchView) MenuItemCompat.getActionView(mSearchViewMenuItem);
+		searchView = (SearchView) mSearchViewMenuItem.getActionView();
 		searchView.setIconifiedByDefault(true);
 		searchView.setOnQueryTextListener(this);
 		searchView.setSubmitButtonEnabled(false);
@@ -289,7 +288,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 			dir += PATH_SEPARATOR + part;
 			View buttonView = View.inflate(this, R.layout.breadcrumbs, null);
 			Button b = (Button) buttonView;
-			b.setText(getString(R.string.breadcrumbs_format, part.isEmpty() ? PATH_SEPARATOR : part));
+			b.setText(getString(R.string.activity_select_file_breadcrumbs_format, part.isEmpty() ? PATH_SEPARATOR : part));
 			b.setTag(dir);
 			b.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -309,7 +308,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		});
 	}
 
-	public enum Actions {
+	enum Actions {
 		SelectFile, SelectFolder, SaveFile
 	}
 
@@ -321,7 +320,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 			super.onPreExecute();
 			if (searchView != null) {
 				searchView.setIconified(true);
-				MenuItemCompat.collapseActionView(mSearchViewMenuItem);
+				mSearchViewMenuItem.collapseActionView();
 				searchView.setQuery("", false);
 			}
 		}
@@ -363,14 +362,14 @@ public class SelectFileActivity extends AppCompatActivity implements
 							for (com.spazedog.lib.rootfw4.utils.File.FileStat stat : stats) {
 								if (stat.type().equals("d")) {
 									folderDetails.add(new FileInfoAdapter.FileDetail(null, stat.name(),
-											getString(R.string.folder),
+											getString(R.string.activity_select_file_folder_detail),
 											true, true));
 								} else if (!FilenameUtils.isExtension(stat.name().toLowerCase(), unopenableExtensions)
 										&& stat.size() <= CodomaApplication.MAX_FILE_SIZE * FileUtils.ONE_KB) {
 									final long fileSize = stat.size();
 									String date = format.format(stat);
 									String description = getString(
-											R.string.file_info_detail,
+											R.string.activity_select_file_file_detail,
 											FileUtils.byteCountToDisplaySize(fileSize),
 											date);
 									fileDetails.add(new FileInfoAdapter.FileDetail(
@@ -381,9 +380,10 @@ public class SelectFileActivity extends AppCompatActivity implements
 								}
 							}
 						}
+					} else {
+						exceptionMessage = getString(R.string.activity_select_file_error_cant_read_folder, tempFolder.getAbsolutePath());
+						return null;
 					}
-					exceptionMessage = "Cant read folder " + tempFolder.getAbsolutePath();
-					return null;
 				} else {
 					currentFolder = tempFolder.getAbsolutePath();
 
@@ -395,13 +395,13 @@ public class SelectFileActivity extends AppCompatActivity implements
 						Uri uri = Uri.parse(f.toURI().toString());
 						if (f.isDirectory()) {
 							folderDetails.add(new FileInfoAdapter.FileDetail(uri, f.getName(),
-									getString(R.string.folder),
+									getString(R.string.activity_select_file_folder_detail, format.format(f.lastModified())),
 									true, true));
 						} else if (f.isFile()
 								&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
 								&& FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * FileUtils.ONE_KB) {
 							String description = getString(
-									R.string.file_info_detail,
+									R.string.activity_select_file_file_detail,
 									FileUtils.byteCountToDisplaySize(f.length()),
 									format.format(f.lastModified()));
 							fileDetails.add(new FileInfoAdapter.FileDetail(
@@ -426,8 +426,8 @@ public class SelectFileActivity extends AppCompatActivity implements
 			if (names != null) {
 				adapter.setFiles(names);
 				listView.scrollToPosition(0);
+				textViewEmpty.setVisibility(names.size() < 2 ? View.VISIBLE : View.GONE);
 			}
-			textViewEmpty.setVisibility(names == null || names.size() < 2 ? View.VISIBLE : View.GONE);
 			if (exceptionMessage != null) {
 				Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
 			}
@@ -437,7 +437,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		}
 
 		@SuppressWarnings("unchecked")
-		public final Comparator<File> getFileNameComparator() {
+		final Comparator<File> getFileNameComparator() {
 			return new AlphanumComparator() {
 				/**
 				 * {@inheritDoc}

@@ -61,8 +61,9 @@
 					android:paddingBottom="5dp"
 					android:paddingLeft="5dp"
 					android:paddingStart="5dp"
+					android:paddingRight="0dp"
+					android:paddingEnd="0dp"
 					android:paddingTop="5dp"
-					android:singleLine="false"
 					android:textCursorDrawable="@null"
 					android:textIsSelectable="true"/>
 			</HorizontalScrollView>

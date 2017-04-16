@@ -61,7 +61,7 @@ public class GoodScrollView extends ScrollView {
 	}
 
 
-	public interface ScrollInterface {
+	interface ScrollInterface {
 		void onScrollChanged(int l, int t, int oldl, int oldt);
 	}
 }

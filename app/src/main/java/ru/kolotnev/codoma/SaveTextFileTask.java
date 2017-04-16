@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
 /**
  * Asynchronous saving file.
  */
-public class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
+class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private final AppCompatActivity activity;
 	private SaveTextFileListener listener;
 	private ProgressDialogFragment progressDialog;
@@ -26,7 +26,7 @@ public class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private String fileTotalSize;
 	private String errorMessage = "";
 
-	public SaveTextFileTask(@NonNull AppCompatActivity activity, SaveTextFileListener listener) {
+	SaveTextFileTask(@NonNull AppCompatActivity activity, SaveTextFileListener listener) {
 		this.activity = activity;
 		this.listener = listener;
 	}
@@ -43,8 +43,7 @@ public class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	 */
 	@Override
 	protected Void doInBackground(final TextFile... textFiles) {
-		for (int i = 0; i < textFiles.length; ++i) {
-			TextFile textFile = textFiles[i];
+		for (TextFile textFile : textFiles) {
 			String newContent = textFile.getAllText();
 
 			try {
@@ -118,7 +117,7 @@ public class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				org.apache.commons.io.FileUtils.byteCountToDisplaySize(values[0]) + " / " + fileTotalSize);
 	}
 
-	public interface SaveTextFileListener {
+	interface SaveTextFileListener {
 		void onFileSaved();
 
 		void onFileSaveError(String message);

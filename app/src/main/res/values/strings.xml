@@ -13,11 +13,13 @@
 		This software is made available under terms of the GNU General Public License Version 3
 	</string>
 
-	<string name="activity_select_file_title">Select file</string>
 	<string name="activity_settings_title">Settings</string>
 
-	<string name="file_info_detail" translatable="false">%s \t\t %s</string>
-	<string name="breadcrumbs_format" translatable="false">"%s     >"</string>
+	<string name="activity_select_file_title">Select file</string>
+	<string name="activity_select_file_error_cant_read_folder">Can\'t read folder %s</string>
+	<string name="activity_select_file_folder_detail">Folder \t\t %s</string>
+	<string name="activity_select_file_file_detail" translatable="false">%s \t\t %s</string>
+	<string name="activity_select_file_breadcrumbs_format" translatable="false">"%s     >"</string>
 
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
@@ -118,7 +120,6 @@
 	<string name="dialog_edit_name_title_rename">New name</string>
 
 
-	<string name="file">File</string>
 	<string name="folder">Folder</string>
 	<string name="home">Home</string>
 	<string name="rename">Rename</string>

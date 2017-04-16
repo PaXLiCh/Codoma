@@ -38,7 +38,7 @@ import java.util.Comparator;
  * To use this class: Use the static "sort" method from the java.util.Collections class:
  * Collections.sort(your list, new AlphanumComparator());
  */
-public class AlphanumComparator implements Comparator {
+class AlphanumComparator implements Comparator {
 	private boolean isDigit(char ch) {
 		return ch >= 48 && ch <= 57;
 	}

@@ -76,7 +76,7 @@ public final class PreferenceHelper {
 	 *
 	 * @return Is line numbers must be shown on gutter.
 	 */
-	public static boolean getLineNumbers(@NonNull final Context context) {
+	static boolean getLineNumbers(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_line_numbers_key,
 				R.bool.settings_view_line_numbers_default);
@@ -96,7 +96,7 @@ public final class PreferenceHelper {
 	 *
 	 * @return Enable or disable paging system.
 	 */
-	public static boolean getSplitText(@NonNull final Context context) {
+	static boolean getSplitText(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_file_page_key,
 				R.bool.settings_file_page_default);

@@ -23,6 +23,8 @@ import android.widget.TextView;
  * create an instance of this fragment.
  */
 public class EditTextDialog extends DialogFragment implements TextView.OnEditorActionListener {
+	private static final String ARG_ACTION = "action";
+	private static final String ARG_HINT = "hint";
 	private EditText mEditText;
 
 	public static EditTextDialog newInstance(final Actions action) {
@@ -32,8 +34,8 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 	public static EditTextDialog newInstance(final Actions action, final String hint) {
 		final EditTextDialog f = new EditTextDialog();
 		final Bundle args = new Bundle();
-		args.putSerializable("action", action);
-		args.putString("hint", hint);
+		args.putSerializable(ARG_ACTION, action);
+		args.putString(ARG_HINT, hint);
 		f.setArguments(args);
 		return f;
 	}
@@ -44,7 +46,7 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 		final Bundle args = getArguments();
 		String title = null;
 		if (args != null) {
-			final Actions action = (Actions) args.getSerializable("action");
+			final Actions action = (Actions) args.getSerializable(ARG_ACTION);
 			if (action == null) {
 				title = null;
 			} else {
@@ -67,7 +69,7 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 
 		View view = View.inflate(getActivity(), R.layout.dialog_edittext, null);
 		mEditText = (EditText) view.findViewById(android.R.id.edit);
-		mEditText.setText(getArguments().getString("hint"));
+		mEditText.setText(getArguments().getString(ARG_HINT));
 		mEditText.requestFocus();
 		mEditText.setOnEditorActionListener(this);
 
@@ -94,8 +96,8 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 		if (target == null) {
 			target = (EditDialogListener) getActivity();
 		}
-		target.onEditTextDialogEnded(mEditText.getText().toString(), getArguments().getString("hint"),
-				(Actions) getArguments().getSerializable("action"));
+		target.onEditTextDialogEnded(mEditText.getText().toString(), getArguments().getString(ARG_HINT),
+				(Actions) getArguments().getSerializable(ARG_ACTION));
 		this.dismiss();
 	}
 
@@ -108,11 +110,11 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 		return false;
 	}
 
-	public enum Actions {
+	enum Actions {
 		NEW_FILE, NEW_FOLDER, RENAME
 	}
 
-	public interface EditDialogListener {
+	interface EditDialogListener {
 		void onEditTextDialogEnded(String result, String hint, Actions action);
 	}
 }

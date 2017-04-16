@@ -9,25 +9,25 @@ import java.util.List;
 /**
  * Search result.
  */
-public class SearchResult {
+class SearchResult {
 	@NonNull
-	public final String whatToSearch;
+	final String whatToSearch;
 	private final List<SearchItem> items = new LinkedList<>();
 	private int index;
 
-	public SearchResult(@NonNull String whatToSearch) {
+	SearchResult(@NonNull String whatToSearch) {
 		this.whatToSearch = whatToSearch;
 	}
 
-	public void addResult(int start, int end) {
+	void addResult(int start, int end) {
 		items.add(new SearchItem(start, end));
 	}
 
-	public int getAmount() {
+	int getAmount() {
 		return items.size();
 	}
 
-	public boolean hasNext() {
+	private boolean hasNext() {
 		return index < items.size() - 1;
 	}
 
@@ -42,7 +42,7 @@ public class SearchResult {
 		return isHasNext;
 	}
 
-	public boolean cycle() {
+	boolean cycle() {
 		boolean isHasNext = hasNext();
 		if (isHasNext)
 			++index;
@@ -53,12 +53,12 @@ public class SearchResult {
 	}
 
 	@NonNull
-	public List<SearchItem> getItems() {
+	List<SearchItem> getItems() {
 		return items;
 	}
 
 	@Nullable
-	public SearchItem getCurrentItem() {
+	SearchItem getCurrentItem() {
 		return (index >= 0 && index < items.size()) ? items.get(index) : null;
 	}
 
@@ -85,11 +85,11 @@ public class SearchResult {
 			index = 0;
 	}
 
-	public class SearchItem {
+	class SearchItem {
 		public int start = 0;
 		public int end = 0;
 
-		public SearchItem(int start, int end) {
+		SearchItem(int start, int end) {
 			this.start = start;
 			this.end = end;
 		}

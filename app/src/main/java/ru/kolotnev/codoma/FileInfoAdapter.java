@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * Adapter for recycler view with file details.
  */
-public class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
+class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 	private final ArrayList<FileDetail> files = new ArrayList<>();
 	private final ArrayList<FileDetail> visibleObjects = new ArrayList<>();
 	private String lastQuery = null;
@@ -30,7 +30,7 @@ public class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHo
 	@Nullable
 	private OnItemClickListener listener;
 
-	public FileInfoAdapter(@NonNull final Context context, @Nullable OnItemClickListener listener) {
+	FileInfoAdapter(@NonNull final Context context, @Nullable OnItemClickListener listener) {
 		this.context = context;
 		this.listener = listener;
 	}
@@ -58,7 +58,7 @@ public class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHo
 		return visibleObjects.size();
 	}
 
-	public void filter(@Nullable String query) {
+	void filter(@Nullable String query) {
 		lastQuery = query;
 		visibleObjects.clear();
 		if (query == null || query.isEmpty()) {
@@ -77,7 +77,7 @@ public class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHo
 	 * Interface definition for a callback to be invoked when an item in this
 	 * Adapter has been clicked.
 	 */
-	public interface OnItemClickListener {
+	interface OnItemClickListener {
 
 		/**
 		 * Callback method to be invoked when an item in this Adapter has
@@ -92,14 +92,14 @@ public class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHo
 		void onItemClick(FileDetail fileDetail);
 	}
 
-	public static class FileDetail {
+	static class FileDetail {
 		private final String name;
 		private final String description;
 		private final boolean isFolder;
 		private final boolean isExist;
 		private final Uri uri;
 
-		public FileDetail(Uri uri, String name, String description, boolean isExist, boolean isFolder) {
+		FileDetail(Uri uri, String name, String description, boolean isExist, boolean isFolder) {
 			this.uri = uri;
 			this.name = name;
 			this.description = description;

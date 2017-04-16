@@ -156,7 +156,7 @@ public class FileOptionsDialogFragment
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface Callbacks {
+	interface Callbacks {
 		// TODO: Update argument type and name
 		void onSelectFileOptions(Uri uri, LineReader.LineEnding eol, String encoding);
 	}

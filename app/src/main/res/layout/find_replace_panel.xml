@@ -25,7 +25,7 @@
 				android:imeActionLabel="@string/find_panel_find_label"
 				android:imeOptions="actionDone|flagNoExtractUi"
 				android:inputType="textNoSuggestions|textFilter|textVisiblePassword"
-				android:singleLine="true"/>
+				android:maxLines="1"/>
 		</android.support.design.widget.TextInputLayout>
 
 		<ImageButton
@@ -41,7 +41,7 @@
 			style="@style/Widget.AppCompat.ActionButton"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:contentDescription="Optis"
+			android:contentDescription="Opts"
 			android:src="?ic_settings"/>
 
 	</LinearLayout>
@@ -66,7 +66,7 @@
 				android:imeActionLabel="@string/find_panel_replace_label"
 				android:imeOptions="actionDone|flagNoExtractUi"
 				android:inputType="textNoSuggestions|textFilter|textVisiblePassword"
-				android:singleLine="true"/>
+				android:maxLines="1"/>
 		</android.support.design.widget.TextInputLayout>
 
 		<ImageButton

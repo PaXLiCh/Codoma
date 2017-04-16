@@ -93,7 +93,7 @@ public class RecentFilesDialogFragment extends DialogFragment {
 				.create();
 	}
 
-	public interface Callbacks {
+	interface Callbacks {
 		void onRecentFileSelected(Uri uri);
 	}
 

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 	<style name="AppTheme.Light" parent="AppTheme.Light.Base">
 		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 		<item name="android:statusBarColor">@android:color/transparent</item>
+		<item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
 	</style>
 
 	<style name="AppTheme.Dark" parent="AppTheme.Dark.Base">
 		<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 		<item name="android:statusBarColor">@android:color/transparent</item>
+		<item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
 	</style>
 </resources>

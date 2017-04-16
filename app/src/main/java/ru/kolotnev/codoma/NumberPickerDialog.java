@@ -33,7 +33,7 @@ public class NumberPickerDialog extends DialogFragment {
 
 		Actions action = (Actions) getArguments().getSerializable("action");
 		int title;
-		switch (action) {
+		switch (action != null ? action : Actions.NONE) {
 			case FONT_SIZE:
 				title = R.string.settings_view_font_size_title;
 				break;
@@ -44,7 +44,7 @@ public class NumberPickerDialog extends DialogFragment {
 				title = R.string.menu_main_go_to_line;
 				break;
 			default:
-				title = R.string.app_name;//nome_app_turbo_editor;
+				title = R.string.app_name;
 				break;
 		}
 
@@ -87,11 +87,11 @@ public class NumberPickerDialog extends DialogFragment {
 		this.dismiss();
 	}
 
-	public enum Actions {
-		FONT_SIZE, GO_TO_PAGE, GO_TO_LINE
+	enum Actions {
+		NONE, FONT_SIZE, GO_TO_PAGE, GO_TO_LINE
 	}
 
-	public interface INumberPickerDialog {
+	interface INumberPickerDialog {
 		void onNumberPickerDialogDismissed(Actions action, int value);
 	}
 }

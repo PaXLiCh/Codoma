@@ -12,11 +12,10 @@ import java.util.regex.Pattern;
  * CSS highlight.
  */
 public class CSSTextSyntax extends TextSyntax {
-
-	static final Pattern CSS_STYLE_NAME= Pattern.compile("[ \\t\\n\\r\\f](.+?)\\{([^\\)]+)\\}");
-	public static final Pattern CSS_ATTRS = Pattern.compile("(.+?):(.+?);");
-	public static final Pattern CSS_ATTR_VALUE = Pattern.compile(":[ \t](.+?);");
-	public static final Pattern CSS_NUMBERS = Pattern.compile(
+	private static final Pattern CSS_STYLE_NAME= Pattern.compile("[ \\t\\n\\r\\f](.+?)\\{([^\\)]+)\\}");
+	private static final Pattern CSS_ATTRS = Pattern.compile("(.+?):(.+?);");
+	private static final Pattern CSS_ATTR_VALUE = Pattern.compile(":[ \t](.+?);");
+	private static final Pattern CSS_NUMBERS = Pattern.compile(
 			"/^auto$|^[+-]?[0-9]+\\.?([0-9]+)?(px|em|ex|%|in|cm|mm|pt|pc)?$/ig");
 
 	@NonNull
