@@ -652,12 +652,12 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 		if (id == ID_UNDO) {
 			//undo();
 			return true;
-		} else if (id == ID_REDO) {
+		}
+		if (id == ID_REDO) {
 			//redo();
 			return true;
-		} else {
-			return super.onTextContextMenuItem(id);
 		}
+		return super.onTextContextMenuItem(id);
 	}
 
 	//endregion

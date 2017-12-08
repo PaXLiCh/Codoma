@@ -32,9 +32,9 @@ public class FontSizeDialogPreference extends DialogPreference
 	@Override
 	protected View onCreateDialogView() {
 		View v = super.onCreateDialogView();
-		textViewSample = (TextView) v.findViewById(R.id.text_sample);
+		textViewSample = v.findViewById(R.id.text_sample);
 		textViewSample.setTypeface(PreferenceHelper.getFont(context));
-		seekBar = (DiscreteSeekBar) v.findViewById(R.id.seekBar);
+		seekBar = v.findViewById(R.id.seekBar);
 		seekBar.setOnProgressChangeListener(this);
 
 		if (shouldPersist())

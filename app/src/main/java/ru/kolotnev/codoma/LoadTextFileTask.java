@@ -1,5 +1,6 @@
 package ru.kolotnev.codoma;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -12,12 +13,13 @@ import com.spazedog.lib.rootfw4.utils.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 
 /**
  * Async task for opening text files.
  */
 class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
-	private final AppCompatActivity activity;
+	private final WeakReference<AppCompatActivity> activity;
 
 	private String message = "";
 	private boolean isRootRequired = false;
@@ -29,7 +31,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 
 	LoadTextFileTask(@NonNull AppCompatActivity activity) {
 		super();
-		this.activity = activity;
+		this.activity = new WeakReference<>(activity);
 		splitIntoPages = PreferenceHelper.getSplitText(activity);
 
 		try {
@@ -46,7 +48,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	protected void onPreExecute() {
 		super.onPreExecute();
 		progressDialog = ProgressDialogFragment.newInstance(0, R.string.dialog_progress_load_text_message, 0, R.plurals.dialog_progress_files_amount);
-		progressDialog.show(activity.getSupportFragmentManager(), "dialog_progress_load_text");
+		progressDialog.show(activity.get().getSupportFragmentManager(), "dialog_progress_load_text");
 	}
 
 	private int totalFiles = 0;
@@ -103,10 +105,12 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		InputStreamReader streamReader = null;
 		int fileSize = 0;
 
+		Context context = activity.get();
+
 		if (textFile.encoding == null || textFile.encoding.isEmpty()) {
-			textFile.encoding = FileUtils.detectEncoding(activity.getContentResolver().openInputStream(uri));
+			textFile.encoding = FileUtils.detectEncoding(context.getContentResolver().openInputStream(uri));
 			if (textFile.encoding.isEmpty()) {
-				textFile.encoding = PreferenceHelper.getEncodingFallback(activity);
+				textFile.encoding = PreferenceHelper.getEncodingFallback(context);
 			}
 		}
 
@@ -117,7 +121,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				lineReader = new LineReader(reader);
 			}
 		} else {
-			InputStream inputStream = activity.getContentResolver().openInputStream(uri);
+			InputStream inputStream = context.getContentResolver().openInputStream(uri);
 			if (inputStream != null) {
 				streamReader = new InputStreamReader(inputStream, textFile.encoding);
 				lineReader = new LineReader(streamReader);

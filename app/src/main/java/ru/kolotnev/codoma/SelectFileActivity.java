@@ -1,15 +1,23 @@
 package ru.kolotnev.codoma;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +49,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 
 	private static final String ROOT_DIR = "/";
 	private static final String PATH_SEPARATOR = "/";
+	private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 0;
 	private FileInfoAdapter adapter;
 	private String currentFolder;
 	private MenuItem mSearchViewMenuItem;
@@ -99,6 +108,10 @@ public class SelectFileActivity extends AppCompatActivity implements
 		String lastNavigatedPath = bundle.getString(EXTRA_PATH,
 				PreferenceHelper.getWorkingFolder(this));
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			checkPermissionReadStorage();
+		}
+
 		File file = new File(lastNavigatedPath);
 
 		if (!file.exists()) {
@@ -107,6 +120,52 @@ public class SelectFileActivity extends AppCompatActivity implements
 		}
 
 		new UpdateList().execute(file.getAbsolutePath());
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+	public void checkPermissionReadStorage() {
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+				!= PackageManager.PERMISSION_GRANTED) {
+
+			// Should we show an explanation?
+			if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+					Manifest.permission.READ_EXTERNAL_STORAGE)) {
+				// Show an explanation to the user *asynchronously* -- don't block
+				// this thread waiting for the user's response! After the user
+				// sees the explanation, try again to request the permission.
+			} else {
+				// No explanation needed, we can request the permission.
+				ActivityCompat.requestPermissions(this,
+						new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+						MY_PERMISSIONS_REQUEST_READ_STORAGE);
+
+				// MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+				// app-defined int constant. The callback method gets the
+				// result of the request.
+			}
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case MY_PERMISSIONS_REQUEST_READ_STORAGE: {
+				//permission to read storage
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+					// permission was granted, yay! Do the
+					// contacts-related task you need to do.
+				} else {
+					// permission denied, boo! Disable the
+					// functionality that depends on this permission.
+					Toast.makeText(this, "We Need permission Storage", Toast.LENGTH_SHORT).show();
+				}
+				return;
+			}
+
+			// other 'case' lines to check for other
+			// permissions this app might request
+		}
 	}
 
 	@Override
@@ -312,6 +371,17 @@ public class SelectFileActivity extends AppCompatActivity implements
 		SelectFile, SelectFolder, SaveFile
 	}
 
+	public static boolean isSymlink(File file) throws IOException {
+		File canon;
+		if (file.getParent() == null) {
+			canon = file;
+		} else {
+			File canonDir = file.getParentFile().getCanonicalFile();
+			canon = new File(canonDir, file.getName());
+		}
+		return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
+	}
+
 	private class UpdateList extends AsyncTask<String, Void, ArrayList<FileInfoAdapter.FileDetail>> {
 		private String exceptionMessage;
 
@@ -340,6 +410,9 @@ public class SelectFileActivity extends AppCompatActivity implements
 				File tempFolder = new File(path);
 				if (tempFolder.isFile()) {
 					tempFolder = tempFolder.getParentFile();
+				}
+				if (isSymlink(tempFolder)) {
+					Log.e(CodomaApplication.TAG, "Symbolic link " + tempFolder.getAbsolutePath() + " " + tempFolder.getCanonicalPath());
 				}
 
 				String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };

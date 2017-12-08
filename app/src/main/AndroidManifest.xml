@@ -13,10 +13,10 @@
 		android:hardwareAccelerated="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
-		tools:replace="android:label"
 		android:largeHeap="true"
 		android:supportsRtl="true"
-		android:theme="@style/AppTheme.Light">
+		android:theme="@style/AppTheme.Light"
+		tools:replace="android:label">
 		<activity
 			android:name=".EditorActivity"
 			android:label="@string/app_name"
@@ -74,7 +74,8 @@
 			android:name=".SelectFileActivity"
 			android:exported="true"
 			android:label="@string/activity_select_file_title"
-			android:parentActivityName=".EditorActivity">
+			android:parentActivityName=".EditorActivity"
+			tools:targetApi="jelly_bean">
 			<meta-data
 				android:name="android.support.PARENT_ACTIVITY"
 				android:value=".EditorActivity"/>

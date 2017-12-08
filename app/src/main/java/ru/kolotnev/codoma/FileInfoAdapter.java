@@ -128,19 +128,19 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		}
 	}
 
-	protected class ViewHolder extends RecyclerView.ViewHolder {
+	class ViewHolder extends RecyclerView.ViewHolder {
 		private final GradientDrawable iconBack;
 		private final ImageView iconImage;
 		private final TextView textView1;
 		private final TextView textView2;
 		private FileDetail fileDetail;
 
-		public ViewHolder(View itemView) {
+		ViewHolder(View itemView) {
 			super(itemView);
-			iconBack = (GradientDrawable) itemView.findViewById(android.R.id.icon).getBackground();
-			iconImage = (ImageView) itemView.findViewById(android.R.id.icon);
-			textView1 = (TextView) itemView.findViewById(android.R.id.text1);
-			textView2 = (TextView) itemView.findViewById(android.R.id.text2);
+			iconImage = itemView.findViewById(android.R.id.icon);
+			iconBack = (GradientDrawable) iconImage.getBackground();
+			textView1 = itemView.findViewById(android.R.id.text1);
+			textView2 = itemView.findViewById(android.R.id.text2);
 			itemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

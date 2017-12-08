@@ -13,13 +13,14 @@ import com.spazedog.lib.rootfw4.utils.io.FileWriter;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 
 /**
  * Asynchronous saving file.
  */
 class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
-	private final AppCompatActivity activity;
+	private final WeakReference<AppCompatActivity> activity;
 	private SaveTextFileListener listener;
 	private ProgressDialogFragment progressDialog;
 	private boolean isSuccessful = false;
@@ -27,7 +28,7 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private String errorMessage = "";
 
 	SaveTextFileTask(@NonNull AppCompatActivity activity, SaveTextFileListener listener) {
-		this.activity = activity;
+		this.activity = new WeakReference<>(activity);
 		this.listener = listener;
 	}
 
@@ -35,7 +36,7 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	protected void onPreExecute() {
 		super.onPreExecute();
 		progressDialog = ProgressDialogFragment.newInstance(0, R.string.dialog_progress_save_text_message, 0, R.plurals.dialog_progress_files_amount);
-		progressDialog.show(activity.getSupportFragmentManager(), "dialog_progress_save_text");
+		progressDialog.show(activity.get().getSupportFragmentManager(), "dialog_progress_save_text");
 	}
 
 	/**
@@ -52,9 +53,7 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				if (TextUtils.isEmpty(filePath)) {
 					writeUri(textFile.greatUri.getUri(), newContent, textFile.encoding);
 				} else {
-					boolean isRootNeeded;
-					isRootNeeded = !textFile.greatUri.isWritable();
-					if (!isRootNeeded) {
+					if (textFile.greatUri.isWritable()) {
 						writeUri(textFile.greatUri.getUri(), newContent, textFile.encoding);
 					} else {
 						// if we can read the file associated with the uri
@@ -79,7 +78,7 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	}
 
 	private void writeUri(@NonNull Uri uri, @NonNull String newContent, @NonNull String encoding) throws IOException {
-		ParcelFileDescriptor pfd = activity.getContentResolver().openFileDescriptor(uri, "w");
+		ParcelFileDescriptor pfd = activity.get().getContentResolver().openFileDescriptor(uri, "w");
 		FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
 		byte[] bytes = newContent.getBytes(Charset.forName(encoding));
 		fileOutputStream.write(bytes);

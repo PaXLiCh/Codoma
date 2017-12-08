@@ -17,15 +17,15 @@ import java.util.List;
  */
 public class TextFile implements TextWatcher {
 	// TODO: move to preferences
-	public static final boolean IS_SHOW_EXTENSIONS = true;
+	static final boolean IS_SHOW_EXTENSIONS = true;
 	/**
 	 * The edit history.
 	 */
 	private final EditHistory mEditHistory = new EditHistory();
-	public GreatUri greatUri;
+	GreatUri greatUri;
 	public String encoding = PreferenceHelper.DEFAULT_ENCODING;
-	public LineReader.LineEnding eol = LineReader.LineEnding.LF;
-	public boolean isSplitIntoPages;
+	LineReader.LineEnding eol = LineReader.LineEnding.LF;
+	boolean isSplitIntoPages;
 
 	/**
 	 * Is undo/redo being performed? This member
@@ -46,7 +46,7 @@ public class TextFile implements TextWatcher {
 	 * Instantiate new text file.
 	 * Pagination for file.
 	 */
-	public TextFile() {
+	TextFile() {
 		setMaxHistorySize(30);
 	}
 
@@ -79,7 +79,7 @@ public class TextFile implements TextWatcher {
 		return isModified;
 	}
 
-	public void fileSaved() {
+	void fileSaved() {
 		isModified = false;
 		clearHistory();
 	}
@@ -87,14 +87,14 @@ public class TextFile implements TextWatcher {
 	/**
 	 * Can undo be performed?
 	 */
-	public boolean getCanUndo() {
+	boolean getCanUndo() {
 		return (mEditHistory.mmPosition > 0);
 	}
 
 	/**
 	 * Can redo be performed?
 	 */
-	public boolean getCanRedo() {
+	boolean getCanRedo() {
 		return (mEditHistory.mmPosition < mEditHistory.mmHistory.size());
 	}
 
@@ -103,14 +103,14 @@ public class TextFile implements TextWatcher {
 	 * negative, then history size is only limited
 	 * by the device memory.
 	 */
-	public void setMaxHistorySize(int maxHistorySize) {
+	void setMaxHistorySize(int maxHistorySize) {
 		mEditHistory.setMaxHistorySize(maxHistorySize);
 	}
 
 	/**
 	 * Clear edit history.
 	 */
-	public void clearHistory() {
+	void clearHistory() {
 		mEditHistory.clear();
 		mShowUndo = getCanUndo();
 		mShowRedo = getCanRedo();
@@ -122,7 +122,7 @@ public class TextFile implements TextWatcher {
 	 * @param text
 	 * 		Editable text.
 	 */
-	public void undo(@NonNull Editable text) {
+	void undo(@NonNull Editable text) {
 		EditItem edit = mEditHistory.getPrevious();
 		if (edit == null) {
 			return;
@@ -154,7 +154,7 @@ public class TextFile implements TextWatcher {
 	 * @param text
 	 * 		Editable text.
 	 */
-	public void redo(@NonNull Editable text) {
+	void redo(@NonNull Editable text) {
 		EditItem edit = mEditHistory.getNext();
 		if (edit == null) {
 			return;
@@ -302,6 +302,8 @@ public class TextFile implements TextWatcher {
 			mShowUndo = showUndo;
 			mShowRedo = showRedo;
 		}
+		// Update content of current page
+		setCurrentPageText(s.toString());
 	}
 
 	//region PAGE SYSTEM
@@ -311,7 +313,7 @@ public class TextFile implements TextWatcher {
 	private int currentPage = 0;
 	private PageSystemListener pageSystemListener;
 
-	public void setupPageSystem(@NonNull String text, boolean pageSystemEnabled) {
+	void setupPageSystem(@NonNull String text, boolean pageSystemEnabled) {
 		final int charForPage = 20000;
 		final int firstPageChars = 50000;
 
@@ -341,15 +343,15 @@ public class TextFile implements TextWatcher {
 		this.isSplitIntoPages = pageSystemEnabled && pages.size() > 1;
 	}
 
-	public void setPageSystemListener(@Nullable PageSystemListener pageSystemListener) {
+	void setPageSystemListener(@Nullable PageSystemListener pageSystemListener) {
 		this.pageSystemListener = pageSystemListener;
 	}
 
-	public int getStartingLine() {
+	int getStartingLine() {
 		return startingLines[currentPage];
 	}
 
-	public String getCurrentPageText() {
+	String getCurrentPageText() {
 		return pages.get(currentPage);
 	}
 
@@ -365,7 +367,7 @@ public class TextFile implements TextWatcher {
 		return stringBuilder.toString();
 	}
 
-	public void setCurrentPageText(@NonNull String currentText) {
+	private void setCurrentPageText(@NonNull String currentText) {
 		pages.set(currentPage, currentText);
 	}
 
@@ -379,7 +381,7 @@ public class TextFile implements TextWatcher {
 		goToPage(currentPage - 1);
 	}
 
-	public void goToPage(int page) {
+	void goToPage(int page) {
 		if (page >= pages.size()) page = pages.size() - 1;
 		if (page < 0) page = 0;
 		boolean shouldUpdateLines = page > currentPage && canReadNextPage();
@@ -395,7 +397,7 @@ public class TextFile implements TextWatcher {
 		pageSystemListener.onPageChanged(page);
 	}
 
-	public void setStartingLines() {
+	void setStartingLines() {
 		int i;
 		int startingLine;
 		int nOfNewLines;
@@ -409,7 +411,7 @@ public class TextFile implements TextWatcher {
 		}
 	}
 
-	public void updateStartingLines(int fromPage, int difference) {
+	void updateStartingLines(int fromPage, int difference) {
 		if (difference == 0)
 			return;
 		int i;
@@ -419,15 +421,15 @@ public class TextFile implements TextWatcher {
 		}
 	}
 
-	public int getMaxPage() {
+	int getMaxPage() {
 		return pages.size() - 1;
 	}
 
-	public int getCurrentPage() {
+	int getCurrentPage() {
 		return currentPage;
 	}
 
-	public String getAllText() {
+	String getAllText() {
 		int i;
 		StringBuilder allText = new StringBuilder();
 		for (i = 0; i < pages.size(); ++i) {
@@ -438,11 +440,11 @@ public class TextFile implements TextWatcher {
 		return allText.toString();
 	}
 
-	public boolean canReadNextPage() {
+	boolean canReadNextPage() {
 		return currentPage < pages.size() - 1;
 	}
 
-	public boolean canReadPrevPage() {
+	boolean canReadPrevPage() {
 		return currentPage >= 1;
 	}
 
@@ -579,7 +581,7 @@ public class TextFile implements TextWatcher {
 		 * replaced CharSequence before with
 		 * CharSequence after.
 		 */
-		public EditItem(int start, CharSequence before, CharSequence after) {
+		EditItem(int start, CharSequence before, CharSequence after) {
 			mmStart = start;
 			mmBefore = before;
 			mmAfter = after;

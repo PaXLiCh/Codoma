@@ -13,11 +13,11 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class RecentFilesProvider {
+final class RecentFilesProvider {
 	/**
 	 * Maximum number of files stored in file history
 	 */
-	public final static int MAX_HISTORY_SIZE = 10;
+	private static final int MAX_HISTORY_SIZE = 10;
 	private static final String TAG = "RecentFiles";
 	private static final String DATABASE_NAME = "codoma";
 	private static final String DATABASE_TABLE = "recent";

@@ -17,7 +17,7 @@ public class PHPTextSyntax extends TextSyntax {
 			"|case|catch|class|clone|const|continue|declare|default|do|else|elseif|enddeclare" +
 			"|endfor|endforeach|endif|endswitch|endwhile|extends|final|for|foreach|function" +
 			"|global|goto|if|implements|interface|instanceof|namespace|new|or|private|protected" +
-			"|public|static|switch|throw|try|use|var|while|xor|die|echo|empty|exit|eval|include" +
+			"|public|switch|throw|try|use|var|while|xor|die|echo|empty|exit|eval|include" +
 			"|include_once|isset|list|require|require_once|return|print|unset|self|static|parent" +
 			"|true|TRUE|false|FALSE|null|NULL\n)\\b");
 

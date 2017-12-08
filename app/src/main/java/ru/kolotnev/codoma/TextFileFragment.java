@@ -120,7 +120,7 @@ public class TextFileFragment extends Fragment implements
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_text_file, container, false);
 		//View viewEditor = view.findViewById(R.id.view_editor);
-		editText = (ColoredEditText) view.findViewById(R.id.edit_text_colored);
+		editText = view.findViewById(R.id.edit_text_colored);
 		editText.setupEditor();
 		editText.setTextFile(textFile);
 
@@ -131,7 +131,6 @@ public class TextFileFragment extends Fragment implements
 	public void onDestroy() {
 		super.onDestroy();
 		textFile.setPageSystemListener(null);
-		textFile.setCurrentPageText(editText.getText().toString());
 		//Log.e("Codoma", "destroying text file fragment which contains " + textFile.text);
 	}
 
@@ -202,7 +201,9 @@ public class TextFileFragment extends Fragment implements
 
 	private void showKeyboard() {
 		InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+		if (imm != null) {
+			imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+		}
 	}
 
 	/**
@@ -242,7 +243,6 @@ public class TextFileFragment extends Fragment implements
 	 * Write file by current path.
 	 */
 	private void saveFile() {
-		textFile.setCurrentPageText(editText.getText().toString());
 		new SaveTextFileTask(activity, this).execute(textFile);
 	}
 
@@ -312,7 +312,6 @@ public class TextFileFragment extends Fragment implements
 	 */
 	public void setCurrentPage(int page) {
 		if (page == textFile.getCurrentPage()) return;
-		textFile.setCurrentPageText(editText.getText().toString());
 		textFile.goToPage(page);
 		editText.replaceTextKeepCursor(textFile.getCurrentPageText());
 		editText.smoothScrollTo(0, 0);
@@ -575,7 +574,7 @@ public class TextFileFragment extends Fragment implements
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface OnFragmentInteractionListener {
+	interface OnFragmentInteractionListener {
 		void onTextChanged(TextFileFragment fragment);
 
 		void onClose(TextFile textFile);

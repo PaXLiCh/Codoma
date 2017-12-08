@@ -4,13 +4,14 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
+import java.lang.ref.WeakReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Task for searching by specified pattern in the text.
  */
-public class SearchTask extends AsyncTask<String, Void, SearchResult> {
+class SearchTask extends AsyncTask<String, Void, SearchResult> {
 	@NonNull
 	private String whatToSearch;
 	private boolean isCase;
@@ -18,11 +19,11 @@ public class SearchTask extends AsyncTask<String, Void, SearchResult> {
 	private int end;
 	private IndeterminateProgressDialogFragment progressDialog;
 	private OnSearchResultListener listener;
-	private AppCompatActivity activity;
+	private WeakReference<AppCompatActivity> activity;
 
-	public SearchTask(AppCompatActivity activity, @NonNull String whatToSearch,
+	SearchTask(AppCompatActivity activity, @NonNull String whatToSearch,
 			boolean caseSensitive, int start, int end, OnSearchResultListener listener) {
-		this.activity = activity;
+		this.activity = new WeakReference<>(activity);
 		this.start = start;
 		this.end = end;
 		this.whatToSearch = whatToSearch;
@@ -35,7 +36,7 @@ public class SearchTask extends AsyncTask<String, Void, SearchResult> {
 		super.onPreExecute();
 
 		progressDialog = IndeterminateProgressDialogFragment.newInstance(R.string.dialog_progress_search_message);
-		progressDialog.show(activity.getSupportFragmentManager(), "dialog_progress_search");
+		progressDialog.show(activity.get().getSupportFragmentManager(), "dialog_progress_search");
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class SearchTask extends AsyncTask<String, Void, SearchResult> {
 		progressDialog.dismiss();
 	}
 
-	public interface OnSearchResultListener {
+	interface OnSearchResultListener {
 		void onResult(SearchResult result);
 	}
 }

@@ -63,15 +63,6 @@ public class EditorActivity extends AppCompatActivity implements
 		pagerAdapter = new ScreenSlidePagerAdapter();
 		viewPager.setAdapter(pagerAdapter);
 
-		((CodomaApplication)getApplication())
-				.recoveryManager
-				.GetListOfRecoveredFiles(this, new RecoveryManager.GetListOfRecoveredFilesListener() {
-			 @Override
-			 public void onResult(File[] files) {
-				 if (files == null) return;
-				 textFileByUri(Uri.fromFile(files[0]), null, null);
-			 }
-		 });
 		if (CodomaApplication.amountOfOpenedFiles() == 0) {
 			textFileFromText("welcome to Codoma!");
 		}

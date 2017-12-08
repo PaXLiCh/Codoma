@@ -1,25 +1,24 @@
 package ru.kolotnev.codoma;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,7 +36,7 @@ import java.util.List;
  * another occurrence of an IO error when recovering a file. The user should
  * save the safekeeping file as soon as possible.
  */
-public class RecoveryManager {
+class RecoveryManager {
 	/**
 	 * no recovery file needed because the head file was unchanged
 	 */
@@ -46,6 +45,7 @@ public class RecoveryManager {
 	public static final int ERROR_FILE_NOT_FOUND = 2;
 	public static final int ERROR_READ = 3;
 	public static final int ERROR_WRITE = 4;
+
 	private static final int BACKUP_SUCCESS = 0;
 	/**
 	 * recovery file saved successfully
@@ -59,20 +59,97 @@ public class RecoveryManager {
 	 * attempted to create a recovery file but failed
 	 */
 	private static final int BACKUP_NO_CHANGES = 3;
+	private static final String PREFS_NAME = "recovery";
+	private static final String PREFS_KEY_AMOUNT = "files_recovered";
+	private static final String PREFS_KEY_URI = "files_%s_uri";
+	private static final String PREFS_KEY_ENCODING = "file_%s_encoding";
+	private static final String PREFS_KEY_EOL = "file_%s_eol";
+	private static final String PREFS_KEY_STORAGE = "file_%s_storage";
+	private static final String FILE_RECOVERED = "recovered_%s.bat";
 	@NonNull
 	public final CodomaApplication app;
 
-	public RecoveryManager(@NonNull CodomaApplication app) {
+	RecoveryManager(@NonNull CodomaApplication app) {
 		this.app = app;
 	}
 
-	@NonNull
-	private static String getNextFilename(@NonNull String fileName, @NonNull String fileExtension) {
-		return "recovery/" + fileName + "_" + new Date(System.currentTimeMillis()).toString() + "." + fileExtension;
+	/**
+	 * Save all opened files to special place and save params for reading of these files.
+	 *
+	 * @param textFiles
+	 * 		List of files to save.
+	 */
+	void backupTextFiles(@NonNull List<TextFile> textFiles) {
+		Log.d("Codoma", "ZALUPA");
+		/*BackupTextFileAsyncTask task = new BackupTextFileAsyncTask(app);
+		TextFile[] files = new TextFile[textFiles.size()];
+		textFiles.toArray(files);
+		task.execute(files);*/
+
+		int resultCode = BACKUP_SUCCESS;
+		SharedPreferences prefs = app.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.clear();
+		int filesNumber = 0;
+		Log.d(CodomaApplication.TAG, "Backing up of the " + textFiles.size() + " files");
+		for (TextFile textFile : textFiles) {
+			//if (!textFile.isModified()) continue;
+			try {
+				String fileName = String.valueOf(filesNumber);
+				byte[] bytes = textFile.getAllText().getBytes(Charset.forName(textFile.encoding));
+				FileOutputStream outputStream = app.openFileOutput(String.format(FILE_RECOVERED, fileName), Context.MODE_PRIVATE);
+				outputStream.write(bytes);
+				//publishProgress(bytes.length, bytes.length);
+				outputStream.close();
+				//backupToExternalStorage(textFile);
+
+				String uri = "";
+				if (textFile.greatUri != null) {
+					uri = textFile.greatUri.getUri().toString();
+				}
+				editor.putString(String.format(PREFS_KEY_URI, fileName), uri);
+				editor.putString(String.format(PREFS_KEY_ENCODING, fileName), textFile.encoding);
+				editor.putString(String.format(PREFS_KEY_EOL, fileName), textFile.eol.name());
+				editor.putString(String.format(PREFS_KEY_STORAGE, fileName), Storage.INTERNAL.name());
+				++filesNumber;
+				Log.d(CodomaApplication.TAG, "Backed up the file " + textFile.getTitle() + " with content " + textFile.getAllText());
+			} catch (IOException e) {
+				e.printStackTrace();
+				Log.e(CodomaApplication.TAG, "Could not create backup in local or external storage. Unsaved changes are lost");
+				resultCode = BACKUP_FAILED;
+			}
+		}
+		editor.putInt(PREFS_KEY_AMOUNT, filesNumber);
+		editor.apply();
+		Log.d(CodomaApplication.TAG, "Backed up " + filesNumber + " files");
+		//return resultCode;
 	}
 
-	private void showRecoveryFailedDialog(@NonNull AppCompatActivity activity) {
-		new RecoveryFailedDialogFragment().show(activity.getSupportFragmentManager(), "recovery_failed");
+	/**
+	 * Recover all files from storage and restore reading params.
+	 */
+	void recoverTextFiles() {
+		RecoverTextFilesAsyncTask task = new RecoverTextFilesAsyncTask(app);
+		task.execute();
+	}
+
+	/**
+	 * Clear all information about backups.
+	 */
+	void clearBackups() {
+		SharedPreferences prefs = app.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		int filesNumber = prefs.getInt(PREFS_KEY_AMOUNT, 0);
+		for (int i = 0; i < filesNumber; ++i) {
+			app.deleteFile(String.format(FILE_RECOVERED, String.valueOf(i)));
+		}
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.clear();
+		editor.apply();
+	}
+
+	private enum Storage {
+		INTERNAL,
+		EXTERNAL
 	}
 
 	/**
@@ -117,59 +194,7 @@ public class RecoveryManager {
 		}
 	}
 
-	public void GetListOfRecoveredFiles(
-			@NonNull AppCompatActivity activity,
-			@NonNull GetListOfRecoveredFilesListener listener) {
-		GetListOfRecoveredFilesAsyncTask asyncTask = new GetListOfRecoveredFilesAsyncTask(activity, listener);
-		asyncTask.execute();
-	}
-
-	public interface GetListOfRecoveredFilesListener {
-		void onResult(File[] files);
-	}
-
-	/**
-	 * List of files which can be recovered.
-	 */
-	private class GetListOfRecoveredFilesAsyncTask extends AsyncTask<Void, Void, File[]> {
-		private AppCompatActivity activity;
-		private GetListOfRecoveredFilesListener listener;
-		private IndeterminateProgressDialogFragment dialog;
-
-		public GetListOfRecoveredFilesAsyncTask(
-				@NonNull AppCompatActivity activity,
-				@NonNull GetListOfRecoveredFilesListener listener) {
-			this.activity = activity;
-			this.listener = listener;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			dialog = IndeterminateProgressDialogFragment.newInstance(R.string.app_name);
-			dialog.show(activity.getSupportFragmentManager(), "dialog");
-		}
-
-		@Override
-		protected File[] doInBackground(Void... voids) {
-			File recoveryDir = new File(app.getFilesDir(), "recovery");
-			return recoveryDir.listFiles();
-		}
-
-		@Override
-		protected void onPostExecute(File[] files) {
-			super.onPostExecute(files);
-			listener.onResult(files);
-			dialog.dismiss();
-		}
-	}
-
-	public void backupTextFiles(@NonNull List<TextFile> textFiles) {
-		BackupTextFileAsyncTask task = new BackupTextFileAsyncTask();
-		task.execute(textFiles.toArray(new TextFile[textFiles.size()]));
-	}
-
-	/**
+	/*
 	 * Writes a backup of the working file.
 	 * <p/>
 	 * Attempts to backup to internal storage first. If unsuccessful, tries
@@ -178,101 +203,95 @@ public class RecoveryManager {
 	 * <p/>
 	 * A backup will only be made if there are unsaved changes. If the working
 	 * file has not been edited yet, STATE_TYPE will be set to TYPE_NO_CHANGES.
-	 */
-	public class BackupTextFileAsyncTask extends AsyncTask<TextFile, Integer, Integer> {
-		@Nullable
-		private AppCompatActivity activity;
 
-		public BackupTextFileAsyncTask() {
-			/**/
-		}
+	private static class BackupTextFileAsyncTask extends AsyncTask<TextFile, Integer, Integer> {
 
-		public BackupTextFileAsyncTask(@NonNull AppCompatActivity activity) {
-			this.activity = activity;
+		WeakReference<Application> appReference;
+		BackupTextFileAsyncTask(Application app) {
+			appReference = new WeakReference<>(app);
 		}
 
 		@Override
 		protected Integer doInBackground(TextFile... textFiles) {
-			int resultCode = BACKUP_SUCCESS;
-			for (TextFile textFile : textFiles) {
-				if (!textFile.isModified()) continue;
-				try {
-					String fileName;
-					String fileExtension;
-					if (textFile.greatUri != null && textFile.greatUri.getUri() != Uri.EMPTY) {
-						fileName = textFile.greatUri.getFileName();
-						fileExtension = textFile.greatUri.getFileExtension();
-					} else {
-						fileName = "untitled";
-						fileExtension = "";
-					}
-					byte[] bytes = textFile.getAllText().getBytes(Charset.forName(textFile.encoding));
-					FileOutputStream outputStream = app.openFileOutput(getNextFilename(fileName, fileExtension), Context.MODE_PRIVATE);
-					outputStream.write(bytes);
-					publishProgress(bytes.length, bytes.length);
-					outputStream.close();
-					//backupToExternalStorage(textFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-					Log.e(CodomaApplication.TAG, "Could not create backup in local or external storage. Unsaved changes are lost");
-					resultCode = BACKUP_FAILED;
-				}
-			}
-			return resultCode;
+
 		}
-	}
+	} */
 
 	/**
 	 * Attempts to read a previously backup file into editField.
 	 * <p/>
 	 * The backup file has to be created by a prior call to backup().
-	 *
-	 * @return Whether the recover was successful
 	 */
-	public class RecoverTextFileAsyncTask extends AsyncTask<File, Integer, TextFile[]> {
-		private AppCompatActivity activity;
+	private static class RecoverTextFilesAsyncTask extends AsyncTask<Void, Integer, TextFile[]> {
 		private boolean splitIntoPages = false;
 		private int recoveryErrorCode = ERROR_NONE; // the error code of the latest recovery action
 
-		public RecoverTextFileAsyncTask(@NonNull AppCompatActivity activity) {
-			this.activity = activity;
-			splitIntoPages = PreferenceHelper.getSplitText(activity);
+		WeakReference<Application> appReference;
+
+		RecoverTextFilesAsyncTask(Application app) {
+			this.appReference = new WeakReference<>(app);
+			splitIntoPages = PreferenceHelper.getSplitText(app);
 		}
 
 		@Override
-		protected TextFile[] doInBackground(File... files) {
-			TextFile[] textFiles = new TextFile[files.length];
-			for (int f = 0; f < files.length; ++f) {
+		protected TextFile[] doInBackground(Void... voids) {
+			Application app = appReference.get();
+			SharedPreferences prefs = app.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+			int filesNumber = prefs.getInt(PREFS_KEY_AMOUNT, 0);
+			TextFile[] textFiles = new TextFile[filesNumber];
+			String encodingFallback = PreferenceHelper.getEncodingFallback(app);
+			LineReader.LineEnding endingsFallback = PreferenceHelper.getLineEnding(app);
+			Log.e(CodomaApplication.TAG, "files to recover " + filesNumber);
+			for (int f = 0; f < filesNumber; ++f) {
 				FileInputStream fs = null;
 				try {
-					fs = new FileInputStream(files[f]);
-					TextFile textFile = textFiles[f];
+					String fileName = String.valueOf(f);
+					Log.i(CodomaApplication.TAG, "Recovering file " + fileName);
+					Storage storage = Storage.valueOf(prefs.getString(String.format(PREFS_KEY_STORAGE, fileName), ""));
+					if (storage == Storage.INTERNAL) {
+						fs = app.openFileInput(String.format(FILE_RECOVERED, fileName));
+					} else if (storage == Storage.EXTERNAL) {
+						// TODO: read file from external storage
+						fs = null;
+					}
+					TextFile textFile = new TextFile();
+					textFiles[f] = textFile;
+					textFile.encoding = prefs.getString(String.format(PREFS_KEY_ENCODING, fileName), encodingFallback);
+					String eolString = prefs.getString(String.format(PREFS_KEY_EOL, fileName), "");
+					if (eolString.isEmpty()) {
+						textFile.eol = endingsFallback;
+					} else {
+						textFile.eol = LineReader.LineEnding.valueOf(eolString);
+					}
+					String uriString = prefs.getString(String.format(PREFS_KEY_URI, fileName), "");
+					Uri uri;
+					if (uriString.isEmpty()) {
+						uri = Uri.EMPTY;
+					} else {
+						uri = Uri.parse(uriString);
+					}
+					textFile.greatUri = new GreatUri(uri, AccessStorageApi.getPath(app, uri));
 
 					StringBuilder stringBuilder = new StringBuilder();
-
-					if (textFile.encoding == null || textFile.encoding.isEmpty()) {
-						fs.reset();
-						textFile.encoding = FileUtils.detectEncoding(fs);
-						if (textFile.encoding.isEmpty()) {
-							textFile.encoding = PreferenceHelper.getEncodingFallback(app);
+					if (fs != null) {
+						InputStreamReader streamReader = new InputStreamReader(fs, textFile.encoding);
+						LineReader lineReader = new LineReader(streamReader);
+						int fileSize = fs.available();
+						int readBytes = 0;
+						String line;
+						while ((line = lineReader.readLine()) != null) {
+							readBytes += line.length() + 1;
+							publishProgress(readBytes, fileSize);
+							stringBuilder.append(line);
+							stringBuilder.append("\n");
 						}
-					}
+						streamReader.close();
+						textFile.setupPageSystem(stringBuilder.toString(), splitIntoPages);
+						if (textFile.eol == null)
+							textFile.eol = lineReader.getLineEndings();
 
-					InputStreamReader streamReader = new InputStreamReader(fs, textFile.encoding);
-					LineReader lineReader = new LineReader(streamReader);
-					int fileSize = fs.available();
-					int readBytes = 0;
-					String line;
-					while ((line = lineReader.readLine()) != null) {
-						readBytes += line.length() + 1;
-						publishProgress(readBytes, fileSize);
-						stringBuilder.append(line);
-						stringBuilder.append("\n");
+						CodomaApplication.add(textFile);
 					}
-					streamReader.close();
-					textFile.setupPageSystem(stringBuilder.toString(), splitIntoPages);
-					if (textFile.eol == null)
-						textFile.eol = lineReader.getLineEndings();
 
 					recoveryErrorCode = ERROR_NONE;
 				} catch (IOException ex) {
