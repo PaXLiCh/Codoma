@@ -13,10 +13,10 @@ import java.util.regex.Pattern;
  */
 class SearchTask extends AsyncTask<String, Void, SearchResult> {
 	@NonNull
-	private String whatToSearch;
-	private boolean isCase;
-	private int start;
-	private int end;
+	private final String whatToSearch;
+	private final boolean isCase;
+	private final int start;
+	private final int end;
 	private IndeterminateProgressDialogFragment progressDialog;
 	private OnSearchResultListener listener;
 	private WeakReference<AppCompatActivity> activity;

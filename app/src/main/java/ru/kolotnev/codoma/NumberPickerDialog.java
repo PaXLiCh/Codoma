@@ -36,7 +36,7 @@ public class NumberPickerDialog extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		View view = View.inflate(getActivity(), R.layout.dialog_seekbar, null);
-		mSeekBar = (NumberPicker) view.findViewById(android.R.id.input);
+		mSeekBar = view.findViewById(android.R.id.input);
 		int title = R.string.app_name;
 
 		Bundle args = getArguments();

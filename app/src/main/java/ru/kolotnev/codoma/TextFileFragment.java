@@ -57,6 +57,7 @@ public class TextFileFragment extends Fragment implements
 	 *
 	 * @return Created fragment with editor for new file.
 	 */
+	@NonNull
 	public static TextFileFragment newInstance() {
 		return new TextFileFragment();
 	}

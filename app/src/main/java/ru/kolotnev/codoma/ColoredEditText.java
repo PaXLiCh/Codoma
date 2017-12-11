@@ -184,7 +184,7 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 	}
 
 	public void setupEditor() {
-		verticalScroll = (GoodScrollView) getRootView().findViewById(R.id.scroll_vertical);
+		verticalScroll = getRootView().findViewById(R.id.scroll_vertical);
 
 		/*verticalScroll.setOnTouchListener(new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -214,7 +214,7 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 		isNeedLineNumbers = PreferenceHelper.getLineNumbers(context);
 		isHighlightEnabled = PreferenceHelper.getSyntaxHighlight(context);
 
-		gutterView = (TextView) getRootView().findViewById(R.id.edit_text_line_numbers);
+		gutterView = getRootView().findViewById(R.id.edit_text_line_numbers);
 		gutterView.setVisibility(isNeedLineNumbers ? View.VISIBLE : View.GONE);
 		if (isNeedLineNumbers) {
 			gutterView.setTextColor(colorScheme.getGutterTextColor());
@@ -270,8 +270,10 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 			public void onClick(View v) {
 				if (!PreferenceHelper.getReadOnly(context)) {
 					verticalScroll.tempDisableListener(1000);
-					((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE))
-							.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
+					InputMethodManager iim = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+					if (iim != null) {
+						iim.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
+					}
 				}
 
 			}
@@ -281,8 +283,10 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (hasFocus && !PreferenceHelper.getReadOnly(context)) {
 					verticalScroll.tempDisableListener(1000);
-					((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE))
-							.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
+					InputMethodManager iim = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+					if (iim != null) {
+						iim.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
+					}
 				}
 			}
 		});

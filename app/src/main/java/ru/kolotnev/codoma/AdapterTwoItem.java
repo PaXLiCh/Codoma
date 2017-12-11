@@ -38,8 +38,8 @@ class AdapterTwoItem extends ArrayAdapter<Pair<String, String>> {
 		private final TextView line2;
 
 		ViewHolder(View v) {
-			line1 = (TextView) v.findViewById(android.R.id.text1);
-			line2 = (TextView) v.findViewById(android.R.id.text2);
+			line1 = v.findViewById(android.R.id.text1);
+			line2 = v.findViewById(android.R.id.text2);
 			v.setTag(this);
 		}
 

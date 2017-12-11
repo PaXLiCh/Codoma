@@ -149,7 +149,7 @@ public class Base16TomorrowNightSyntaxColor extends SyntaxColor {
 	private static final Style whitespace = new Style();
 
 
-	private static Map<String, Style> styleMap = new HashMap<>();
+	private static final Map<String, Style> styleMap = new HashMap<>();
 
 	static {
 		comment.color = gray;

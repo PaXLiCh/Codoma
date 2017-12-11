@@ -77,7 +77,7 @@ public class RecentFilesDialogFragment extends DialogFragment {
 		};
 
 		View rootView = View.inflate(context, R.layout.dialog_recent_files, null);
-		RecyclerView fileListView = (RecyclerView) rootView.findViewById(android.R.id.list);
+		RecyclerView fileListView = rootView.findViewById(android.R.id.list);
 		FileInfoAdapter adapter = new FileInfoAdapter(context, listener);
 		adapter.setFiles(iconifiedEntries);
 		fileListView.setAdapter(adapter);

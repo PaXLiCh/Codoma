@@ -34,6 +34,7 @@ public class CodomaApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Log.d(TAG, "onCreate application");
 		recoveryManager = new RecoveryManager(this);
 		recoveryManager.recoverTextFiles();
 
@@ -58,18 +59,54 @@ public class CodomaApplication extends Application {
 	public void onTrimMemory(int level) {
 		super.onTrimMemory(level);
 		Log.e(TAG, "onTrimMemory level (" + level + ")");
+
+
+		//TRIM_MEMORY_BACKGROUND
+		//Constant Value: 40 (0x00000028)
+		//added in API level 14
+		//the process has gone on to the LRU list. This is a good opportunity to clean up resources that can efficiently and quickly be re-built if the user returns to the app.
+
+		//TRIM_MEMORY_COMPLETE
+		//Constant Value: 80 (0x00000050)
+		//added in API level 14
+		//the process is nearing the end of the background LRU list, and if more memory isn't found soon it will be killed.
+
+		//TRIM_MEMORY_MODERATE
+		//Constant Value: 60 (0x0000003c)
+		//added in API level 14
+		//the process is around the middle of the background LRU list; freeing memory can help the system keep other processes running later in the list for better overall performance.
+
+		//TRIM_MEMORY_RUNNING_CRITICAL
+		//Constant Value: 15 (0x0000000f)
+		//added in API level 16
+		//the process is not an expendable background process, but the device is running extremely low on memory and is about to not be able to keep any background processes running.
+		// Your running process should free up as many non-critical resources as it can to allow that memory to be used elsewhere.
+		// The next thing that will happen after this is onLowMemory() called to report that nothing at all can be kept in the background,
+		// a situation that can start to notably impact the user.
+
+		//TRIM_MEMORY_RUNNING_LOW
+		//Constant Value: 10 (0x0000000a)
+		//added in API level 16
+		//the process is not an expendable background process, but the device is running low on memory.
+		// Your running process should free up unneeded resources to allow that memory to be used elsewhere.
+
+		//TRIM_MEMORY_RUNNING_MODERATE
+		//Constant Value: 5 (0x00000005)
+		//added in API level 16
+		//the process is not an expendable background process, but the device is running moderately low on memory.
+		// Your running process may want to release some unneeded resources for use elsewhere.
+
+		//TRIM_MEMORY_UI_HIDDEN
+		//Constant Value: 20 (0x00000014)
+		//added in API level 14
+		//the process had been showing a user interface, and is no longer doing so. Large allocations with the UI should be released at this point to allow memory to be better managed.
+
 	}
 
 	@Override
 	public void onLowMemory() {
 		super.onLowMemory();
 		Log.e(TAG, "onLowMemory");
-	}
-
-	@Override
-	public void onTerminate() {
-		super.onTerminate();
-		Log.e(TAG, "onTerminate");
 	}
 
 	public static int amountOfOpenedFiles() {

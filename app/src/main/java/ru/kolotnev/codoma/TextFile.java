@@ -79,6 +79,14 @@ public class TextFile implements TextWatcher {
 		return isModified;
 	}
 
+	void setModified() {
+		this.isModified = true;
+	}
+
+	void setModified(boolean isModified) {
+		this.isModified = isModified;
+	}
+
 	void fileSaved() {
 		isModified = false;
 		clearHistory();

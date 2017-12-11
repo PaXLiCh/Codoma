@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,19 +25,13 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
-import com.spazedog.lib.rootfw4.RootFW;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.List;
 
 public class SelectFileActivity extends AppCompatActivity implements
+		UpdateListOfFilesAsyncTask.UpdateListOfFilesListener,
 		SearchView.OnQueryTextListener,
 		FileInfoAdapter.OnItemClickListener,
 		EditTextDialog.EditDialogListener {
@@ -79,7 +71,15 @@ public class SelectFileActivity extends AppCompatActivity implements
 		}
 
 		Bundle bundle = getIntent().getExtras();
-		action = (Actions) bundle.getSerializable(EXTRA_ACTION);
+		String lastNavigatedPath;
+		if (bundle != null) {
+			action = (Actions) bundle.getSerializable(EXTRA_ACTION);
+			lastNavigatedPath = bundle.getString(EXTRA_PATH,
+					PreferenceHelper.getWorkingFolder(this));
+		} else {
+			action = Actions.SelectFile;
+			lastNavigatedPath = PreferenceHelper.getWorkingFolder(this);
+		}
 
 		adapter = new FileInfoAdapter(this, this);
 		listView = (RecyclerView) findViewById(android.R.id.list);
@@ -87,7 +87,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		textViewEmpty = findViewById(R.id.empty_text);
 
 		scrollBreadcrumbs = (HorizontalScrollView) findViewById(R.id.scroll_breadcrumbs);
-		viewBreadcrumbs = (LinearLayout) scrollBreadcrumbs.findViewById(R.id.view_breadcrumbs);
+		viewBreadcrumbs = scrollBreadcrumbs.findViewById(R.id.view_breadcrumbs);
 
 		FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.menu_item_create_file);
 		mFab.setOnClickListener(new View.OnClickListener() {
@@ -105,9 +105,6 @@ public class SelectFileActivity extends AppCompatActivity implements
 			}
 		});
 
-		String lastNavigatedPath = bundle.getString(EXTRA_PATH,
-				PreferenceHelper.getWorkingFolder(this));
-
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			checkPermissionReadStorage();
 		}
@@ -119,7 +116,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 			file = new File(PreferenceHelper.defaultFolder(this));
 		}
 
-		new UpdateList().execute(file.getAbsolutePath());
+		updateList(file.getAbsolutePath());
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -189,7 +186,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		final String name = fileDetail.getName();
 		if (name.equals("..")) {
 			if (currentFolder.equals(ROOT_DIR)) {
-				new UpdateList().execute(PreferenceHelper.getWorkingFolder(this));
+				updateList(PreferenceHelper.getWorkingFolder(this));
 			} else {
 				File tempFile = new File(currentFolder);
 				if (tempFile.isFile()) {
@@ -197,11 +194,11 @@ public class SelectFileActivity extends AppCompatActivity implements
 				} else {
 					tempFile = tempFile.getParentFile();
 				}
-				new UpdateList().execute(tempFile.getAbsolutePath());
+				updateList(tempFile.getAbsolutePath());
 			}
 			return;
 		} else if (name.equals(getString(R.string.home))) {
-			new UpdateList().execute(PreferenceHelper.getWorkingFolder(this));
+			updateList(PreferenceHelper.getWorkingFolder(this));
 			return;
 		}
 
@@ -210,7 +207,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		if (selectedFile.isFile() && action == Actions.SelectFile) {
 			finishWithResult(selectedFile);
 		} else if (selectedFile.isDirectory()) {
-			new UpdateList().execute(selectedFile.getAbsolutePath());
+			updateList(selectedFile.getAbsolutePath());
 		}
 	}
 
@@ -305,7 +302,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		} else if (actions == EditTextDialog.Actions.NEW_FOLDER && !TextUtils.isEmpty(inputText)) {
 			File file = new File(currentFolder, inputText);
 			file.mkdirs();
-			new UpdateList().execute(currentFolder);
+			updateList(currentFolder);
 		}
 	}
 
@@ -331,7 +328,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		} else {
 			File file = new File(currentFolder);
 			String parentFolder = file.getParent();
-			new UpdateList().execute(parentFolder);
+			updateList(parentFolder);
 		}
 	}
 
@@ -353,7 +350,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 				@Override
 				public void onClick(View view) {
 					String dir = (String) view.getTag();
-					new UpdateList().execute(dir);
+					updateList(dir);
 				}
 			});
 			viewBreadcrumbs.addView(b);
@@ -367,159 +364,52 @@ public class SelectFileActivity extends AppCompatActivity implements
 		});
 	}
 
+	@Override
+	public void onUpdateList(List<FileInfoAdapter.FileDetail> names) {
+		if (names != null) {
+			adapter.setFiles(names);
+			listView.scrollToPosition(0);
+			textViewEmpty.setVisibility(names.size() < 2 ? View.VISIBLE : View.GONE);
+		}
+		setDirectoryButtons();
+		invalidateOptionsMenu();
+	}
+
+	@Override
+	public void onException(@NonNull String exceptionMessage) {
+		Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onCantOpen(@NonNull String fileName) {
+		String exceptionMessage = getString(R.string.activity_select_file_error_cant_read_folder, fileName);
+		Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
+	}
+
 	enum Actions {
 		SelectFile, SelectFolder, SaveFile
 	}
 
-	public static boolean isSymlink(File file) throws IOException {
-		File canon;
-		if (file.getParent() == null) {
-			canon = file;
-		} else {
-			File canonDir = file.getParentFile().getCanonicalFile();
-			canon = new File(canonDir, file.getName());
+	private void updateList(String path) {
+		if (searchView != null) {
+			searchView.setIconified(true);
+			mSearchViewMenuItem.collapseActionView();
+			searchView.setQuery("", false);
 		}
-		return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
+
+		String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };
+
+		new UpdateListOfFilesAsyncTask(
+				currentFolder,
+				this,
+				unopenableExtensions,
+				getString(R.string.activity_select_file_file_detail),
+				getString(R.string.activity_select_file_folder_detail),
+				getString(R.string.home),
+				getString(R.string.folder))
+				.execute(path);
 	}
 
-	private class UpdateList extends AsyncTask<String, Void, ArrayList<FileInfoAdapter.FileDetail>> {
-		private String exceptionMessage;
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			if (searchView != null) {
-				searchView.setIconified(true);
-				mSearchViewMenuItem.collapseActionView();
-				searchView.setQuery("", false);
-			}
-		}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected ArrayList<FileInfoAdapter.FileDetail> doInBackground(final String... params) {
-			try {
-
-				final String path = params[0];
-				if (TextUtils.isEmpty(path)) {
-					return null;
-				}
-
-				File tempFolder = new File(path);
-				if (tempFolder.isFile()) {
-					tempFolder = tempFolder.getParentFile();
-				}
-				if (isSymlink(tempFolder)) {
-					Log.e(CodomaApplication.TAG, "Symbolic link " + tempFolder.getAbsolutePath() + " " + tempFolder.getCanonicalPath());
-				}
-
-				String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };
-
-				final DateFormat format = DateFormat.getDateInstance();
-				final ArrayList<FileInfoAdapter.FileDetail> fileDetails = new ArrayList<>();
-				final ArrayList<FileInfoAdapter.FileDetail> folderDetails = new ArrayList<>();
-				if (currentFolder.equals("/")) {
-					folderDetails.add(new FileInfoAdapter.FileDetail(null, getString(R.string.home), getString(R.string.folder), true, true));
-				} else {
-					folderDetails.add(new FileInfoAdapter.FileDetail(null, "..", getString(R.string.folder), true, true));
-				}
-
-				if (!tempFolder.canRead()) {
-					if (RootFW.connect()) {
-						com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentFolder);
-						com.spazedog.lib.rootfw4.utils.File.FileStat[] stats = folder.getDetailedList();
-
-						if (stats != null) {
-							for (com.spazedog.lib.rootfw4.utils.File.FileStat stat : stats) {
-								if (stat.type().equals("d")) {
-									folderDetails.add(new FileInfoAdapter.FileDetail(null, stat.name(),
-											getString(R.string.activity_select_file_folder_detail),
-											true, true));
-								} else if (!FilenameUtils.isExtension(stat.name().toLowerCase(), unopenableExtensions)
-										&& stat.size() <= CodomaApplication.MAX_FILE_SIZE * FileUtils.ONE_KB) {
-									final long fileSize = stat.size();
-									String date = format.format(stat);
-									String description = getString(
-											R.string.activity_select_file_file_detail,
-											FileUtils.byteCountToDisplaySize(fileSize),
-											date);
-									fileDetails.add(new FileInfoAdapter.FileDetail(
-											null,
-											stat.name(),
-											description,
-											true, false));
-								}
-							}
-						}
-					} else {
-						exceptionMessage = getString(R.string.activity_select_file_error_cant_read_folder, tempFolder.getAbsolutePath());
-						return null;
-					}
-				} else {
-					currentFolder = tempFolder.getAbsolutePath();
-
-					File[] files = tempFolder.listFiles();
-
-					Arrays.sort(files, getFileNameComparator());
-
-					for (final File f : files) {
-						Uri uri = Uri.parse(f.toURI().toString());
-						if (f.isDirectory()) {
-							folderDetails.add(new FileInfoAdapter.FileDetail(uri, f.getName(),
-									getString(R.string.activity_select_file_folder_detail, format.format(f.lastModified())),
-									true, true));
-						} else if (f.isFile()
-								&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
-								&& FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * FileUtils.ONE_KB) {
-							String description = getString(
-									R.string.activity_select_file_file_detail,
-									FileUtils.byteCountToDisplaySize(f.length()),
-									format.format(f.lastModified()));
-							fileDetails.add(new FileInfoAdapter.FileDetail(
-									uri, f.getName(), description, true, false));
-						}
-					}
-				}
-
-				folderDetails.addAll(fileDetails);
-				return folderDetails;
-			} catch (Exception e) {
-				exceptionMessage = e.getMessage();
-				return null;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected void onPostExecute(final ArrayList<FileInfoAdapter.FileDetail> names) {
-			if (names != null) {
-				adapter.setFiles(names);
-				listView.scrollToPosition(0);
-				textViewEmpty.setVisibility(names.size() < 2 ? View.VISIBLE : View.GONE);
-			}
-			if (exceptionMessage != null) {
-				Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
-			}
-			setDirectoryButtons();
-			invalidateOptionsMenu();
-			super.onPostExecute(names);
-		}
-
-		@SuppressWarnings("unchecked")
-		final Comparator<File> getFileNameComparator() {
-			return new AlphanumComparator() {
-				/**
-				 * {@inheritDoc}
-				 */
-				@Override
-				public String getTheString(Object obj) {
-					return ((File) obj).getName().toLowerCase();
-				}
-			};
-		}
-	}
 }

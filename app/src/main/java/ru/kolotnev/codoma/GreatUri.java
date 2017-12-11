@@ -17,7 +17,7 @@ public class GreatUri {
 	private String fileName;
 	private String fileExtension;
 
-	public GreatUri(Uri uri, String fileAbsoluteName) {
+	GreatUri(Uri uri, String fileAbsoluteName) {
 		this.uri = uri;
 		//fileAbsoluteName = AccessStorageApi.getPath(this, uri);
 		filePath = fileAbsoluteName;//FilenameUtils.getFullPath(fileAbsoluteName);

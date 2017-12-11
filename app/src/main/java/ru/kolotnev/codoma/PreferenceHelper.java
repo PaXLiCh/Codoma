@@ -16,7 +16,7 @@ import java.io.File;
  * Helper for getting preferences.
  */
 public final class PreferenceHelper {
-	public static final String DEFAULT_ENCODING = "UTF-8";
+	static final String DEFAULT_ENCODING = "UTF-8";
 
 	//public static final String SD_CARD_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath();
 
@@ -60,11 +60,11 @@ public final class PreferenceHelper {
 	 *
 	 * @return Is color scheme dark.
 	 */
-	public static boolean isDarkTheme(@NonNull final Context context) {
+	static boolean isDarkTheme(@NonNull final Context context) {
 		return getBoolean(context, R.string.settings_view_dark_key, R.bool.settings_view_dark_default);
 	}
 
-	public static int getTheme(@NonNull final Context context) {
+	static int getTheme(@NonNull final Context context) {
 		return getPrefs(context).getInt("theme", 0);
 	}
 
@@ -110,37 +110,37 @@ public final class PreferenceHelper {
 	 *
 	 * @return Enabled or disabled syntax coloring.
 	 */
-	public static boolean getSyntaxHighlight(@NonNull final Context context) {
+	static boolean getSyntaxHighlight(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_syntax_highlight_key,
 				R.bool.settings_view_syntax_highlight_default);
 	}
 
-	public static boolean getWrapContent(@NonNull final Context context) {
+	static boolean getWrapContent(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_wordwrap_key,
 				R.bool.settings_view_wordwrap_default);
 	}
 
-	public static int getFontSize(@NonNull final Context context) {
+	static int getFontSize(@NonNull final Context context) {
 		return getInt(context,
 				R.string.settings_view_font_size_key,
 				R.integer.settings_view_font_size_default);
 	}
 
-	public static boolean getWhitespaces(@NonNull final Context context) {
+	static boolean getWhitespaces(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_view_whitespace_key,
 				R.bool.settings_view_whitespace_default);
 	}
 
-	public static int getTabWidth(@NonNull final Context context) {
+	static int getTabWidth(@NonNull final Context context) {
 		return Integer.parseInt(getString(context,
 				R.string.settings_view_tab_width_key,
 				R.string.settings_view_tab_width_default));
 	}
 
-	public static int getUpdateDelay(@NonNull final Context context) {
+	static int getUpdateDelay(@NonNull final Context context) {
 		return Integer.parseInt(getString(context,
 				R.string.settings_view_update_delay_key,
 				R.string.settings_view_update_delay_default));
@@ -150,13 +150,13 @@ public final class PreferenceHelper {
 
 	// region Editing
 
-	public static boolean getTabToSpaces(@NonNull final Context context) {
+	static boolean getTabToSpaces(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_edit_tab_to_spaces_key,
 				R.bool.settings_edit_tab_to_spaces_default);
 	}
 
-	public static boolean getAutoIndent(@NonNull final Context context) {
+	static boolean getAutoIndent(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_edit_indent_key,
 				R.bool.settings_edit_indent_default);
@@ -174,30 +174,30 @@ public final class PreferenceHelper {
 
 	// region FILE IO
 
-	public static LineReader.LineEnding getLineEnding(@NonNull final Context context) {
+	static LineReader.LineEnding getLineEnding(@NonNull final Context context) {
 		String lineEndingString = getString(context,
 				R.string.settings_file_line_endings_key,
 				R.string.settings_file_line_endings_default);
 		return LineReader.LineEnding.valueOf(lineEndingString);
 	}
 
-	public static boolean getUseStorageAccessFramework(@NonNull final Context context) {
+	static boolean getUseStorageAccessFramework(@NonNull final Context context) {
 		return getBoolean(context,
 				R.string.settings_file_saf_key,
 				R.bool.settings_file_saf_default);
 	}
 
-	public static boolean getSuggestionActive(@NonNull final Context context) {
+	static boolean getSuggestionActive(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("suggestion_active", false);
 	}
 
-	public static String getEncoding(@NonNull final Context context) {
+	static String getEncoding(@NonNull final Context context) {
 		return getString(context,
 				R.string.settings_file_encoding_key,
 				R.string.settings_file_encoding_default);
 	}
 
-	public static String getEncodingFallback(@NonNull final Context context) {
+	static String getEncodingFallback(@NonNull final Context context) {
 		return getString(context,
 				R.string.settings_file_encoding_fallback_key,
 				R.string.settings_file_encoding_fallback_default);
@@ -211,7 +211,7 @@ public final class PreferenceHelper {
 
 	// endregion
 
-	public static String defaultFolder(@NonNull final Context context) {
+	static String defaultFolder(@NonNull final Context context) {
 		String folder;
 		File externalFolder = context.getExternalFilesDir(null);
 
@@ -226,26 +226,26 @@ public final class PreferenceHelper {
 		return folder;
 	}
 
-	public static String getWorkingFolder(@NonNull final Context context) {
+	static String getWorkingFolder(@NonNull final Context context) {
 		return getPrefs(context).getString("working_folder2", defaultFolder(context));
 	}
 
 	private final static String FONT_PATH_BITSTREAM_VERA = "typefaces/VeraMono.ttf";
 	private final static String FONT_PATH_PROGGY_CLEAN = "typefaces/ProggyCleanSZ.ttf";
 
-	public static final String FONT_MONOSPACE = "(Android) Monospace";
-	public static final String FONT_SANS_SERIF = "(Android) Sans serif";
-	public static final String FONT_SERIF = "(Android) Serif";
-	public static final String FONT_BITESTREAM_VERA = "(Builtin) Bitstream Vera";
-	public static final String FONT_PROGGY_CLAN = "(Builtin) Proggy Clean";
+	private static final String FONT_MONOSPACE = "(Android) Monospace";
+	private static final String FONT_SANS_SERIF = "(Android) Sans serif";
+	private static final String FONT_SERIF = "(Android) Serif";
+	private static final String FONT_BITESTREAM_VERA = "(Builtin) Bitstream Vera";
+	private static final String FONT_PROGGY_CLAN = "(Builtin) Proggy Clean";
 
-	public static final String FONT_MONOSPACE_VALUE = "monospace";
-	public static final String FONT_SANS_SERIF_VALUE = "sans_serif";
-	public static final String FONT_SERIF_VALUE = "serif";
-	public static final String FONT_BITESTREAM_VERA_VALUE = "bitstream_vera";
-	public static final String FONT_PROGGY_CLAN_VALUE = "proggy_clean";
+	private static final String FONT_MONOSPACE_VALUE = "monospace";
+	private static final String FONT_SANS_SERIF_VALUE = "sans_serif";
+	private static final String FONT_SERIF_VALUE = "serif";
+	private static final String FONT_BITESTREAM_VERA_VALUE = "bitstream_vera";
+	private static final String FONT_PROGGY_CLAN_VALUE = "proggy_clean";
 
-	public static final String[] FONT_ENTRIES = new String[] {
+	static final String[] FONT_ENTRIES = new String[] {
 			FONT_MONOSPACE,
 			FONT_SANS_SERIF,
 			FONT_SERIF,
@@ -254,7 +254,7 @@ public final class PreferenceHelper {
 	};
 
 
-	public static final String[] FONT_ENTRY_VALUES = new String[] {
+	static final String[] FONT_ENTRY_VALUES = new String[] {
 			FONT_MONOSPACE_VALUE,
 			FONT_SANS_SERIF_VALUE,
 			FONT_SERIF_VALUE,
@@ -264,7 +264,7 @@ public final class PreferenceHelper {
 
 
 	@Nullable
-	public static Typeface getFont(@NonNull final Context context) {
+	static Typeface getFont(@NonNull final Context context) {
 		String font = getString(context,
 				R.string.settings_view_font_key,
 				R.string.settings_view_font_default);
@@ -298,7 +298,7 @@ public final class PreferenceHelper {
 		return getPrefs(context).getBoolean("auto_save", false);
 	}
 
-	public static boolean getReadOnly(@NonNull final Context context) {
+	static boolean getReadOnly(@NonNull final Context context) {
 		return getPrefs(context).getBoolean("read_only", false);
 	}
 
@@ -341,7 +341,7 @@ public final class PreferenceHelper {
 		getEditor(context).putInt("font_size", value).commit();
 	}
 
-	public static void setWorkingFolder(Context context, String value) {
+	static void setWorkingFolder(Context context, String value) {
 		getEditor(context).putString("working_folder2", value).commit();
 	}
 

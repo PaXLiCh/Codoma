@@ -17,6 +17,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Adapter for recycler view with file details.
@@ -26,16 +27,16 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 	private final ArrayList<FileDetail> visibleObjects = new ArrayList<>();
 	private String lastQuery = null;
 	@NonNull
-	private Context context;
+	private final Context context;
 	@Nullable
-	private OnItemClickListener listener;
+	private final OnItemClickListener listener;
 
 	FileInfoAdapter(@NonNull final Context context, @Nullable OnItemClickListener listener) {
 		this.context = context;
 		this.listener = listener;
 	}
 
-	public void setFiles(@NonNull ArrayList<FileDetail> files) {
+	public void setFiles(@NonNull List<FileDetail> files) {
 		this.files.clear();
 		this.files.addAll(files);
 		filter(lastQuery);

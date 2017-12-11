@@ -21,7 +21,7 @@ public abstract class SmartFragmentPagerAdapter<T extends Fragment> extends Frag
 
 	private final Class<T> clazz;
 
-	public SmartFragmentPagerAdapter(FragmentManager fragmentManager, Class<T> clazz) {
+	SmartFragmentPagerAdapter(FragmentManager fragmentManager, Class<T> clazz) {
 		super(fragmentManager);
 		this.clazz = clazz;
 	}
@@ -56,7 +56,7 @@ public abstract class SmartFragmentPagerAdapter<T extends Fragment> extends Frag
 	 *
 	 * @return Fragment for the specified position.
 	 */
-	public T getRegisteredFragment(int position) {
+	T getRegisteredFragment(int position) {
 		return registeredFragments.get(position);
 	}
 

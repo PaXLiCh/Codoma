@@ -21,8 +21,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import java.io.File;
-
 /**
  * New editor.
  */
@@ -164,8 +162,11 @@ public class EditorActivity extends AppCompatActivity implements
 				goToLine();
 				return true;
 			case R.id.statistics:
-				FileInfoDialog.newInstance(viewPager.getCurrentItem())
-						.show(getSupportFragmentManager(), FileInfoDialog.TAG);
+				TextFile textFile = CodomaApplication.get(viewPager.getCurrentItem());
+				if (textFile != null) {
+					FileInfoDialog.newInstance(textFile, this)
+							.show(getSupportFragmentManager(), FileInfoDialog.TAG);
+				}
 				return true;
 			case R.id.settings:
 				Intent i = new Intent(this, CodomaPreferenceActivity.class);
@@ -189,7 +190,9 @@ public class EditorActivity extends AppCompatActivity implements
 
 			case R.id.change_input_method:
 				InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				im.showInputMethodPicker();
+				if (im != null) {
+					im.showInputMethodPicker();
+				}
 				return true;
 
 			case R.id.about:
@@ -529,7 +532,7 @@ public class EditorActivity extends AppCompatActivity implements
 		else
 			actionBar.setTitle(textFile.getTitle());
 		supportInvalidateOptionsMenu();
-		Log.e("Codoma", "update title");
+		Log.e(CodomaApplication.TAG, "update title");
 
 		//tabs.setVisibility(TextFileProvider.size() > 1 ? View.VISIBLE : View.GONE);
 	}
@@ -556,6 +559,7 @@ public class EditorActivity extends AppCompatActivity implements
 		// Central system API to the overall input method framework (IMF) architecture
 		InputMethodManager inputManager =
 				(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		if (inputManager == null) return;
 
 		// Base interface for a remote object
 		View focusedView = getCurrentFocus();

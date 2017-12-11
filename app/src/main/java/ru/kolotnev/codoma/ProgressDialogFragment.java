@@ -59,15 +59,15 @@ public class ProgressDialogFragment extends DialogFragment {
 		Context context = getContext();
 
 		View v = View.inflate(context, R.layout.dialog_progress, null);
-		textMessage = (TextView) v.findViewById(android.R.id.message);
+		textMessage = v.findViewById(android.R.id.message);
 		textMessage.setText(message);
 
 		viewTotal = v.findViewById(android.R.id.primary);
-		progressBarTotal = (ProgressBar) viewTotal.findViewById(android.R.id.secondaryProgress);
-		textProgressTotal = (TextView) viewTotal.findViewById(android.R.id.text2);
+		progressBarTotal = viewTotal.findViewById(android.R.id.secondaryProgress);
+		textProgressTotal = viewTotal.findViewById(android.R.id.text2);
 
-		progressBar = (ProgressBar) v.findViewById(android.R.id.progress);
-		textProgress = (TextView) v.findViewById(android.R.id.text1);
+		progressBar = v.findViewById(android.R.id.progress);
+		textProgress = v.findViewById(android.R.id.text1);
 		// Disable the back button
 		DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
 			@Override

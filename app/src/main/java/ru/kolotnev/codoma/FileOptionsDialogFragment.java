@@ -17,7 +17,6 @@ import android.widget.Spinner;
 
 import java.util.Arrays;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -82,8 +81,8 @@ public class FileOptionsDialogFragment
 		}
 		Context context = getActivity();
 		View v = View.inflate(context, R.layout.dialog_file_options, null);
-		Spinner spinnerEncoding = (Spinner) v.findViewById(R.id.spinner_encodings);
-		Spinner spinnerEnding = (Spinner) v.findViewById(R.id.spinner_endings);
+		Spinner spinnerEncoding = v.findViewById(R.id.spinner_encodings);
+		Spinner spinnerEnding = v.findViewById(R.id.spinner_endings);
 
 		Resources res = getResources();
 		final String[] valuesEndings = res
