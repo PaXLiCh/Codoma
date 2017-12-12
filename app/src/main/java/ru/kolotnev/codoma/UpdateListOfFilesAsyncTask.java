@@ -3,12 +3,13 @@ package ru.kolotnev.codoma;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.spazedog.lib.rootfw4.RootFW;
 
-import org.apache.commons.io.*;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,22 +24,34 @@ import java.util.List;
  */
 class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAdapter.FileDetail>> {
 	private String exceptionMessage;
-	private String currentFolder;
+	@NonNull
+	private String currentDirectory;
+	@Nullable
 	private UpdateListOfFilesListener listener;
 	private String[] unopenableExtensions;
+	@NonNull
 	private String formatDetailFile;
+	@NonNull
 	private String formatDetailFolder;
+	@NonNull
 	private String stringHome;
+	@NonNull
 	private String stringFolder;
 
-	UpdateListOfFilesAsyncTask(String directory, UpdateListOfFilesListener listener, String[] unopenableExtensions, String formatDetailFile, String formatDetailFolder, String stringHome, String stringFolder) {
-		currentFolder = directory;
+	UpdateListOfFilesAsyncTask(
+			@NonNull UpdateListOfFilesListener listener,
+			String[] unopenableExtensions,
+			@NonNull String formatDetailFile,
+			@NonNull String formatDetailFolder,
+			@NonNull String stringHome,
+			@NonNull String stringFolder) {
 		this.listener = listener;
 		this.unopenableExtensions = unopenableExtensions;
 		this.formatDetailFile = formatDetailFile;
 		this.formatDetailFolder = formatDetailFolder;
 		this.stringHome = stringHome;
 		this.stringFolder = stringFolder;
+		currentDirectory = "";
 	}
 
 	@Override
@@ -52,7 +65,6 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 	@Override
 	protected ArrayList<FileInfoAdapter.FileDetail> doInBackground(final String... params) {
 		try {
-
 			final String path = params[0];
 			if (TextUtils.isEmpty(path)) {
 				return null;
@@ -62,6 +74,9 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			if (tempFolder.isFile()) {
 				tempFolder = tempFolder.getParentFile();
 			}
+
+			currentDirectory = tempFolder.getAbsolutePath();
+
 			if (isSymlink(tempFolder)) {
 				Log.e(CodomaApplication.TAG, "Symbolic link " + tempFolder.getAbsolutePath() + " " + tempFolder.getCanonicalPath());
 			}
@@ -69,7 +84,8 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			final DateFormat format = DateFormat.getDateInstance();
 			final ArrayList<FileInfoAdapter.FileDetail> fileDetails = new ArrayList<>();
 			final ArrayList<FileInfoAdapter.FileDetail> folderDetails = new ArrayList<>();
-			if (currentFolder.equals("/")) {
+
+			if (currentDirectory.equals("/")) {
 				folderDetails.add(new FileInfoAdapter.FileDetail(null, stringHome, stringFolder, true, true));
 			} else {
 				folderDetails.add(new FileInfoAdapter.FileDetail(null, "..", stringFolder, true, true));
@@ -77,9 +93,8 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 
 			if (!tempFolder.canRead()) {
 				if (RootFW.connect()) {
-					com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentFolder);
+					com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentDirectory);
 					com.spazedog.lib.rootfw4.utils.File.FileStat[] stats = folder.getDetailedList();
-
 					if (stats != null) {
 						for (com.spazedog.lib.rootfw4.utils.File.FileStat stat : stats) {
 							if (stat.type().equals("d")) {
@@ -101,13 +116,9 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 							}
 						}
 					}
-				} else {
-					listener.onCantOpen(tempFolder.getAbsolutePath());
-					return null;
 				}
+				return null;
 			} else {
-				currentFolder = tempFolder.getAbsolutePath();
-
 				File[] files = tempFolder.listFiles();
 
 				Arrays.sort(files, getFileNameComparator());
@@ -118,7 +129,7 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 						String description =
 								String.format(formatDetailFolder, format.format(f.lastModified()));
 						folderDetails.add(new FileInfoAdapter.FileDetail(uri, f.getName(),
-								description,true, true));
+								description, true, true));
 					} else if (f.isFile()
 							&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
 							&& org.apache.commons.io.FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
@@ -146,15 +157,17 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 	 */
 	@Override
 	protected void onPostExecute(final List<FileInfoAdapter.FileDetail> names) {
-		if (exceptionMessage != null) {
-			listener.onException(exceptionMessage);
-		} else {
-			listener.onUpdateList(names);
-		}
 		super.onPostExecute(names);
+		if (listener == null) return;
+		if (names == null) {
+			listener.onCantOpen(currentDirectory, exceptionMessage);
+		} else {
+			listener.onUpdateList(currentDirectory, names);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
+	@NonNull
 	private Comparator<File> getFileNameComparator() {
 		return new AlphanumComparator() {
 			/**
@@ -179,8 +192,10 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 	}
 
 	interface UpdateListOfFilesListener {
-		void onUpdateList(final List<FileInfoAdapter.FileDetail> names);
-		void onException(@NonNull String path);
-		void onCantOpen(@NonNull String fileName);
+		void onUpdateList(
+				@NonNull String currentDirectory,
+				@NonNull final List<FileInfoAdapter.FileDetail> names);
+
+		void onCantOpen(@NonNull String directoryPath, @Nullable String exceptionMessage);
 	}
 }

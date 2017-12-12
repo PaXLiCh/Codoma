@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -50,7 +51,10 @@ public class SelectFileActivity extends AppCompatActivity implements
 	private LinearLayout viewBreadcrumbs;
 	private Actions action;
 	private View textViewEmpty;
+	private View progressBar;
 	private RecyclerView listView;
+	@Nullable
+	private UpdateListOfFilesAsyncTask task;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +89,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 		listView = (RecyclerView) findViewById(android.R.id.list);
 		listView.setAdapter(adapter);
 		textViewEmpty = findViewById(R.id.empty_text);
+		progressBar = findViewById(android.R.id.progress);
 
 		scrollBreadcrumbs = (HorizontalScrollView) findViewById(R.id.scroll_breadcrumbs);
 		viewBreadcrumbs = scrollBreadcrumbs.findViewById(R.id.view_breadcrumbs);
@@ -365,25 +370,26 @@ public class SelectFileActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void onUpdateList(List<FileInfoAdapter.FileDetail> names) {
-		if (names != null) {
-			adapter.setFiles(names);
-			listView.scrollToPosition(0);
-			textViewEmpty.setVisibility(names.size() < 2 ? View.VISIBLE : View.GONE);
-		}
+	public void onUpdateList(@NonNull String currentDirectory, @NonNull List<FileInfoAdapter.FileDetail> names) {
+		adapter.setFiles(names);
+		listView.scrollToPosition(0);
+		textViewEmpty.setVisibility(names.size() < 2 ? View.VISIBLE : View.GONE);
+		progressBar.setVisibility(View.GONE);
+		currentFolder = currentDirectory;
 		setDirectoryButtons();
 		invalidateOptionsMenu();
+		task = null;
 	}
 
 	@Override
-	public void onException(@NonNull String exceptionMessage) {
-		Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void onCantOpen(@NonNull String fileName) {
-		String exceptionMessage = getString(R.string.activity_select_file_error_cant_read_folder, fileName);
-		Toast.makeText(SelectFileActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
+	public void onCantOpen(@NonNull String fileName, @Nullable String exceptionMessage) {
+		String message = getString(R.string.activity_select_file_error_cant_read_folder, fileName);
+		if (exceptionMessage != null) {
+			message = message + "\n" + exceptionMessage;
+		}
+		Toast.makeText(SelectFileActivity.this, message, Toast.LENGTH_SHORT).show();
+		progressBar.setVisibility(View.GONE);
+		task = null;
 	}
 
 	enum Actions {
@@ -397,19 +403,21 @@ public class SelectFileActivity extends AppCompatActivity implements
 			searchView.setQuery("", false);
 		}
 
+		textViewEmpty.setVisibility(View.GONE);
+		progressBar.setVisibility(View.VISIBLE);
+
 		String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };
 
-		new UpdateListOfFilesAsyncTask(
-				currentFolder,
+		if (task != null && !task.isCancelled()) {
+			task.cancel(true);
+		}
+		task = new UpdateListOfFilesAsyncTask(
 				this,
 				unopenableExtensions,
 				getString(R.string.activity_select_file_file_detail),
 				getString(R.string.activity_select_file_folder_detail),
 				getString(R.string.home),
-				getString(R.string.folder))
-				.execute(path);
+				getString(R.string.folder));
+		task.execute(path);
 	}
-
-
-
 }
