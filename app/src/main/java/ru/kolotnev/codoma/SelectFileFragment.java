@@ -89,25 +89,12 @@ public class SelectFileFragment extends Fragment implements
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.activity_select_file, container, false);
 
-		currentFolder = PreferenceHelper.defaultFolder(this.getContext());
-
 		Toolbar toolbar = view.findViewById(R.id.toolbar);
 		((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
 		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
-
-		Bundle bundle = getArguments();
-		String lastNavigatedPath;
-		if (bundle != null) {
-			action = (Actions) bundle.getSerializable(EXTRA_ACTION);
-			lastNavigatedPath = bundle.getString(EXTRA_PATH,
-					PreferenceHelper.getWorkingFolder(getContext()));
-		} else {
-			action = Actions.SelectFile;
-			lastNavigatedPath = PreferenceHelper.getWorkingFolder(getContext());
 		}
 
 		adapter = new FileInfoAdapter(getContext(), this);
@@ -139,15 +126,31 @@ public class SelectFileFragment extends Fragment implements
 			checkPermissionReadStorage();
 		}
 
-		File file = new File(lastNavigatedPath);
+		if (savedInstanceState == null) {
+			Bundle bundle = getArguments();
+			String lastNavigatedPath;
+			if (bundle != null) {
+				action = (Actions) bundle.getSerializable(EXTRA_ACTION);
+				lastNavigatedPath = bundle.getString(EXTRA_PATH,
+						PreferenceHelper.getWorkingFolder(getContext()));
+			} else {
+				action = Actions.SelectFile;
+				lastNavigatedPath = PreferenceHelper.getWorkingFolder(getContext());
+			}
 
-		if (!file.exists()) {
-			PreferenceHelper.setWorkingFolder(getContext(), PreferenceHelper.defaultFolder(getContext()));
-			file = new File(PreferenceHelper.defaultFolder(getContext()));
+			File file = new File(lastNavigatedPath);
+
+			if (!file.exists()) {
+				PreferenceHelper.setWorkingFolder(getContext(), PreferenceHelper.defaultFolder(getContext()));
+				file = new File(PreferenceHelper.defaultFolder(getContext()));
+			}
+
+			updateList(file.getAbsolutePath());
+			Log.e(CodomaApplication.TAG, "start with " + file.getAbsolutePath());
+		} else {
+			updateList(currentFolder);
+			Log.e(CodomaApplication.TAG, "restart with " + currentFolder);
 		}
-
-		updateList(file.getAbsolutePath());
-		Log.e(CodomaApplication.TAG, "start with " + file.getAbsolutePath());
 
 		return view;
 	}
@@ -200,7 +203,6 @@ public class SelectFileFragment extends Fragment implements
 
 	@Override
 	public void onBackPressed() {
-		Log.e(CodomaApplication.TAG, "onBackPressed in fragment");
 		upOneLevel();
 	}
 
