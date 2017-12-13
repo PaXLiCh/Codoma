@@ -405,7 +405,7 @@ public class EditorActivity extends AppCompatActivity implements
 			intent.setType("*/*");
 		} else {
 			intent = new Intent(this, SelectFileActivity.class);
-			intent.putExtra("action", SelectFileActivity.Actions.SelectFile);
+			intent.putExtra("action", SelectFileFragment.Actions.SelectFile);
 		}
 		startActivityForResult(intent,
 				openAs ? REQUEST_CODE_SELECT_FILE_AS : REQUEST_CODE_SELECT_FILE);

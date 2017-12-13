@@ -258,9 +258,9 @@ public class TextFileFragment extends Fragment implements
 			startActivityForResult(intent, requestCode);
 		} else {
 			Intent subActivity = new Intent(activity, SelectFileActivity.class);
-			subActivity.putExtra(SelectFileActivity.EXTRA_ACTION, SelectFileActivity.Actions.SelectFile);
+			subActivity.putExtra(SelectFileFragment.EXTRA_ACTION, SelectFileFragment.Actions.SelectFile);
 			if (textFile.greatUri != null && textFile.greatUri.getUri() != Uri.EMPTY) {
-				subActivity.putExtra(SelectFileActivity.EXTRA_PATH, textFile.greatUri.getFilePath());
+				subActivity.putExtra(SelectFileFragment.EXTRA_PATH, textFile.greatUri.getFilePath());
 				//AnimationUtils.startActivityWithScale(this, subActivity, true, requestCode, view);
 			}
 			startActivityForResult(subActivity, requestCode);
