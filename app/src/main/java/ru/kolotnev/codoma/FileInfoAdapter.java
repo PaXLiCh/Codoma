@@ -99,9 +99,20 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		private final boolean isFolder;
 		private final boolean isExist;
 		private final Uri uri;
+		private final Uri symlinkUri;
 
 		FileDetail(Uri uri, String name, String description, boolean isExist, boolean isFolder) {
 			this.uri = uri;
+			this.name = name;
+			this.description = description;
+			this.isExist = isExist;
+			this.isFolder = isFolder;
+			this.symlinkUri = null;
+		}
+
+		FileDetail(@NonNull Uri canonicalUri, @NonNull Uri symlinkUri, String name, String description, boolean isExist, boolean isFolder) {
+			this.uri = canonicalUri;
+			this.symlinkUri = symlinkUri;
 			this.name = name;
 			this.description = description;
 			this.isExist = isExist;
@@ -111,6 +122,9 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		public Uri getUri() {
 			return uri;
 		}
+
+		@Nullable
+		public Uri getSymlinkUri() { return symlinkUri; }
 
 		public String getName() {
 			return name;
@@ -178,6 +192,10 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 				color = R.color.file_media_video;
 			} else {
 				color = R.color.file_text;
+			}
+
+			if (fileDetail.symlinkUri != null) {
+				color = android.R.color.black;
 			}
 			((GradientDrawable) iconBack.mutate()).setColor(ContextCompat.getColor(context, color));
 

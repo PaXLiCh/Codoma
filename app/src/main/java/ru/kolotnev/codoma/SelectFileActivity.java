@@ -207,7 +207,7 @@ public class SelectFileActivity extends AppCompatActivity implements
 			return;
 		}
 
-		final File selectedFile = new File(currentFolder, name);
+		final File selectedFile = new File(fileDetail.getUri().getPath());
 
 		if (selectedFile.isFile() && action == Actions.SelectFile) {
 			finishWithResult(selectedFile);

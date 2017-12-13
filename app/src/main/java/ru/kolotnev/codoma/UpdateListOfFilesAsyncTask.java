@@ -77,10 +77,6 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 
 			currentDirectory = tempFolder.getAbsolutePath();
 
-			if (isSymlink(tempFolder)) {
-				Log.e(CodomaApplication.TAG, "Symbolic link " + tempFolder.getAbsolutePath() + " " + tempFolder.getCanonicalPath());
-			}
-
 			final DateFormat format = DateFormat.getDateInstance();
 			final ArrayList<FileInfoAdapter.FileDetail> fileDetails = new ArrayList<>();
 			final ArrayList<FileInfoAdapter.FileDetail> folderDetails = new ArrayList<>();
@@ -120,16 +116,26 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 				return null;
 			} else {
 				File[] files = tempFolder.listFiles();
-
 				Arrays.sort(files, getFileNameComparator());
 
 				for (final File f : files) {
 					Uri uri = Uri.parse(f.toURI().toString());
+					Uri uriCanon = null;
+					if (isSymlink(f)) {
+						Log.v(CodomaApplication.TAG, "Symlink " + f.getAbsolutePath() + " -> " + f.getCanonicalPath());
+						uriCanon = Uri.parse(new File(f.getCanonicalPath()).toString());
+					}
 					if (f.isDirectory()) {
-						String description =
-								String.format(formatDetailFolder, format.format(f.lastModified()));
-						folderDetails.add(new FileInfoAdapter.FileDetail(uri, f.getName(),
-								description, true, true));
+						String description = String.format(
+								formatDetailFolder,
+								format.format(f.lastModified()));
+						folderDetails.add(new FileInfoAdapter.FileDetail(
+								uri, f.getName(), description, true, true));
+						if (uriCanon != null) {
+							folderDetails.add(new FileInfoAdapter.FileDetail(
+									uriCanon, uri, f.getName() + " -> " + uriCanon.getPath(),
+									description, true, true));
+						}
 					} else if (f.isFile()
 							&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
 							&& org.apache.commons.io.FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
@@ -139,6 +145,11 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 								format.format(f.lastModified()));
 						fileDetails.add(new FileInfoAdapter.FileDetail(
 								uri, f.getName(), description, true, false));
+						if (uriCanon != null) {
+							fileDetails.add(new FileInfoAdapter.FileDetail(
+									uriCanon, uri, f.getName() + " -> " + uriCanon.getPath(),
+									description, true, false));
+						}
 					}
 				}
 			}
