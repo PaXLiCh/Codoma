@@ -100,6 +100,7 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		private final boolean isExist;
 		private final Uri uri;
 		private final Uri symlinkUri;
+		private final boolean isRootRequired;
 
 		FileDetail(Uri uri, String name, String description, boolean isExist, boolean isFolder) {
 			this.uri = uri;
@@ -108,6 +109,17 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 			this.isExist = isExist;
 			this.isFolder = isFolder;
 			this.symlinkUri = null;
+			isRootRequired = false;
+		}
+
+		FileDetail(Uri uri, boolean isRooRequired, String name, String description, boolean isExist, boolean isFolder) {
+			this.uri = uri;
+			this.name = name;
+			this.description = description;
+			this.isExist = isExist;
+			this.isFolder = isFolder;
+			this.symlinkUri = null;
+			this.isRootRequired = isRooRequired;
 		}
 
 		FileDetail(@NonNull Uri canonicalUri, @NonNull Uri symlinkUri, String name, String description, boolean isExist, boolean isFolder) {
@@ -117,6 +129,7 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 			this.description = description;
 			this.isExist = isExist;
 			this.isFolder = isFolder;
+			this.isRootRequired = false;
 		}
 
 		public Uri getUri() {
@@ -141,6 +154,8 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		public boolean isFolder() {
 			return isFolder;
 		}
+
+		public boolean isRootRequired() { return isRootRequired; }
 	}
 
 	class ViewHolder extends RecyclerView.ViewHolder {

@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.spazedog.lib.rootfw4.RootFW;
 import com.spazedog.lib.rootfw4.utils.io.FileReader;
@@ -22,7 +23,6 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private final WeakReference<AppCompatActivity> activity;
 
 	private String message = "";
-	private boolean isRootRequired = false;
 	private ProgressDialogFragment progressDialog;
 	private TextFile[] textFiles;
 	private LoadTextFileListener listener;
@@ -67,25 +67,21 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 			publishProgress(0, 0);
 			TextFile textFile = params[currentFile];
 			// TODO: add ability to open many files and display progress with 2 bars on dialog
-			GreatUri newUri = textFile.greatUri;
+			GreatUri greatUri = textFile.greatUri;
 
 			try {
 				// if no new uri
-				if (newUri == null || newUri.getUri() == null || newUri.getUri() == Uri.EMPTY) {
+				if (greatUri == null || greatUri.getUri() == null || greatUri.getUri() == Uri.EMPTY) {
 					// file just empty
 				} else {
-					String filePath = newUri.getFilePath();
-
+					String filePath = greatUri.getFilePath();
+					// read the file associated with the uri
 					if (TextUtils.isEmpty(filePath)) {
 						// if the uri has no path
-						readUri(textFile, newUri.getUri(), filePath, false);
+						readUri(textFile, greatUri);
 					} else {
 						// if the uri has a path
-
-						// if we cannot read the file, root permission required
-						isRootRequired = !newUri.isReadable();
-						// read the file associated with the uri
-						readUri(textFile, newUri.getUri(), filePath, isRootRequired);
+						readUri(textFile, greatUri);
 					}
 
 				}
@@ -98,30 +94,44 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		return null;
 	}
 
-	private void readUri(@NonNull TextFile textFile, Uri uri, String path, boolean asRoot) throws IOException {
+	private void readUri(@NonNull TextFile textFile, @NonNull GreatUri uri) throws IOException {
 		LineReader lineReader = null;
-		StringBuilder stringBuilder = new StringBuilder();
 		FileReader reader = null;
 		InputStreamReader streamReader = null;
 		int fileSize = 0;
 
 		Context context = activity.get();
 
-		if (textFile.encoding == null || textFile.encoding.isEmpty()) {
-			textFile.encoding = FileUtils.detectEncoding(context.getContentResolver().openInputStream(uri));
-			if (textFile.encoding.isEmpty()) {
-				textFile.encoding = PreferenceHelper.getEncodingFallback(context);
-			}
-		}
+		// if we cannot read the file, root permission required
+		boolean isRootRequired = !uri.isReadable();
+		if (isRootRequired) {
+			Log.e(CodomaApplication.TAG, "Want to read with rootfw");
+			textFile.eol = PreferenceHelper.getLineEnding(context);
+			textFile.encoding = PreferenceHelper.getEncoding(context);
 
-		if (asRoot) {
 			// Connect the shared connection
 			if (RootFW.connect()) {
-				reader = RootFW.getFileReader(path);
+				com.spazedog.lib.rootfw4.utils.File fileRooted = RootFW.getFile(uri.getFilePath());
+				Log.e(CodomaApplication.TAG, "Want to read with rootfw (got file) path:" + uri.getFilePath() + " file:" + (fileRooted != null) + " exist " + fileRooted.exists());
+				try {
+					reader = new FileReader(uri.getFilePath());
+				} catch (Exception e) {
+					Log.e(CodomaApplication.TAG, "Want to read with rootfw (EXCEPTION " + e.getMessage() + ")");
+				}
+				Log.e(CodomaApplication.TAG, "Want to read with rootfw (got file reader)");
 				lineReader = new LineReader(reader);
+				Log.e(CodomaApplication.TAG, "Want to read with rootfw (got stream reader)");
 			}
 		} else {
-			InputStream inputStream = context.getContentResolver().openInputStream(uri);
+			// Read with normal reader
+			if (textFile.encoding == null || textFile.encoding.isEmpty()) {
+				textFile.encoding = FileUtils.detectEncoding(context.getContentResolver().openInputStream(uri.getUri()));
+				if (textFile.encoding.isEmpty()) {
+					textFile.encoding = PreferenceHelper.getEncodingFallback(context);
+				}
+			}
+
+			InputStream inputStream = context.getContentResolver().openInputStream(uri.getUri());
 			if (inputStream != null) {
 				streamReader = new InputStreamReader(inputStream, textFile.encoding);
 				lineReader = new LineReader(streamReader);
@@ -130,6 +140,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 			}
 		}
 
+		StringBuilder stringBuilder = new StringBuilder();
 		int readBytes = 0;
 		if (lineReader != null) {
 			String line;

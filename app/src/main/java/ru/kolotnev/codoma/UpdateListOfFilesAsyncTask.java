@@ -90,30 +90,37 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			if (!tempFolder.canRead()) {
 				if (RootFW.connect()) {
 					com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentDirectory);
-					com.spazedog.lib.rootfw4.utils.File.FileStat[] stats = folder.getDetailedList();
-					if (stats != null) {
-						for (com.spazedog.lib.rootfw4.utils.File.FileStat stat : stats) {
-							if (stat.type().equals("d")) {
-								folderDetails.add(new FileInfoAdapter.FileDetail(null, stat.name(),
-										String.format(formatDetailFolder, "no date"),
-										true, true));
-							} else if (!FilenameUtils.isExtension(stat.name().toLowerCase(), unopenableExtensions)
-									&& stat.size() <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
-								final long fileSize = stat.size();
-								String date = format.format(stat);
-								String description = String.format(formatDetailFile,
-										org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize),
-										date);
-								fileDetails.add(new FileInfoAdapter.FileDetail(
-										null,
-										stat.name(),
-										description,
-										true, false));
-							}
+					Log.e(CodomaApplication.TAG, "WANT ROOT!");
+					String[] files = folder.getList();
+					for (String fileName : files) {
+						String filePath = FilenameUtils.concat(currentDirectory, fileName);
+						com.spazedog.lib.rootfw4.utils.File file = RootFW.getFile(filePath);
+						Log.e(CodomaApplication.TAG, "ROOT FILE NAME " + fileName + " exist? " + file.exists() + " path:" + file.getCanonicalPath());
+						Uri uri = Uri.parse(filePath);
+
+						if (file.isDirectory()) {
+							folderDetails.add(new FileInfoAdapter.FileDetail(
+									uri,
+									true,
+									fileName,
+									String.format(formatDetailFolder, "no date"),
+									true, true));
+						} else if (!FilenameUtils.isExtension(fileName.toLowerCase(), unopenableExtensions)
+								&& file.size() <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
+							String date = "no date";//format.format(stat);
+							String description = String.format(formatDetailFile,
+									org.apache.commons.io.FileUtils.byteCountToDisplaySize(file.size()),
+									date);
+							fileDetails.add(new FileInfoAdapter.FileDetail(
+									uri,
+									true,
+									fileName,
+									description,
+									true, false));
 						}
+
 					}
 				}
-				return null;
 			} else {
 				File[] files = tempFolder.listFiles();
 				Arrays.sort(files, getFileNameComparator());
@@ -159,6 +166,7 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			return folderDetails;
 		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
+			Log.e(CodomaApplication.TAG, e.getMessage());
 			return null;
 		}
 	}

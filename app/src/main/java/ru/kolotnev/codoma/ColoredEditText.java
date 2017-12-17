@@ -2,6 +2,7 @@ package ru.kolotnev.codoma;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -148,7 +149,7 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 			updateHandler.postDelayed(colorUpdater, updateDelay);
 
 			// TODO: send correct invalidate
-			((Activity) getContext()).invalidateOptionsMenu();
+			((Activity)(((ContextWrapper) getContext())).getBaseContext()).invalidateOptionsMenu();
 		}
 	};
 	private boolean isNeedLineNumbers;

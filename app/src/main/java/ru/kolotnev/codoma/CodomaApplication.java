@@ -28,8 +28,39 @@ public class CodomaApplication extends Application {
 	public static final String PLAY_STORE = "market://search?q=pub:Kolotnev";
 
 	private static final List<TextFile> textFiles = new ArrayList<>();
-
+	public static EditorActivity.ScreenSlidePagerAdapter pagerAdapter;
 	public RecoveryManager recoveryManager;
+
+	public static int amountOfOpenedFiles() {
+		return textFiles.size();
+	}
+
+	public static void remove(TextFile textFile) {
+		textFiles.remove(textFile);
+		if (pagerAdapter != null) {
+			pagerAdapter.notifyDataSetChanged();
+		}
+	}
+
+	@Nullable
+	public static TextFile get(int location) {
+		if (location > -1 && location < textFiles.size()) {
+			return textFiles.get(location);
+		}
+		return null;
+	}
+
+	public static int add(TextFile textFile) {
+		textFiles.add(textFile);
+		if (pagerAdapter != null) {
+			pagerAdapter.notifyDataSetChanged();
+		}
+		return textFiles.indexOf(textFile);
+	}
+
+	public static int indexOfOpenedFile(TextFile textFile) {
+		return textFiles.indexOf(textFile);
+	}
 
 	@Override
 	public void onCreate() {
@@ -107,31 +138,6 @@ public class CodomaApplication extends Application {
 	public void onLowMemory() {
 		super.onLowMemory();
 		Log.e(TAG, "onLowMemory");
-	}
-
-	public static int amountOfOpenedFiles() {
-		return textFiles.size();
-	}
-
-	public static void remove(TextFile textFile) {
-		textFiles.remove(textFile);
-	}
-
-	@Nullable
-	public static TextFile get(int location) {
-		if (location > -1 && location < textFiles.size()) {
-			return textFiles.get(location);
-		}
-		return null;
-	}
-
-	public static int add(TextFile textFile) {
-		textFiles.add(textFile);
-		return textFiles.indexOf(textFile);
-	}
-
-	public static int indexOfOpenedFile(TextFile textFile) {
-		return textFiles.indexOf(textFile);
 	}
 
 	public void saveFiles() {

@@ -52,10 +52,12 @@ public class SelectFileFragment extends Fragment implements
 
 	public static final String EXTRA_ACTION = "action";
 	public static final String EXTRA_PATH = "path";
-
+	private static final String TAG = "Select file";
 	private static final String ROOT_DIR = "/";
 	private static final String PATH_SEPARATOR = "/";
 	private static final int MY_PERMISSIONS_REQUEST_READ_STORAGE = 0;
+	private static final int REQUEST_CODE_NAME_FILE = 21;
+	private static final int REQUEST_CODE_NAME_FOLDER = 22;
 	private FileInfoAdapter adapter;
 	private String currentFolder;
 	private MenuItem mSearchViewMenuItem;
@@ -69,7 +71,6 @@ public class SelectFileFragment extends Fragment implements
 	@Nullable
 	private UpdateListOfFilesAsyncTask task;
 
-
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,12 +82,15 @@ public class SelectFileFragment extends Fragment implements
 	public void onAttach(Context context) {
 		super.onAttach(context);
 
-		((OnBackPressedSubscriber)getActivity()).setOnBackPressedListener(this);
+		((OnBackPressedSubscriber) getActivity()).setOnBackPressedListener(this);
 	}
 
 	@Nullable
 	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+	public View onCreateView(
+			LayoutInflater inflater,
+			@Nullable ViewGroup container,
+			@Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.activity_select_file, container, false);
 
 		Toolbar toolbar = view.findViewById(R.id.toolbar);
@@ -110,7 +114,9 @@ public class SelectFileFragment extends Fragment implements
 		mFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FILE).show(getFragmentManager(), "dialog");
+				EditTextDialog dialog = EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FILE);
+				dialog.setTargetFragment(SelectFileFragment.this, REQUEST_CODE_NAME_FILE);
+				dialog.show(getFragmentManager(), "dialog");
 			}
 		});
 
@@ -118,7 +124,9 @@ public class SelectFileFragment extends Fragment implements
 		mFab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FOLDER).show(getFragmentManager(), "dialog");
+				EditTextDialog dialog = EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FOLDER);
+				dialog.setTargetFragment(SelectFileFragment.this, REQUEST_CODE_NAME_FOLDER);
+				dialog.show(getFragmentManager(), "dialog");
 			}
 		});
 
@@ -127,6 +135,7 @@ public class SelectFileFragment extends Fragment implements
 		}
 
 		if (savedInstanceState == null) {
+			// The file selection is started
 			Bundle bundle = getArguments();
 			String lastNavigatedPath;
 			if (bundle != null) {
@@ -138,19 +147,31 @@ public class SelectFileFragment extends Fragment implements
 				lastNavigatedPath = PreferenceHelper.getWorkingFolder(getContext());
 			}
 
+			// Check provided path, fallback to default path
 			File file = new File(lastNavigatedPath);
-
 			if (!file.exists()) {
-				PreferenceHelper.setWorkingFolder(getContext(), PreferenceHelper.defaultFolder(getContext()));
-				file = new File(PreferenceHelper.defaultFolder(getContext()));
+				String defaultFolder = PreferenceHelper.defaultFolder(getContext());
+				PreferenceHelper.setWorkingFolder(getContext(), defaultFolder);
+				file = new File(defaultFolder);
 			}
 
-			updateList(file.getAbsolutePath());
-			Log.e(CodomaApplication.TAG, "start with " + file.getAbsolutePath());
-		} else {
+			currentFolder = file.getAbsolutePath();
+
 			updateList(currentFolder);
-			Log.e(CodomaApplication.TAG, "restart with " + currentFolder);
+			Log.e(TAG, "start with " + currentFolder);
+		} else {
+			// View was recreated, rebuild list of files
+			if (task == null) {
+				updateList(currentFolder);
+				Log.e(TAG, "restart with " + currentFolder);
+			} else {
+				Log.e(TAG, "restart with " + currentFolder + " waiting for content");
+				textViewEmpty.setVisibility(View.GONE);
+				progressBar.setVisibility(View.VISIBLE);
+			}
 		}
+
+		setDirectoryButtons();
 
 		return view;
 	}
@@ -219,7 +240,7 @@ public class SelectFileFragment extends Fragment implements
 
 	@Override
 	public void onItemClick(FileInfoAdapter.FileDetail fileDetail) {
-		Log.e(CodomaApplication.TAG, "Click on item " + (fileDetail.getUri() == null));
+		Log.e(TAG, "Click on item " + (fileDetail.getUri() == null));
 		final String name = fileDetail.getName();
 		if (name.equals("..")) {
 			if (currentFolder.equals(ROOT_DIR)) {
@@ -239,14 +260,19 @@ public class SelectFileFragment extends Fragment implements
 			return;
 		}
 
-		final File selectedFile = new File(fileDetail.getUri().getPath());
-
-		if (selectedFile.isFile() && action == Actions.SelectFile) {
-			Log.e(CodomaApplication.TAG, "Click on file " + selectedFile.getAbsolutePath());
+		String path = fileDetail.getUri().getPath();
+		final File selectedFile = new File(path);
+		Log.e(TAG, "Click on smsth " + path + " " + selectedFile.getAbsoluteFile().exists());
+		if (fileDetail.isFolder()) {
+			Log.e(TAG, "Click on dir " + path + " root? " + fileDetail.isRootRequired());
+			if (action == Actions.SelectFolder) {
+				finishWithResult(selectedFile);
+			} else {
+				updateList(path);
+			}
+		} else if (action == Actions.SelectFile) {
+			Log.e(TAG, "Click on file " + path + " root? " + fileDetail.isRootRequired());
 			finishWithResult(selectedFile);
-		} else if (selectedFile.isDirectory()) {
-			updateList(selectedFile.getAbsolutePath());
-			Log.e(CodomaApplication.TAG, "Click on dir " + selectedFile.getAbsolutePath());
 		}
 	}
 
@@ -306,41 +332,60 @@ public class SelectFileFragment extends Fragment implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
 	public void onEditTextDialogEnded(final String inputText, final String hint, final EditTextDialog.Actions actions) {
-		if (inputText.length() == 0) {
+		if (TextUtils.isEmpty(inputText)) {
 			Toast.makeText(getContext(), R.string.dialog_error_no_file_name, Toast.LENGTH_LONG).show();
 			return;
 		}
 
-		if (actions == EditTextDialog.Actions.NEW_FILE && !TextUtils.isEmpty(inputText)) {
+		if (actions == EditTextDialog.Actions.NEW_FILE) {
 			File file = new File(currentFolder, inputText);
-			if (file.isDirectory()) {
-				Toast.makeText(getContext(), R.string.dialog_error_not_a_file, Toast.LENGTH_LONG).show();
-				return;
-			}
-			try {
-				if (file.createNewFile()) {
-					finishWithResult(file);
-				} else {
-					// No easy way to check filename for illegal characters like |?<>*+ because
-					// this is dependent on the file system type - FAT32, ext3, NTFS...
-					// The main application will catch such errors when it tries
-					// to create a file with the illegal name.
-					boolean exists = file.exists();
-					File parent = file.getParentFile();
-					if (!exists && !parent.canWrite()) {
-						// misc errors
-						Toast.makeText(getContext(), R.string.dialog_error_file_write_denied, Toast.LENGTH_LONG).show();
-					}
+			if (file.exists()) {
+				if (file.isDirectory()) {
+					Toast.makeText(getContext(), R.string.dialog_error_not_a_file, Toast.LENGTH_LONG).show();
+				} else if (file.isDirectory()) {
+					Toast.makeText(getContext(), "Specified name at current path is a folder\n" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
 				}
-			} catch (IOException e) {
-				Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+			} else {
+				try {
+					if (file.createNewFile()) {
+						finishWithResult(file);
+					} else {
+						// No easy way to check filename for illegal characters like |?<>*+ because
+						// this is dependent on the file system type - FAT32, ext3, NTFS...
+						// The main application will catch such errors when it tries
+						// to create a file with the illegal name.
+						boolean exists = file.exists();
+						File parent = file.getParentFile();
+						if (!exists && !parent.canWrite()) {
+							// misc errors
+							Toast.makeText(getContext(), R.string.dialog_error_file_write_denied, Toast.LENGTH_LONG).show();
+						}
+					}
+				} catch (IOException e) {
+					Toast.makeText(getContext(), "Unable to create file with path\n" + file.getAbsolutePath() + "\n" + e.getMessage(), Toast.LENGTH_SHORT).show();
+				}
 			}
-		} else if (actions == EditTextDialog.Actions.NEW_FOLDER && !TextUtils.isEmpty(inputText)) {
+		} else if (actions == EditTextDialog.Actions.NEW_FOLDER) {
 			File file = new File(currentFolder, inputText);
-			file.mkdirs();
+			if (file.exists()) {
+				if (file.isFile()) {
+					Toast.makeText(getContext(), "Specified name at current path is a file\n" + file.getAbsolutePath() + "\nSelect another name.", Toast.LENGTH_LONG).show();
+				} else if (file.isDirectory()) {
+					Toast.makeText(getContext(), "Specified folder is already exists at path\n" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+				}
+			} else {
+				try {
+					if (file.mkdirs()) {
+						currentFolder = file.getAbsolutePath();
+					} else {
+						Toast.makeText(getContext(), "Unable to create folder with path\n" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+					}
+				} catch (SecurityException e) {
+					Toast.makeText(getContext(), "Unable to create folder with path\n" + file.getAbsolutePath() + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+				}
+			}
 			updateList(currentFolder);
 		}
 	}
@@ -426,10 +471,6 @@ public class SelectFileFragment extends Fragment implements
 		task = null;
 	}
 
-	enum Actions {
-		SelectFile, SelectFolder
-	}
-
 	private void updateList(String path) {
 		if (searchView != null) {
 			searchView.setIconified(true);
@@ -453,5 +494,9 @@ public class SelectFileFragment extends Fragment implements
 				getString(R.string.home),
 				getString(R.string.folder));
 		task.execute(path);
+	}
+
+	enum Actions {
+		SelectFile, SelectFolder
 	}
 }

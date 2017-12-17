@@ -68,7 +68,7 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 		}
 
 		View view = View.inflate(getActivity(), R.layout.dialog_edittext, null);
-		mEditText = (EditText) view.findViewById(android.R.id.edit);
+		mEditText = view.findViewById(android.R.id.edit);
 		mEditText.setText(getArguments().getString(ARG_HINT));
 		mEditText.requestFocus();
 		mEditText.setOnEditorActionListener(this);

@@ -40,7 +40,6 @@ public class EditorActivity extends AppCompatActivity implements
 			REQUEST_CODE_PREFERENCES = 200;
 	private ActionBar actionBar;
 	private ViewPager viewPager;
-	private ScreenSlidePagerAdapter pagerAdapter;
 	private FindReplaceFragment _findPanel;
 
 	@Override
@@ -57,9 +56,9 @@ public class EditorActivity extends AppCompatActivity implements
 		setSupportActionBar(toolbar);
 		actionBar = getSupportActionBar();
 
+		CodomaApplication.pagerAdapter = new ScreenSlidePagerAdapter();
 		viewPager = (ViewPager) findViewById(R.id.view_pager);
-		pagerAdapter = new ScreenSlidePagerAdapter();
-		viewPager.setAdapter(pagerAdapter);
+		viewPager.setAdapter(CodomaApplication.pagerAdapter);
 
 		if (CodomaApplication.amountOfOpenedFiles() == 0) {
 			textFileFromText("welcome to Codoma!");
@@ -99,6 +98,7 @@ public class EditorActivity extends AppCompatActivity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		CodomaApplication.pagerAdapter = null;
 	}
 
 	@Override
@@ -223,6 +223,9 @@ public class EditorActivity extends AppCompatActivity implements
 
 		if (resultCode == RESULT_OK) {
 			final Uri uri = intent.getData();
+			if (uri == null) {
+				return;
+			}
 			if (Device.hasKitKatApi() && PreferenceHelper.getUseStorageAccessFramework(this)) {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 					final int takeFlags = intent.getFlags()
@@ -313,10 +316,7 @@ public class EditorActivity extends AppCompatActivity implements
 	@Override
 	public void onClose(TextFile textFile) {
 		CodomaApplication.remove(textFile);
-		pagerAdapter.notifyDataSetChanged();
-
 		//viewPager.setCurrentItem(0);
-
 		updateTitle();
 	}
 
@@ -424,39 +424,62 @@ public class EditorActivity extends AppCompatActivity implements
 	}
 
 	private void saveFile() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).save();
+		getCurrentFile().save();
 	}
 
 	private void saveFileAs() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).saveAs();
+		getCurrentFile().saveAs();
 	}
 
 	private void closeFile() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).close();
+		getCurrentFile().close();
 	}
 
 	private void undo() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).undo();
+		getCurrentFile().undo();
 	}
 
 	private void redo() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).redo();
+		getCurrentFile().redo();
 	}
 
 	private void goToLine() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).goToLine();
+		getCurrentFile().goToLine();
 	}
 
 	private void goToPagePrevious() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).gotoPrevPage();
+		getCurrentFile().gotoPrevPage();
 	}
 
 	private void goToPageNext() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).gotoNextPage();
+		getCurrentFile().gotoNextPage();
 	}
 
 	private void goToPage() {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).gotoPage();
+		getCurrentFile().gotoPage();
+	}
+
+	@Override
+	public void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		getCurrentFile().find(text, isCaseSensitive, isWholeWord, isRegex);
+	}
+
+	@Override
+	public void replace(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		getCurrentFile().replaceText(text, replace, isCaseSensitive, isWholeWord, isRegex);
+	}
+
+	@Override
+	public void replaceAll(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
+		getCurrentFile().replaceAll(text, replace, isCaseSensitive, isWholeWord, isRegex);
+	}
+
+	private TextFileFragment getFile(int index) {
+		return CodomaApplication.pagerAdapter.getRegisteredFragment(index);
+	}
+
+	private TextFileFragment getCurrentFile() {
+		return CodomaApplication.pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem());
 	}
 
 	private void textFileByUri(Uri uri, LineReader.LineEnding lineEnding, String encoding) {
@@ -505,8 +528,6 @@ public class EditorActivity extends AppCompatActivity implements
 			//textFile.detectSyntax();
 
 			int position = CodomaApplication.add(textFile);
-
-			pagerAdapter.notifyDataSetChanged();
 			viewPager.setCurrentItem(position);
 
 			updateTitle();
@@ -553,7 +574,6 @@ public class EditorActivity extends AppCompatActivity implements
 
 	/**
 	 * Closes the soft keyboard.
-	 *
 	 */
 	private void closeKeyBoard() {
 		// Central system API to the overall input method framework (IMF) architecture
@@ -583,25 +603,10 @@ public class EditorActivity extends AppCompatActivity implements
 		textFileByUri(uri, null, null);
 	}
 
-	@Override
-	public void find(@NonNull String text, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).find(text, isCaseSensitive, isWholeWord, isRegex);
-	}
-
-	@Override
-	public void replace(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).replaceText(text, replace, isCaseSensitive, isWholeWord, isRegex);
-	}
-
-	@Override
-	public void replaceAll(@NonNull String text, @NonNull String replace, boolean isCaseSensitive, boolean isWholeWord, boolean isRegex) {
-		pagerAdapter.getRegisteredFragment(viewPager.getCurrentItem()).replaceAll(text, replace, isCaseSensitive, isWholeWord, isRegex);
-	}
-
 	/**
 	 * Adapter for pages with opened files.
 	 */
-	private class ScreenSlidePagerAdapter extends SmartFragmentPagerAdapter<TextFileFragment> {
+	class ScreenSlidePagerAdapter extends SmartFragmentPagerAdapter<TextFileFragment> {
 		ScreenSlidePagerAdapter() {
 			super(getSupportFragmentManager(), TextFileFragment.class);
 		}
@@ -629,18 +634,6 @@ public class EditorActivity extends AppCompatActivity implements
 
 		@Override
 		public int getItemPosition(Object object) {
-			/*TextFileFragment frag = (TextFileFragment) object;
-			int pos = TextFileProvider.indexOfOpenedFile(frag.getTextFile());
-			if (pos == -1) return POSITION_NONE;
-			return pos;
-			SparseArrayCompat<TextFileFragment> sparseArray = getListOfRegisteredFragments();
-			for (int i = 0; i < sparseArray.size(); ++i) {
-				int key = sparseArray.keyAt(i);
-				// get the object by the key.
-				TextFileFragment obj = sparseArray.get(key);
-				if (obj == object)
-					return key;
-			}*/
 			return POSITION_NONE;
 		}
 	}
