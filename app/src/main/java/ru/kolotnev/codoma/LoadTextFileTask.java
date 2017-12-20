@@ -15,24 +15,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /**
  * Async task for opening text files.
  */
 class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
-	private final WeakReference<AppCompatActivity> activity;
+	private static final String TAG = LoadTextFileTask.class.getName();
+	private static final String TAG_DIALOG = "dialog_progress_load_text";
 
+	private final WeakReference<AppCompatActivity> activity;
+	private final ArrayList<TextFile> textFiles = new ArrayList<>();
+	private final boolean splitIntoPages;
+	@NonNull
+	private final String encodingDefault;
+	@NonNull
+	private final String encodingFallback;
 	private String message = "";
 	private ProgressDialogFragment progressDialog;
-	private TextFile[] textFiles;
 	private LoadTextFileListener listener;
 	private String fileTotalSize = "";
-	private boolean splitIntoPages = false;
 
 	LoadTextFileTask(@NonNull AppCompatActivity activity) {
 		super();
 		this.activity = new WeakReference<>(activity);
 		splitIntoPages = PreferenceHelper.getSplitText(activity);
+		encodingDefault = PreferenceHelper.getEncoding(activity);
+		encodingFallback = PreferenceHelper.getEncodingFallback(activity);
 
 		try {
 			this.listener = (LoadTextFileListener) activity;
@@ -41,49 +50,58 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		}
 	}
 
+	private static int safeLongToInt(long l) {
+		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException
+					(l + " cannot be cast to int without changing its value.");
+		}
+		return (int) l;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		progressDialog = ProgressDialogFragment.newInstance(0, R.string.dialog_progress_load_text_message, 0, R.plurals.dialog_progress_files_amount);
-		progressDialog.show(activity.get().getSupportFragmentManager(), "dialog_progress_load_text");
+		progressDialog = ProgressDialogFragment.newInstance(
+				0,
+				R.string.dialog_progress_load_text_message,
+				0,
+				R.plurals.dialog_progress_files_amount);
+		progressDialog.show(activity.get().getSupportFragmentManager(), TAG_DIALOG);
 	}
-
-	private int totalFiles = 0;
-	private int currentFile = 0;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected Void doInBackground(TextFile... params) {
-		textFiles = params;
+		int totalFiles = params.length;
 		//progressDialog.setTotal(params.length > 1);
-		totalFiles = textFiles.length;
-		for (int i = 0; i < textFiles.length; ++i) {
-			currentFile = i;
-			publishProgress(0, 0);
-			TextFile textFile = params[currentFile];
+
+		for (int i = 0; i < totalFiles; ++i) {
+			int currentFileIndex = i + 1;
+			publishProgress(0, 0, currentFileIndex, totalFiles);
+			TextFile textFile = params[i];
 			// TODO: add ability to open many files and display progress with 2 bars on dialog
 			GreatUri greatUri = textFile.greatUri;
+			if (greatUri == null || greatUri.getUri() == null || greatUri.getUri() == Uri.EMPTY) {
+				// if no uri, nothing to load, skip this file
+				Log.w(TAG, String.format("File %d '%s' cannot be loaded: no URI set.", i, textFile.getTitle()));
+				continue;
+			}
 
+			String filePath = greatUri.getFilePath();
 			try {
-				// if no new uri
-				if (greatUri == null || greatUri.getUri() == null || greatUri.getUri() == Uri.EMPTY) {
-					// file just empty
+				// read the file associated with the uri
+				if (TextUtils.isEmpty(filePath)) {
+					// if the uri has no path
+					readUri(textFile, greatUri, currentFileIndex, totalFiles);
 				} else {
-					String filePath = greatUri.getFilePath();
-					// read the file associated with the uri
-					if (TextUtils.isEmpty(filePath)) {
-						// if the uri has no path
-						readUri(textFile, greatUri);
-					} else {
-						// if the uri has a path
-						readUri(textFile, greatUri);
-					}
-
+					// if the uri has a path
+					readUri(textFile, greatUri, currentFileIndex, totalFiles);
+					textFiles.add(textFile);
 				}
 			} catch (Exception e) {
 				message = e.getMessage();
@@ -94,7 +112,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		return null;
 	}
 
-	private void readUri(@NonNull TextFile textFile, @NonNull GreatUri uri) throws IOException {
+	private void readUri(@NonNull TextFile textFile, @NonNull GreatUri uri, int currentFileIndex, int totalFiles) throws IOException {
 		LineReader lineReader = null;
 		FileReader reader = null;
 		InputStreamReader streamReader = null;
@@ -105,29 +123,40 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		// if we cannot read the file, root permission required
 		boolean isRootRequired = !uri.isReadable();
 		if (isRootRequired) {
-			Log.e(CodomaApplication.TAG, "Want to read with rootfw");
+			Log.e(TAG, "Want to read with rootfw");
 			textFile.eol = PreferenceHelper.getLineEnding(context);
-			textFile.encoding = PreferenceHelper.getEncoding(context);
+			if (textFile.encoding == null || textFile.encoding.isEmpty()) {
+				textFile.encoding = encodingDefault;
+				if (textFile.encoding.isEmpty()) {
+					textFile.encoding = encodingFallback;
+				}
+			}
 
 			// Connect the shared connection
 			if (RootFW.connect()) {
 				com.spazedog.lib.rootfw4.utils.File fileRooted = RootFW.getFile(uri.getFilePath());
-				Log.e(CodomaApplication.TAG, "Want to read with rootfw (got file) path:" + uri.getFilePath() + " file:" + (fileRooted != null) + " exist " + fileRooted.exists());
+				if (fileRooted == null) {
+					Log.e(TAG, "Want to read with rootfw (got file) path:" + uri.getFilePath() + " but file == null");
+					return;
+				}
+				Log.e(TAG, "Want to read with rootfw (got file) path:" + uri.getFilePath() + " exist " + fileRooted.exists());
 				try {
 					reader = new FileReader(uri.getFilePath());
 				} catch (Exception e) {
-					Log.e(CodomaApplication.TAG, "Want to read with rootfw (EXCEPTION " + e.getMessage() + ")");
+					Log.e(TAG, "Want to read with rootfw (EXCEPTION " + e.getMessage() + ")");
 				}
-				Log.e(CodomaApplication.TAG, "Want to read with rootfw (got file reader)");
+				Log.e(TAG, "Want to read with rootfw (got file reader)");
 				lineReader = new LineReader(reader);
-				Log.e(CodomaApplication.TAG, "Want to read with rootfw (got stream reader)");
+				Log.e(TAG, "Want to read with rootfw (got stream reader)");
+				fileSize = safeLongToInt(fileRooted.size());
+				fileTotalSize = org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize);
 			}
 		} else {
 			// Read with normal reader
 			if (textFile.encoding == null || textFile.encoding.isEmpty()) {
 				textFile.encoding = FileUtils.detectEncoding(context.getContentResolver().openInputStream(uri.getUri()));
 				if (textFile.encoding.isEmpty()) {
-					textFile.encoding = PreferenceHelper.getEncodingFallback(context);
+					textFile.encoding = encodingFallback;
 				}
 			}
 
@@ -140,13 +169,14 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 			}
 		}
 
+		// Read content of file
 		StringBuilder stringBuilder = new StringBuilder();
 		int readBytes = 0;
 		if (lineReader != null) {
 			String line;
 			while ((line = lineReader.readLine()) != null) {
 				readBytes += line.length() + 1;
-				publishProgress(readBytes, fileSize);
+				publishProgress(readBytes, fileSize, currentFileIndex, totalFiles);
 				stringBuilder.append(line);
 				stringBuilder.append("\n");
 			}
@@ -174,7 +204,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		if (!TextUtils.isEmpty(message)) {
 			listener.onFileLoadError(message);
 		} else {
-			listener.onFileLoaded(textFiles);
+			listener.onFileLoaded(textFiles.toArray(new TextFile[textFiles.size()]));
 		}
 	}
 
@@ -186,7 +216,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		super.onProgressUpdate(values);
 		progressDialog.setProgress(values[0], values[1],
 				org.apache.commons.io.FileUtils.byteCountToDisplaySize(values[0]) + " / " + fileTotalSize);
-		progressDialog.setProgressTotal(currentFile + 1, totalFiles);
+		progressDialog.setProgressTotal(values[2], values[3]);
 	}
 
 	/**

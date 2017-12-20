@@ -52,12 +52,12 @@ public class EditorActivity extends AppCompatActivity implements
 
 		RecentFilesProvider.loadFromPersistentStore(this);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		actionBar = getSupportActionBar();
 
 		CodomaApplication.pagerAdapter = new ScreenSlidePagerAdapter();
-		viewPager = (ViewPager) findViewById(R.id.view_pager);
+		viewPager = findViewById(R.id.view_pager);
 		viewPager.setAdapter(CodomaApplication.pagerAdapter);
 
 		if (CodomaApplication.amountOfOpenedFiles() == 0) {
@@ -65,7 +65,7 @@ public class EditorActivity extends AppCompatActivity implements
 		}
 
 		// Bind the tabs to the ViewPager
-		TabLayout tabs = (TabLayout) findViewById(android.R.id.tabs);
+		TabLayout tabs = findViewById(android.R.id.tabs);
 		tabs.setupWithViewPager(viewPager);
 
 		_findPanel = (FindReplaceFragment) getSupportFragmentManager().findFragmentById(R.id.find_replace);
