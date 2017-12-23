@@ -11,16 +11,21 @@ import android.util.Log;
 import com.spazedog.lib.rootfw4.RootFW;
 import com.spazedog.lib.rootfw4.utils.io.FileReader;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.io.output.NullOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
  * Async task for opening text files.
  */
-class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
+class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 	private static final String TAG = LoadTextFileTask.class.getName();
 	private static final String TAG_DIALOG = "dialog_progress_load_text";
 
@@ -34,7 +39,6 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	private String message = "";
 	private ProgressDialogFragment progressDialog;
 	private LoadTextFileListener listener;
-	private String fileTotalSize = "";
 
 	LoadTextFileTask(@NonNull AppCompatActivity activity) {
 		super();
@@ -48,14 +52,6 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		} catch (ClassCastException e) {
 			throw new ClassCastException("Context must implement LoadTextFileListener.");
 		}
-	}
-
-	private static int safeLongToInt(long l) {
-		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException
-					(l + " cannot be cast to int without changing its value.");
-		}
-		return (int) l;
 	}
 
 	/**
@@ -81,8 +77,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		//progressDialog.setTotal(params.length > 1);
 
 		for (int i = 0; i < totalFiles; ++i) {
-			int currentFileIndex = i + 1;
-			publishProgress(0, 0, currentFileIndex, totalFiles);
+			publishProgress(0L, 0L, (long) i, (long) totalFiles);
 			TextFile textFile = params[i];
 			// TODO: add ability to open many files and display progress with 2 bars on dialog
 			GreatUri greatUri = textFile.greatUri;
@@ -97,10 +92,10 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				// read the file associated with the uri
 				if (TextUtils.isEmpty(filePath)) {
 					// if the uri has no path
-					readUri(textFile, greatUri, currentFileIndex, totalFiles);
+					readUri(textFile, greatUri, i, totalFiles);
 				} else {
 					// if the uri has a path
-					readUri(textFile, greatUri, currentFileIndex, totalFiles);
+					readUri(textFile, greatUri, i, totalFiles);
 					textFiles.add(textFile);
 				}
 			} catch (Exception e) {
@@ -112,11 +107,11 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 		return null;
 	}
 
-	private void readUri(@NonNull TextFile textFile, @NonNull GreatUri uri, int currentFileIndex, int totalFiles) throws IOException {
+	private void readUri(@NonNull TextFile textFile, @NonNull GreatUri uri, long currentFileIndex, long totalFiles) throws IOException {
 		LineReader lineReader = null;
 		FileReader reader = null;
 		InputStreamReader streamReader = null;
-		int fileSize = 0;
+		long fileSize = 0L;
 
 		Context context = activity.get();
 
@@ -148,8 +143,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				Log.e(TAG, "Want to read with rootfw (got file reader)");
 				lineReader = new LineReader(reader);
 				Log.e(TAG, "Want to read with rootfw (got stream reader)");
-				fileSize = safeLongToInt(fileRooted.size());
-				fileTotalSize = org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize);
+				fileSize = fileRooted.size();
 			}
 		} else {
 			// Read with normal reader
@@ -165,21 +159,31 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				streamReader = new InputStreamReader(inputStream, textFile.encoding);
 				lineReader = new LineReader(streamReader);
 				fileSize = inputStream.available();
-				fileTotalSize = org.apache.commons.io.FileUtils.byteCountToDisplaySize(fileSize);
 			}
 		}
 
+		progressDialog.calibrateFileSizeMeter(fileSize);
+
 		// Read content of file
 		StringBuilder stringBuilder = new StringBuilder();
-		int readBytes = 0;
+		long bytesRead = 0L;
 		if (lineReader != null) {
+			NullOutputStream nullOutputStream = new NullOutputStream();
+			CountingOutputStream countingOutputStream = new CountingOutputStream(nullOutputStream);
+			Charset charset = Charset.forName(textFile.encoding);
+
 			String line;
 			while ((line = lineReader.readLine()) != null) {
-				readBytes += line.length() + 1;
-				publishProgress(readBytes, fileSize, currentFileIndex, totalFiles);
+				IOUtils.write(line, countingOutputStream, charset);
+				bytesRead += countingOutputStream.getByteCount() + lineReader.getLastEol().length();
+				countingOutputStream.resetByteCount();
+				publishProgress(bytesRead, fileSize, currentFileIndex, totalFiles);
 				stringBuilder.append(line);
 				stringBuilder.append("\n");
 			}
+			countingOutputStream.flush();
+			countingOutputStream.close();
+
 			if (streamReader != null)
 				streamReader.close();
 			if (reader != null)
@@ -189,6 +193,8 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 				textFile.eol = lineReader.getLineEndings();
 		}
 
+		// Current file now read
+		publishProgress(fileSize, fileSize, currentFileIndex + 1, totalFiles);
 		if (isRootRequired)
 			RootFW.disconnect();
 	}
@@ -212,11 +218,10 @@ class LoadTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onProgressUpdate(Integer... values) {
+	protected void onProgressUpdate(Long... values) {
 		super.onProgressUpdate(values);
-		progressDialog.setProgress(values[0], values[1],
-				org.apache.commons.io.FileUtils.byteCountToDisplaySize(values[0]) + " / " + fileTotalSize);
-		progressDialog.setProgressTotal(values[2], values[3]);
+		progressDialog.setProgressInBytes(values[0], values[1]);
+		progressDialog.setProgressTotal(values[2].intValue(), values[3].intValue());
 	}
 
 	/**

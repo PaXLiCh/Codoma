@@ -34,14 +34,14 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 
 	@Nullable
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.find_replace_panel, container);
 		v.findViewById(R.id.find_panel_find_next).setOnClickListener(this);
 		v.findViewById(R.id.find_panel_replace).setOnClickListener(this);
 		v.findViewById(R.id.find_panel_replace_all).setOnClickListener(this);
 		v.findViewById(R.id.find_panel_settings).setOnClickListener(this);
 
-		editTextFind = (EditText) v.findViewById(R.id.find_panel_search_text);
+		editTextFind = v.findViewById(R.id.find_panel_search_text);
 		editTextFind.setOnKeyListener(new View.OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -55,7 +55,7 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 			}
 		});
 
-		editTextReplace = (EditText) v.findViewById(R.id.find_panel_replace_text);
+		editTextReplace = v.findViewById(R.id.find_panel_replace_text);
 		editTextReplace.setOnKeyListener(new View.OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if (keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -107,9 +107,9 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 		Context context = getActivity();
 
 		View v = View.inflate(context, R.layout.dialog_search_options, null);
-		final CheckBox checkCase = (CheckBox) v.findViewById(R.id.find_panel_case_sensitive);
-		final CheckBox checkWholeWord = (CheckBox) v.findViewById(R.id.find_panel_match_whole_word);
-		final CheckBox checkRegex = (CheckBox) v.findViewById(R.id.find_panel_regex);
+		final CheckBox checkCase = v.findViewById(R.id.find_panel_case_sensitive);
+		final CheckBox checkWholeWord = v.findViewById(R.id.find_panel_match_whole_word);
+		final CheckBox checkRegex = v.findViewById(R.id.find_panel_regex);
 
 		checkCase.setChecked(isCase);
 		checkWholeWord.setChecked(isWholeWord);

@@ -174,8 +174,20 @@
 
 	<plurals name="dialog_progress_files_amount">
 		<item quantity="one">One file</item>
-		<item quantity="few">%2$d of %1$d files</item>
+		<item quantity="few">%1$d of the %2$d files</item>
 	</plurals>
+	<string name="dialog_progress_size">%1$d of %2$d %3$s</string>
+	<string-array name="dialog_progress_size_prefix">
+		<item>bytes</item>
+		<item>KiB</item>
+		<item>MiB</item>
+		<item>GiB</item>
+		<item>TiB</item>
+		<item>PiB</item>
+		<item>EiB</item>
+		<item>ZiB</item>
+		<item>YiB</item>
+	</string-array>
 
 	<!--
 	NEW EDITOR SETTINGS

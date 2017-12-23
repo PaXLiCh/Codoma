@@ -3,6 +3,7 @@ package ru.kolotnev.codoma;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.PluralsRes;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.math.BigInteger;
+
 /**
  * Special dialog fragment for progress.
  */
@@ -22,8 +25,24 @@ public class ProgressDialogFragment extends DialogFragment {
 	private static final String ARG_MESSAGE = "message";
 	private static final String ARG_PROGRESS = "progress";
 	private static final String ARG_PROGRESS_TOTAL = "progress_total";
+	private TextView textMessage;
+	private ProgressBar progressBar;
+	private TextView textProgress;
+	private View viewTotal;
+	private ProgressBar progressBarTotal;
+	private TextView textProgressTotal;
+	private int progressRes;
+	private int progressTotalRes;
+	@NonNull
+	private BigInteger fileSizeDivider = BigInteger.ONE;
+	private int powerOfSize = 0;
 
-	public static ProgressDialogFragment newInstance(@StringRes int title, @StringRes int message, @PluralsRes int progress, @PluralsRes int progressTotal) {
+	@NonNull
+	public static ProgressDialogFragment newInstance(
+			@StringRes int title,
+			@StringRes int message,
+			@PluralsRes int progress,
+			@PluralsRes int progressTotal) {
 		ProgressDialogFragment dialog = new ProgressDialogFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_TITLE, title);
@@ -36,25 +55,18 @@ public class ProgressDialogFragment extends DialogFragment {
 		return dialog;
 	}
 
-	private TextView textMessage;
-	private ProgressBar progressBar;
-	private TextView textProgress;
-
-	private View viewTotal;
-	private ProgressBar progressBarTotal;
-	private TextView textProgressTotal;
-
-	private int progressRes;
-	private int progressTotalRes;
-
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		int title = args.getInt(ARG_TITLE);
-		int message = args.getInt(ARG_MESSAGE);
-		progressRes = args.getInt(ARG_PROGRESS);
-		progressTotalRes = args.getInt(ARG_PROGRESS_TOTAL);
+		int title = 0;
+		String message = "";
+		if (args != null) {
+			title = args.getInt(ARG_TITLE);
+			message = getString(args.getInt(ARG_MESSAGE));
+			progressRes = args.getInt(ARG_PROGRESS);
+			progressTotalRes = args.getInt(ARG_PROGRESS_TOTAL);
+		}
 
 		Context context = getContext();
 
@@ -108,6 +120,57 @@ public class ProgressDialogFragment extends DialogFragment {
 
 	public void setTotal(boolean isTotal) {
 		viewTotal.setVisibility(isTotal ? View.VISIBLE : View.GONE);
+	}
+
+	/**
+	 * Adjust representation of file size.
+	 *
+	 * @param sizeOfFile
+	 * 		Maximal file size.
+	 */
+	public void calibrateFileSizeMeter(final long sizeOfFile) {
+		final BigInteger size = BigInteger.valueOf(sizeOfFile);
+		int powerChecked = 0;
+		int powerToCheck = 0;
+		BigInteger b;
+		boolean isNeedToDivide = true;
+		while (isNeedToDivide) {
+			b = BigInteger.valueOf(2).pow(powerToCheck);
+			if (size.divide(b).compareTo(BigInteger.ZERO) > 0) {
+				powerChecked = powerToCheck;
+				powerToCheck += 10;
+			} else {
+				isNeedToDivide = false;
+				powerOfSize = powerChecked / 10;
+				fileSizeDivider = BigInteger.valueOf(2).pow(powerChecked);
+			}
+		}
+	}
+
+	/**
+	 * Set progress in bytes.
+	 *
+	 * @param bytesRead
+	 * 		Bytes read.
+	 * @param bytesTotal
+	 * 		Total number of bytes.
+	 */
+	public void setProgressInBytes(final long bytesRead, final long bytesTotal) {
+		final BigInteger bytesReadInt = BigInteger.valueOf(bytesRead).divide(fileSizeDivider);
+		final BigInteger bytesTotalInt = BigInteger.valueOf(bytesTotal).divide(fileSizeDivider);
+		Context context = getContext();
+		String formatted;
+		if (context == null) {
+			formatted = String.valueOf(bytesReadInt) + " / " + org.apache.commons.io.FileUtils.byteCountToDisplaySize(bytesTotalInt);
+		} else {
+			Resources resources = context.getResources();
+			formatted = getString(
+					R.string.dialog_progress_size,
+					bytesReadInt,
+					bytesTotalInt,
+					resources.getStringArray(R.array.dialog_progress_size_prefix)[powerOfSize]);
+		}
+		setProgress(bytesReadInt.intValue(), bytesTotalInt.intValue(), formatted);
 	}
 
 	public void setProgressTotal(Integer current, Integer max) {

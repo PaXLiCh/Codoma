@@ -32,7 +32,7 @@ public class IndeterminateProgressDialogFragment extends DialogFragment {
 		Bundle args = getArguments();
 		int message = args.getInt(ARG_MESSAGE);
 		View v = View.inflate(context, R.layout.dialog_progress_indeterminate, null);
-		TextView textView = (TextView) v.findViewById(android.R.id.message);
+		TextView textView = v.findViewById(android.R.id.message);
 		textView.setText(message);
 		return new AlertDialog.Builder(context)
 				.setView(v)

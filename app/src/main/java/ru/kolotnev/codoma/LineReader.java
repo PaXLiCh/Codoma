@@ -36,7 +36,7 @@ public final class LineReader {
 	 * Creates a new instance that will read lines from the given
 	 * {@code Readable} object.
 	 */
-	public LineReader(Readable readable) {
+	LineReader(Readable readable) {
 		//this.readable = checkNotNull(readable);
 		if (readable == null) {
 			throw new NullPointerException();
@@ -58,7 +58,6 @@ public final class LineReader {
 	 * 		if an I/O error occurs
 	 */
 	public String readLine() throws IOException {
-		eolLast = "";
 		while (lines.peek() == null) {
 			cbuf.clear();
 			// The default implementation of Reader#read(CharBuffer) allocates a

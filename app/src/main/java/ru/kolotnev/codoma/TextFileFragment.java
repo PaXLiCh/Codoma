@@ -115,7 +115,7 @@ public class TextFileFragment extends Fragment implements
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		// Inflate the layout for this fragment
@@ -142,7 +142,7 @@ public class TextFileFragment extends Fragment implements
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
 	}
 

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
@@ -67,16 +68,19 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 			}
 		}
 
-		View view = View.inflate(getActivity(), R.layout.dialog_edittext, null);
+		FragmentActivity activity = getActivity();
+		View view = View.inflate(activity, R.layout.dialog_edittext, null);
 		mEditText = view.findViewById(android.R.id.edit);
 		mEditText.setText(getArguments().getString(ARG_HINT));
 		mEditText.requestFocus();
 		mEditText.setOnEditorActionListener(this);
 
 		// Show soft keyboard automatically
-		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		if (activity != null) {
+			activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		}
 
-		return new AlertDialog.Builder(getActivity())
+		return new AlertDialog.Builder(activity)
 				.setTitle(title)
 				.setView(view)
 				.setPositiveButton(android.R.string.ok,
@@ -92,12 +96,17 @@ public class EditTextDialog extends DialogFragment implements TextView.OnEditorA
 	}
 
 	void returnData() {
+		Bundle args = getArguments();
 		EditDialogListener target = (EditDialogListener) getTargetFragment();
 		if (target == null) {
 			target = (EditDialogListener) getActivity();
 		}
-		target.onEditTextDialogEnded(mEditText.getText().toString(), getArguments().getString(ARG_HINT),
-				(Actions) getArguments().getSerializable(ARG_ACTION));
+		if (target != null && args != null) {
+			target.onEditTextDialogEnded(
+					mEditText.getText().toString(),
+					args.getString(ARG_HINT),
+					(Actions) args.getSerializable(ARG_ACTION));
+		}
 		this.dismiss();
 	}
 

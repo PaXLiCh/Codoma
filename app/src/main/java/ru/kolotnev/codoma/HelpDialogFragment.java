@@ -24,7 +24,7 @@ public class HelpDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		View v = View.inflate(getContext(), R.layout.dialog_help, null);
 
-		WebView contents = (WebView) v.findViewById(R.id.help_content);
+		WebView contents = v.findViewById(R.id.help_content);
 		contents.getSettings().setBuiltInZoomControls(true);
 
 		contents.loadUrl(determineHelpFile());

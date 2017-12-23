@@ -134,11 +134,22 @@
 	</plurals>
 
 	<plurals name="dialog_progress_files_amount">
-		<item quantity="one">%2$d из %1$d файла</item>
-		<item quantity="few">%2$d из %1$d файлов</item>
-		<item quantity="many">%2$d из %1$d файлов</item>
+		<item quantity="one">%1$d из %2$d файла</item>
+		<item quantity="few">%1$d из %2$d файлов</item>
+		<item quantity="many">%1$d из %2$d файлов</item>
 	</plurals>
-
+	<string name="dialog_progress_size">%1$d из %2$d %3$s</string>
+	<string-array name="dialog_progress_size_prefix">
+		<item>байт</item>
+		<item>КиБ</item>
+		<item>МиБ</item>
+		<item>ГиБ</item>
+		<item>ТиБ</item>
+		<item>ПиБ</item>
+		<item>ЭиБ</item>
+		<item>ЗиБ</item>
+		<item>ЙиБ</item>
+	</string-array>
 
 	<!--
 	SETTINGS

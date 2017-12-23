@@ -5,30 +5,47 @@
 	android:layout_height="wrap_content"
 	android:layout_gravity=""
 	android:gravity="center_vertical"
-	android:padding="16dp"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:padding="16dp">
 
 	<TextView
-		android:paddingBottom="16dp"
 		android:id="@android:id/message"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-		android:text="@string/app_name"/>
+		android:paddingBottom="16dp"
+		android:text="@string/app_name"
+		android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+	<ProgressBar
+		android:id="@android:id/progress"
+		style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:indeterminate="false"
+		android:max="30"
+		android:progress="10"/>
+
+	<TextView
+		android:id="@android:id/text1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="end"
+		android:text="10/10"/>
 
 	<LinearLayout
-		android:orientation="vertical"
 		android:id="@android:id/primary"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
 		<ProgressBar
-			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
 			android:id="@android:id/secondaryProgress"
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:indeterminate="false"
-			android:progress="10"
-			android:max="30"/>
+			android:max="30"
+			android:progress="10"/>
 
 		<TextView
 			android:id="@android:id/text2"
@@ -37,19 +54,4 @@
 			android:layout_gravity="end"
 			android:text="10/10"/>
 	</LinearLayout>
-	<ProgressBar
-		style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-		android:id="@android:id/progress"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:indeterminate="false"
-		android:progress="10"
-		android:max="30"/>
-
-	<TextView
-		android:id="@android:id/text1"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="end"
-		android:text="10/10"/>
 </LinearLayout>
