@@ -112,14 +112,14 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 			isRootRequired = false;
 		}
 
-		FileDetail(Uri uri, boolean isRooRequired, String name, String description, boolean isExist, boolean isFolder) {
+		FileDetail(Uri uri, boolean isRootRequired, String name, String description, boolean isExist, boolean isFolder) {
 			this.uri = uri;
 			this.name = name;
 			this.description = description;
 			this.isExist = isExist;
 			this.isFolder = isFolder;
 			this.symlinkUri = null;
-			this.isRootRequired = isRooRequired;
+			this.isRootRequired = isRootRequired;
 		}
 
 		FileDetail(@NonNull Uri canonicalUri, @NonNull Uri symlinkUri, String name, String description, boolean isExist, boolean isFolder) {

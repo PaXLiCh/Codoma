@@ -161,8 +161,9 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 				fileSize = inputStream.available();
 			}
 		}
-
-		progressDialog.calibrateFileSizeMeter(fileSize);
+		if (progressDialog != null) {
+			progressDialog.calibrateFileSizeMeter(fileSize);
+		}
 
 		// Read content of file
 		StringBuilder stringBuilder = new StringBuilder();
@@ -178,8 +179,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 				bytesRead += countingOutputStream.getByteCount() + lineReader.getLastEol().length();
 				countingOutputStream.resetByteCount();
 				publishProgress(bytesRead, fileSize, currentFileIndex, totalFiles);
-				stringBuilder.append(line);
-				stringBuilder.append("\n");
+				stringBuilder.append(line).append("\n");
 			}
 			countingOutputStream.flush();
 			countingOutputStream.close();

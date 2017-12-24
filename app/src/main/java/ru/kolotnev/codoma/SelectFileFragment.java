@@ -481,14 +481,14 @@ public class SelectFileFragment extends Fragment implements
 		textViewEmpty.setVisibility(View.GONE);
 		progressBar.setVisibility(View.VISIBLE);
 
-		String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };
-
+		//String[] unopenableExtensions = { "apk", "mp3", "mp4", "png", "jpg", "jpeg" };
+		//!FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
+		//		f.length() <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB
 		if (task != null && !task.isCancelled()) {
 			task.cancel(true);
 		}
 		task = new UpdateListOfFilesAsyncTask(
 				this,
-				unopenableExtensions,
 				getString(R.string.activity_select_file_file_detail),
 				getString(R.string.activity_select_file_folder_detail),
 				getString(R.string.home),

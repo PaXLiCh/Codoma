@@ -25,6 +25,7 @@ public class ProgressDialogFragment extends DialogFragment {
 	private static final String ARG_MESSAGE = "message";
 	private static final String ARG_PROGRESS = "progress";
 	private static final String ARG_PROGRESS_TOTAL = "progress_total";
+	private static final BigInteger TWO_BYTES = BigInteger.valueOf(2);
 	private TextView textMessage;
 	private ProgressBar progressBar;
 	private TextView textProgress;
@@ -97,28 +98,28 @@ public class ProgressDialogFragment extends DialogFragment {
 		return builder.create();
 	}
 
-	public void setMessage(@NonNull CharSequence message) {
+	public void setMessage(@NonNull final CharSequence message) {
 		textMessage.setText(message);
 	}
 
-	public void setMessage(@StringRes int message) {
+	public void setMessage(@StringRes final int message) {
 		textMessage.setText(message);
 	}
 
-	public void setProgress(Integer current, Integer max) {
+	public void setProgress(final int current, final int max) {
 		progressBar.setProgress(current);
 		progressBar.setMax(max);
 		if (progressRes == 0) return;
 		textProgress.setText(getResources().getQuantityString(progressRes, max, current, max));
 	}
 
-	public void setProgress(Integer current, Integer max, @NonNull String formattedProgress) {
+	public void setProgress(final int current, final int max, @NonNull final String formattedProgress) {
 		progressBar.setProgress(current);
 		progressBar.setMax(max);
 		textProgress.setText(formattedProgress);
 	}
 
-	public void setTotal(boolean isTotal) {
+	public void setTotal(final boolean isTotal) {
 		viewTotal.setVisibility(isTotal ? View.VISIBLE : View.GONE);
 	}
 
@@ -135,14 +136,14 @@ public class ProgressDialogFragment extends DialogFragment {
 		BigInteger b;
 		boolean isNeedToDivide = true;
 		while (isNeedToDivide) {
-			b = BigInteger.valueOf(2).pow(powerToCheck);
+			b = TWO_BYTES.pow(powerToCheck);
 			if (size.divide(b).compareTo(BigInteger.ZERO) > 0) {
 				powerChecked = powerToCheck;
 				powerToCheck += 10;
 			} else {
 				isNeedToDivide = false;
 				powerOfSize = powerChecked / 10;
-				fileSizeDivider = BigInteger.valueOf(2).pow(powerChecked);
+				fileSizeDivider = TWO_BYTES.pow(powerChecked);
 			}
 		}
 	}
@@ -173,14 +174,14 @@ public class ProgressDialogFragment extends DialogFragment {
 		setProgress(bytesReadInt.intValue(), bytesTotalInt.intValue(), formatted);
 	}
 
-	public void setProgressTotal(Integer current, Integer max) {
+	public void setProgressTotal(final int current, final int max) {
 		progressBarTotal.setProgress(current);
 		progressBarTotal.setMax(max);
 		if (progressTotalRes == 0) return;
 		textProgressTotal.setText(getResources().getQuantityString(progressTotalRes, max, current, max));
 	}
 
-	public void setProgressTotal(Integer current, Integer max, @NonNull String formattedProgress) {
+	public void setProgressTotal(final int current, final int max, @NonNull final String formattedProgress) {
 		progressBarTotal.setProgress(current);
 		progressBarTotal.setMax(max);
 		textProgressTotal.setText(formattedProgress);

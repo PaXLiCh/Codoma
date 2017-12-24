@@ -2,6 +2,7 @@ package ru.kolotnev.codoma;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -23,12 +24,12 @@ import java.util.List;
  * Fetch list of files at specified directory.
  */
 class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAdapter.FileDetail>> {
+	private static final String TAG = UpdateListOfFilesAsyncTask.class.getSimpleName();
 	private String exceptionMessage;
 	@NonNull
 	private String currentDirectory;
 	@Nullable
 	private UpdateListOfFilesListener listener;
-	private String[] unopenableExtensions;
 	@NonNull
 	private String formatDetailFile;
 	@NonNull
@@ -40,18 +41,30 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 
 	UpdateListOfFilesAsyncTask(
 			@NonNull UpdateListOfFilesListener listener,
-			String[] unopenableExtensions,
 			@NonNull String formatDetailFile,
 			@NonNull String formatDetailFolder,
 			@NonNull String stringHome,
 			@NonNull String stringFolder) {
 		this.listener = listener;
-		this.unopenableExtensions = unopenableExtensions;
 		this.formatDetailFile = formatDetailFile;
 		this.formatDetailFolder = formatDetailFolder;
 		this.stringHome = stringHome;
 		this.stringFolder = stringFolder;
 		currentDirectory = "";
+	}
+
+	private static boolean isSymbolicLink(@NonNull File file) throws IOException {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			return java.nio.file.Files.isSymbolicLink(file.toPath());
+		}
+		File canon;
+		if (file.getParent() == null) {
+			canon = file;
+		} else {
+			File canonDir = file.getParentFile().getCanonicalFile();
+			canon = new File(canonDir, file.getName());
+		}
+		return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
 	}
 
 	@Override
@@ -90,27 +103,30 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			if (!tempFolder.canRead()) {
 				if (RootFW.connect()) {
 					com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentDirectory);
-					Log.e(CodomaApplication.TAG, "WANT ROOT!");
+					Log.v(TAG, "Superuser permissions are obtained");
 					String[] files = folder.getList();
 					for (String fileName : files) {
 						String filePath = FilenameUtils.concat(currentDirectory, fileName);
 						com.spazedog.lib.rootfw4.utils.File file = RootFW.getFile(filePath);
-						Log.e(CodomaApplication.TAG, "ROOT FILE NAME " + fileName + " exist? " + file.exists() + " path:" + file.getCanonicalPath());
-						Uri uri = Uri.parse(filePath);
+						File f = new File(filePath);
+						Uri uri = Uri.parse(f.toURI().toString());
+						Uri uriCanon = null;
+						if (isSymbolicLink(f)) {
+							Log.v(TAG, "Symlink " + f.getAbsolutePath() + " -> " + f.getCanonicalPath());
+							uriCanon = Uri.parse(new File(f.getCanonicalPath()).toString());
+						}
 
 						if (file.isDirectory()) {
 							folderDetails.add(new FileInfoAdapter.FileDetail(
 									uri,
 									true,
 									fileName,
-									String.format(formatDetailFolder, "no date"),
+									String.format(formatDetailFolder, format.format(f.lastModified())),
 									true, true));
-						} else if (!FilenameUtils.isExtension(fileName.toLowerCase(), unopenableExtensions)
-								&& file.size() <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
-							String date = "no date";//format.format(stat);
+						} else if (file.isFile()) {
 							String description = String.format(formatDetailFile,
 									org.apache.commons.io.FileUtils.byteCountToDisplaySize(file.size()),
-									date);
+									format.format(f.lastModified()));
 							fileDetails.add(new FileInfoAdapter.FileDetail(
 									uri,
 									true,
@@ -128,8 +144,8 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 				for (final File f : files) {
 					Uri uri = Uri.parse(f.toURI().toString());
 					Uri uriCanon = null;
-					if (isSymlink(f)) {
-						Log.v(CodomaApplication.TAG, "Symlink " + f.getAbsolutePath() + " -> " + f.getCanonicalPath());
+					if (isSymbolicLink(f)) {
+						Log.v(TAG, "Symlink " + f.getAbsolutePath() + " -> " + f.getCanonicalPath());
 						uriCanon = Uri.parse(new File(f.getCanonicalPath()).toString());
 					}
 					if (f.isDirectory()) {
@@ -143,9 +159,7 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 									uriCanon, uri, f.getName() + " -> " + uriCanon.getPath(),
 									description, true, true));
 						}
-					} else if (f.isFile()
-							&& !FilenameUtils.isExtension(f.getName().toLowerCase(), unopenableExtensions)
-							&& org.apache.commons.io.FileUtils.sizeOf(f) <= CodomaApplication.MAX_FILE_SIZE * org.apache.commons.io.FileUtils.ONE_KB) {
+					} else if (f.isFile()) {
 						String description = String.format(
 								formatDetailFile,
 								org.apache.commons.io.FileUtils.byteCountToDisplaySize(f.length()),
@@ -166,7 +180,7 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			return folderDetails;
 		} catch (Exception e) {
 			exceptionMessage = e.getMessage();
-			Log.e(CodomaApplication.TAG, e.getMessage());
+			Log.e(TAG, e.getMessage());
 			return null;
 		}
 	}
@@ -197,17 +211,6 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 				return ((File) obj).getName().toLowerCase();
 			}
 		};
-	}
-
-	private static boolean isSymlink(@NonNull File file) throws IOException {
-		File canon;
-		if (file.getParent() == null) {
-			canon = file;
-		} else {
-			File canonDir = file.getParentFile().getCanonicalFile();
-			canon = new File(canonDir, file.getName());
-		}
-		return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
 	}
 
 	interface UpdateListOfFilesListener {

@@ -305,7 +305,7 @@ public class TextFile implements TextWatcher {
 	public void afterTextChanged(Editable s) {
 		boolean showUndo = getCanUndo();
 		boolean showRedo = getCanRedo();
-		isModified = !isModified && showUndo;
+		isModified = showUndo;
 		if (showUndo != mShowUndo || showRedo != mShowRedo) {
 			mShowUndo = showUndo;
 			mShowRedo = showRedo;

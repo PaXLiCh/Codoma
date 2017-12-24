@@ -19,12 +19,11 @@ import java.nio.charset.Charset;
 /**
  * Asynchronous saving file.
  */
-class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
+class SaveTextFileTask extends AsyncTask<TextFile, Long, Void> {
 	private final WeakReference<AppCompatActivity> activity;
 	private SaveTextFileListener listener;
 	private ProgressDialogFragment progressDialog;
 	private boolean isSuccessful = false;
-	private String fileTotalSize;
 	private String errorMessage = "";
 
 	SaveTextFileTask(@NonNull AppCompatActivity activity, SaveTextFileListener listener) {
@@ -44,17 +43,26 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	 */
 	@Override
 	protected Void doInBackground(final TextFile... textFiles) {
-		for (TextFile textFile : textFiles) {
-			String newContent = textFile.getAllText();
+		int totalFiles = textFiles.length;
+		for (int i = 0; i < totalFiles; ++i) {
+			TextFile textFile = textFiles[i];
+			publishProgress(0L, 0L, (long) i, (long) totalFiles);
 
+			String newContent = textFile.getAllText();
+			byte[] bytes = newContent.getBytes(Charset.forName(textFile.encoding));
+
+			long fileSize = bytes.length;
+			if (progressDialog != null) {
+				progressDialog.calibrateFileSizeMeter(fileSize);
+			}
 			try {
 				String filePath = textFile.greatUri.getFilePath();
 				// if the uri has no path
 				if (TextUtils.isEmpty(filePath)) {
-					writeUri(textFile.greatUri.getUri(), newContent, textFile.encoding);
+					writeUri(textFile.greatUri.getUri(), bytes);
 				} else {
 					if (textFile.greatUri.isWritable()) {
-						writeUri(textFile.greatUri.getUri(), newContent, textFile.encoding);
+						writeUri(textFile.greatUri.getUri(), bytes);
 					} else {
 						// if we can read the file associated with the uri
 						if (RootFW.connect()) {
@@ -62,30 +70,34 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 							systemPart.mount(new String[] { "rw" });
 
 							FileWriter file = RootFW.getFileWriter(textFile.greatUri.getFilePath(), false);
-							file.write(newContent.getBytes(Charset.forName(textFile.encoding)));
+							file.write(bytes);
 
 							RootFW.disconnect();
 						}
 					}
 				}
 
+				publishProgress(fileSize, fileSize, (long) i, (long) totalFiles);
+
 				isSuccessful = true;
 			} catch (Exception e) {
 				errorMessage = e.getMessage();
 			}
+
+			publishProgress(fileSize, fileSize, (long) i + 1L, (long) totalFiles);
 		}
 		return null;
 	}
 
-	private void writeUri(@NonNull Uri uri, @NonNull String newContent, @NonNull String encoding) throws IOException {
+	private void writeUri(@NonNull Uri uri, @NonNull byte[] bytes) throws IOException {
 		ParcelFileDescriptor pfd = activity.get().getContentResolver().openFileDescriptor(uri, "w");
-		FileOutputStream fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
-		byte[] bytes = newContent.getBytes(Charset.forName(encoding));
-		fileOutputStream.write(bytes);
-		publishProgress(bytes.length, bytes.length);
-		fileTotalSize = org.apache.commons.io.FileUtils.byteCountToDisplaySize(bytes.length);
-		fileOutputStream.close();
-		pfd.close();
+		FileOutputStream fileOutputStream;
+		if (pfd != null) {
+			fileOutputStream = new FileOutputStream(pfd.getFileDescriptor());
+			fileOutputStream.write(bytes);
+			fileOutputStream.close();
+			pfd.close();
+		}
 	}
 
 	/**
@@ -110,10 +122,10 @@ class SaveTextFileTask extends AsyncTask<TextFile, Integer, Void> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onProgressUpdate(Integer... values) {
+	protected void onProgressUpdate(Long... values) {
 		super.onProgressUpdate(values);
-		progressDialog.setProgress(values[0], values[1],
-				org.apache.commons.io.FileUtils.byteCountToDisplaySize(values[0]) + " / " + fileTotalSize);
+		progressDialog.setProgressInBytes(values[0], values[1]);
+		progressDialog.setProgressTotal(values[2].intValue(), values[3].intValue());
 	}
 
 	interface SaveTextFileListener {
