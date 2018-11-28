@@ -88,7 +88,7 @@ public class SelectFileFragment extends Fragment implements
 	@Nullable
 	@Override
 	public View onCreateView(
-			LayoutInflater inflater,
+			@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.activity_select_file, container, false);
@@ -239,8 +239,8 @@ public class SelectFileFragment extends Fragment implements
 	}
 
 	@Override
-	public void onItemClick(FileInfoAdapter.FileDetail fileDetail) {
-		Log.e(TAG, "Click on item " + (fileDetail.getUri() == null));
+	public void onItemClick(@NonNull FileInfoAdapter.FileDetail fileDetail) {
+		Log.e(TAG, "Click on item " + fileDetail.getName());
 		final String name = fileDetail.getName();
 		if (name.equals("..")) {
 			if (currentFolder.equals(ROOT_DIR)) {

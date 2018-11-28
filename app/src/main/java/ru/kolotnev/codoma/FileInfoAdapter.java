@@ -90,48 +90,48 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		 * @param fileDetail
 		 * 		clicked file details.
 		 */
-		void onItemClick(FileDetail fileDetail);
+		void onItemClick(@NonNull FileDetail fileDetail);
 	}
 
 	static class FileDetail {
+		@NonNull
 		private final String name;
 		private final String description;
 		private final boolean isFolder;
 		private final boolean isExist;
+		@NonNull
 		private final Uri uri;
+		@Nullable
 		private final Uri symlinkUri;
 		private final boolean isRootRequired;
 
-		FileDetail(Uri uri, String name, String description, boolean isExist, boolean isFolder) {
-			this.uri = uri;
-			this.name = name;
-			this.description = description;
-			this.isExist = isExist;
-			this.isFolder = isFolder;
-			this.symlinkUri = null;
-			isRootRequired = false;
+		FileDetail(@NonNull Uri uri, @NonNull String name, @NonNull String description, boolean isExist, boolean isFolder) {
+			this(uri, null, name, description, isExist, isFolder, false);
 		}
 
-		FileDetail(Uri uri, boolean isRootRequired, String name, String description, boolean isExist, boolean isFolder) {
-			this.uri = uri;
-			this.name = name;
+		FileDetail(@NonNull Uri uri, @NonNull String name, @NonNull String description, boolean isExist, boolean isFolder, boolean isRootRequired) {
+			this(uri, null, name, description, isExist, isFolder, isRootRequired);
+		}
+
+		FileDetail(@NonNull Uri canonicalUri, @Nullable Uri symlinkUri, @NonNull String name, @NonNull String description, boolean isExist, boolean isFolder) {
+			this(canonicalUri, symlinkUri, name, description, isExist, isFolder, false);
+		}
+
+		FileDetail(@NonNull Uri canonicalUri, @Nullable Uri symlinkUri, @NonNull String name, @NonNull String description, boolean isExist, boolean isFolder, boolean isRootRequired) {
+			this.uri = canonicalUri;
+			this.symlinkUri = symlinkUri;
+			if (symlinkUri != null) {
+				this.name = name + " -> " + canonicalUri.getPath();
+			} else {
+				this.name = name;
+			}
 			this.description = description;
 			this.isExist = isExist;
 			this.isFolder = isFolder;
-			this.symlinkUri = null;
 			this.isRootRequired = isRootRequired;
 		}
 
-		FileDetail(@NonNull Uri canonicalUri, @NonNull Uri symlinkUri, String name, String description, boolean isExist, boolean isFolder) {
-			this.uri = canonicalUri;
-			this.symlinkUri = symlinkUri;
-			this.name = name;
-			this.description = description;
-			this.isExist = isExist;
-			this.isFolder = isFolder;
-			this.isRootRequired = false;
-		}
-
+		@NonNull
 		public Uri getUri() {
 			return uri;
 		}
@@ -139,6 +139,7 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 		@Nullable
 		public Uri getSymlinkUri() { return symlinkUri; }
 
+		@NonNull
 		public String getName() {
 			return name;
 		}

@@ -183,7 +183,11 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 			}
 			countingOutputStream.flush();
 			countingOutputStream.close();
-
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			if (streamReader != null)
 				streamReader.close();
 			if (reader != null)

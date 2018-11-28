@@ -16,6 +16,7 @@ public class NumberPickerDialog extends DialogFragment {
 	private static final String ARG_MAX = "max";
 	private static final String ARG_CURRENT = "current";
 	private NumberPicker mSeekBar;
+	private Bundle mArgs;
 
 	public static NumberPickerDialog newInstance(final Actions action) {
 		return NumberPickerDialog.newInstance(action, 0, 50, 100);
@@ -39,11 +40,11 @@ public class NumberPickerDialog extends DialogFragment {
 		mSeekBar = view.findViewById(android.R.id.input);
 		int title = R.string.app_name;
 
-		Bundle args = getArguments();
-		if (args == null) {
+		mArgs = getArguments();
+		if (mArgs == null) {
 			Log.e(CodomaApplication.TAG, "Number picker dialog created without arguments.");
 		} else {
-			Actions action = (Actions) args.getSerializable(ARG_ACTION);
+			Actions action = (Actions) mArgs.getSerializable(ARG_ACTION);
 			switch (action != null ? action : Actions.NONE) {
 				case FONT_SIZE:
 					title = R.string.settings_view_font_size_title;
@@ -59,11 +60,11 @@ public class NumberPickerDialog extends DialogFragment {
 					break;
 			}
 
-			mSeekBar.setMaxValue(args.getInt(ARG_MAX));
-			mSeekBar.setMinValue(args.getInt(ARG_MIN));
-			mSeekBar.setValue(args.getInt(ARG_CURRENT));
+			mSeekBar.setMaxValue(mArgs.getInt(ARG_MAX));
+			mSeekBar.setMinValue(mArgs.getInt(ARG_MIN));
+			mSeekBar.setValue(mArgs.getInt(ARG_CURRENT));
 		}
-		return new AlertDialog.Builder(getActivity())
+		return new AlertDialog.Builder(requireActivity())
 				.setTitle(title)
 				.setView(view)
 				.setPositiveButton(android.R.string.ok,
@@ -84,7 +85,7 @@ public class NumberPickerDialog extends DialogFragment {
 		}
 		if (target != null) {
 			target.onNumberPickerDialogDismissed(
-					(Actions) getArguments().getSerializable(ARG_ACTION),
+					(Actions) mArgs.getSerializable(ARG_ACTION),
 					mSeekBar.getValue()
 			);
 		}

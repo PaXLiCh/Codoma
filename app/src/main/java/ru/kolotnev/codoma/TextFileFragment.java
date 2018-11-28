@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.Layout;
+import android.text.Selection;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -270,10 +272,23 @@ public class TextFileFragment extends Fragment implements
 	public void goToLine() {
 		int min = editText.getLineUtils().firstReadLine();
 		int max = editText.getLineUtils().lastReadLine();
+		int current = getCurrentCursorLine();
 		NumberPickerDialog dialog = NumberPickerDialog.newInstance
-				(NumberPickerDialog.Actions.GO_TO_LINE, min, min, max);
+				(NumberPickerDialog.Actions.GO_TO_LINE, min, current, max);
 		dialog.setTargetFragment(this, 0);
 		dialog.show(getFragmentManager(), "dialog");
+	}
+
+	public int getCurrentCursorLine()
+	{
+		int selectionStart = Selection.getSelectionStart(editText.getText()) + 1;
+		Layout layout = editText.getLayout();
+
+		if (!(selectionStart == -1)) {
+			return layout.getLineForOffset(selectionStart);
+		}
+
+		return -1;
 	}
 
 	/**

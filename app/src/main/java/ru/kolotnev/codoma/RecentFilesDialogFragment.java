@@ -67,7 +67,7 @@ public class RecentFilesDialogFragment extends DialogFragment {
 
 		FileInfoAdapter.OnItemClickListener listener = new FileInfoAdapter.OnItemClickListener() {
 			@Override
-			public void onItemClick(FileInfoAdapter.FileDetail fileDetail) {
+			public void onItemClick(@NonNull FileInfoAdapter.FileDetail fileDetail) {
 				if (context instanceof Callbacks) {
 					Callbacks callbacks = (Callbacks) getContext();
 					callbacks.onRecentFileSelected(fileDetail.getUri());

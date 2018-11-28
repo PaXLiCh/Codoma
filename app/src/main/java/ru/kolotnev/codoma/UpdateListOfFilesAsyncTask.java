@@ -72,6 +72,32 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 		super.onPreExecute();
 	}
 
+	private void AddItemFileDetail(
+			@NonNull List<FileInfoAdapter.FileDetail> list,
+			@NonNull Uri uri,
+			@Nullable Uri canonicalUri,
+			@NonNull String fileName,
+			@NonNull String description,
+			boolean isFolder,
+			boolean isRootRequired) {
+		list.add(new FileInfoAdapter.FileDetail(
+				uri,
+				fileName,
+				description,
+				true,
+				isFolder,
+				isRootRequired));
+		if (canonicalUri != null) {
+			list.add(new FileInfoAdapter.FileDetail(
+					canonicalUri, uri,
+					fileName,
+					description,
+					true,
+					isFolder,
+					isRootRequired));
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -95,9 +121,9 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			final ArrayList<FileInfoAdapter.FileDetail> folderDetails = new ArrayList<>();
 
 			if (currentDirectory.equals("/")) {
-				folderDetails.add(new FileInfoAdapter.FileDetail(null, stringHome, stringFolder, true, true));
+				folderDetails.add(new FileInfoAdapter.FileDetail(Uri.EMPTY, stringHome, stringFolder, true, true));
 			} else {
-				folderDetails.add(new FileInfoAdapter.FileDetail(null, "..", stringFolder, true, true));
+				folderDetails.add(new FileInfoAdapter.FileDetail(Uri.EMPTY, "..", stringFolder, true, true));
 			}
 
 			if (!tempFolder.canRead()) {
@@ -115,26 +141,29 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 							Log.v(TAG, "Symlink " + f.getAbsolutePath() + " -> " + f.getCanonicalPath());
 							uriCanon = Uri.parse(new File(f.getCanonicalPath()).toString());
 						}
-
-						if (file.isDirectory()) {
-							folderDetails.add(new FileInfoAdapter.FileDetail(
-									uri,
-									true,
-									fileName,
-									String.format(formatDetailFolder, format.format(f.lastModified())),
-									true, true));
-						} else if (file.isFile()) {
-							String description = String.format(formatDetailFile,
+						boolean isDirectory = file.isDirectory();
+						if (!isDirectory && !file.isFile()) {
+							continue;
+						}
+						List<FileInfoAdapter.FileDetail> list;
+						String description;
+						if (isDirectory) {
+							list = folderDetails;
+							description = String.format(formatDetailFolder,
+									format.format(f.lastModified()));
+						} else {
+							list = fileDetails;
+							description = String.format(formatDetailFile,
 									org.apache.commons.io.FileUtils.byteCountToDisplaySize(file.size()),
 									format.format(f.lastModified()));
-							fileDetails.add(new FileInfoAdapter.FileDetail(
-									uri,
-									true,
-									fileName,
-									description,
-									true, false));
 						}
-
+						AddItemFileDetail(
+								list,
+								uri, uriCanon,
+								fileName,
+								description,
+								isDirectory,
+								true);
 					}
 				}
 			} else {
@@ -148,30 +177,33 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 						Log.v(TAG, "Symlink " + f.getAbsolutePath() + " -> " + f.getCanonicalPath());
 						uriCanon = Uri.parse(new File(f.getCanonicalPath()).toString());
 					}
-					if (f.isDirectory()) {
-						String description = String.format(
+					boolean isDirectory = f.isDirectory();
+					if (!isDirectory && !f.isFile()) {
+						continue;
+					}
+					List<FileInfoAdapter.FileDetail> list;
+					String fileName = f.getName();
+					String description;
+					if (isDirectory) {
+						list = folderDetails;
+						description = String.format(
 								formatDetailFolder,
 								format.format(f.lastModified()));
-						folderDetails.add(new FileInfoAdapter.FileDetail(
-								uri, f.getName(), description, true, true));
-						if (uriCanon != null) {
-							folderDetails.add(new FileInfoAdapter.FileDetail(
-									uriCanon, uri, f.getName() + " -> " + uriCanon.getPath(),
-									description, true, true));
-						}
-					} else if (f.isFile()) {
-						String description = String.format(
+					} else {
+						list = fileDetails;
+						description = String.format(
 								formatDetailFile,
 								org.apache.commons.io.FileUtils.byteCountToDisplaySize(f.length()),
 								format.format(f.lastModified()));
-						fileDetails.add(new FileInfoAdapter.FileDetail(
-								uri, f.getName(), description, true, false));
-						if (uriCanon != null) {
-							fileDetails.add(new FileInfoAdapter.FileDetail(
-									uriCanon, uri, f.getName() + " -> " + uriCanon.getPath(),
-									description, true, false));
-						}
 					}
+					AddItemFileDetail(
+							list,
+							uri, uriCanon,
+							fileName,
+							description,
+							isDirectory,
+							false
+					);
 				}
 			}
 
@@ -179,8 +211,13 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			folderDetails.addAll(fileDetails);
 			return folderDetails;
 		} catch (Exception e) {
-			exceptionMessage = e.getMessage();
-			Log.e(TAG, e.getMessage());
+			String message = e.getMessage();
+			if (message == null) {
+				exceptionMessage = e.toString();
+			} else {
+				exceptionMessage = message;
+			}
+			Log.e(TAG, exceptionMessage);
 			return null;
 		}
 	}

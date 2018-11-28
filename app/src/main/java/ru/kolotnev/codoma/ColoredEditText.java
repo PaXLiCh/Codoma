@@ -148,10 +148,26 @@ public class ColoredEditText extends android.support.v7.widget.AppCompatEditText
 
 			updateHandler.postDelayed(colorUpdater, updateDelay);
 
+			Activity activity = getActivity();
 			// TODO: send correct invalidate
-			((Activity)(((ContextWrapper) getContext())).getBaseContext()).invalidateOptionsMenu();
+			if (activity != null) {
+				activity.invalidateOptionsMenu();
+			}
 		}
 	};
+
+	@Nullable
+	private Activity getActivity() {
+		Context context = getContext();
+		while (context instanceof ContextWrapper) {
+			if (context instanceof Activity) {
+				return (Activity)context;
+			}
+			context = ((ContextWrapper)context).getBaseContext();
+		}
+		return null;
+	}
+
 	private boolean isNeedLineNumbers;
 	//endregion
 

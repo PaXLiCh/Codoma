@@ -559,6 +559,11 @@ public class EditorActivity extends AppCompatActivity implements
 	}
 
 	@Override
+	public void onCurrentTextChanged() {
+		invalidateOptionsMenu();
+	}
+
+	@Override
 	public void onPageChanged(int page) {
 		// TODO: rework search and replace
 		//pageSystemButtons.updateVisibility(false);

@@ -457,6 +457,7 @@ public class TextFile implements TextWatcher {
 	}
 
 	public interface PageSystemListener {
+		void onCurrentTextChanged();
 		void onPageChanged(int page);
 	}
 

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "ru.kolotnev.codoma"
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "0.6"
     }
@@ -20,16 +20,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:+'
-    compile 'com.android.support:design:+'
-    compile 'com.android.support:recyclerview-v7:+'
-    compile 'com.android.support:support-v4:+'
-    compile 'com.github.clans:fab:+'
-    compile 'com.ibm.icu:icu4j:+'
-    compile 'org.apache.commons:commons-lang3:+'
-    compile 'org.adw.library:discrete-seekbar:+'
-    compile 'commons-io:commons-io:+'
-    compile 'com.spazedog.lib:rootfw_gen4:+@aar'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:+'
+    implementation 'com.android.support:design:+'
+    implementation 'com.android.support:recyclerview-v7:+'
+    implementation 'com.android.support:support-v4:+'
+    implementation 'com.github.clans:fab:+'
+    implementation 'com.ibm.icu:icu4j:+'
+    implementation 'org.apache.commons:commons-lang3:+'
+    implementation 'org.adw.library:discrete-seekbar:+'
+    implementation 'commons-io:commons-io:+'
+    implementation 'com.spazedog.lib:rootfw_gen4:+@aar'
 }
