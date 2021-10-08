@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.provider.DocumentFile;
+import androidx.documentfile.provider.DocumentFile;
 import android.util.Pair;
 
 import java.io.BufferedInputStream;

@@ -3,13 +3,11 @@ package ru.kolotnev.codoma;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import com.spazedog.lib.rootfw4.RootFW;
-import com.spazedog.lib.rootfw4.utils.Filesystem;
-import com.spazedog.lib.rootfw4.utils.io.FileWriter;
+import com.spazedog.lib.rootfw.utils.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -65,7 +63,7 @@ class SaveTextFileTask extends AsyncTask<TextFile, Long, Void> {
 						writeUri(textFile.greatUri.getUri(), bytes);
 					} else {
 						// if we can read the file associated with the uri
-						if (RootFW.connect()) {
+						/*if (RootFW.connect()) {
 							Filesystem.Disk systemPart = RootFW.getDisk(textFile.greatUri.getParentFolder());
 							systemPart.mount(new String[] { "rw" });
 
@@ -73,7 +71,7 @@ class SaveTextFileTask extends AsyncTask<TextFile, Long, Void> {
 							file.write(bytes);
 
 							RootFW.disconnect();
-						}
+						}*/
 					}
 				}
 

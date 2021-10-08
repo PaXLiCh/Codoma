@@ -1,7 +1,7 @@
 package ru.kolotnev.codoma;
 
 import android.app.Application;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;

@@ -22,7 +22,7 @@
 		android:id="@+id/im_search"
 		android:icon="?ic_search"
 		android:title="@string/menu_select_file_search"
-		app:actionViewClass="android.support.v7.widget.SearchView"
+		app:actionViewClass="androidx.appcompat.widget.SearchView"
 		app:showAsAction="ifRoom|collapseActionView">
 	</item>
 </menu>

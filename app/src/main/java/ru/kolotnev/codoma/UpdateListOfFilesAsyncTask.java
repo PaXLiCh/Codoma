@@ -3,12 +3,12 @@ package ru.kolotnev.codoma;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.spazedog.lib.rootfw4.RootFW;
+//import com.spazedog.lib.rootfw4.RootFW;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -127,7 +127,7 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 			}
 
 			if (!tempFolder.canRead()) {
-				if (RootFW.connect()) {
+				/*if (RootFW.connect()) {
 					com.spazedog.lib.rootfw4.utils.File folder = RootFW.getFile(currentDirectory);
 					Log.v(TAG, "Superuser permissions are obtained");
 					String[] files = folder.getList();
@@ -165,7 +165,7 @@ class UpdateListOfFilesAsyncTask extends AsyncTask<String, Void, List<FileInfoAd
 								isDirectory,
 								true);
 					}
-				}
+				}*/
 			} else {
 				File[] files = tempFolder.listFiles();
 				Arrays.sort(files, getFileNameComparator());

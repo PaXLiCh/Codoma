@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Codoma.iml" filepath="$PROJECT_DIR$/Codoma.iml" group="Codoma" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Codoma/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Codoma.iml" filepath="$PROJECT_DIR$/.idea/modules/Codoma.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Codoma.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Codoma.app.iml" />
     </modules>
   </component>
 </project>

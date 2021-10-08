@@ -15,7 +15,7 @@
 		android:layout_height="90sp"
 		android:text="@string/settings_view_font_size_sample"/>
 
-	<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+	<com.mardous.discreteseekbar.DiscreteSeekBar
 		android:id="@+id/seekBar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

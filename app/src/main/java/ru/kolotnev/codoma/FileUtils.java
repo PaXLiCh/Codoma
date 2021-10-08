@@ -2,7 +2,7 @@ package ru.kolotnev.codoma;
 
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
 import android.util.Log;
 
 import com.ibm.icu.text.CharsetDetector;

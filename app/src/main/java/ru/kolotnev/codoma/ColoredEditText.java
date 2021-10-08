@@ -10,8 +10,8 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -60,7 +60,7 @@ import ru.kolotnev.codoma.TextSyntax.TextSyntax;
 /**
  * Syntax colored EditText widget.
  */
-public class ColoredEditText extends android.support.v7.widget.AppCompatEditText {
+public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText {
 	//region VARIABLES
 	private static final String TAG = "ColoredEditText";
 	private static final int

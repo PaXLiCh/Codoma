@@ -5,12 +5,11 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
 
 	<application
 		android:name=".CodomaApplication"
-		android:allowBackup="true"
+		android:allowBackup="false"
 		android:hardwareAccelerated="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
@@ -22,8 +21,9 @@
 			android:name=".EditorActivity"
 			android:label="@string/app_name"
 			android:launchMode="singleTop"
-			android:screenOrientation="portrait"
-			android:windowSoftInputMode="stateUnspecified|adjustResize">
+			android:screenOrientation="fullSensor"
+			android:windowSoftInputMode="stateUnspecified|adjustResize"
+			android:exported="true">
 
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>

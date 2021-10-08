@@ -1,6 +1,6 @@
 package ru.kolotnev.codoma.TextSyntax;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

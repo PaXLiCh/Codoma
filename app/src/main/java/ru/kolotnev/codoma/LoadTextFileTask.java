@@ -3,13 +3,10 @@ package ru.kolotnev.codoma;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.spazedog.lib.rootfw4.RootFW;
-import com.spazedog.lib.rootfw4.utils.io.FileReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
@@ -109,7 +106,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 
 	private void readUri(@NonNull TextFile textFile, @NonNull GreatUri uri, long currentFileIndex, long totalFiles) throws IOException {
 		LineReader lineReader = null;
-		FileReader reader = null;
+		//FileReader reader = null;
 		InputStreamReader streamReader = null;
 		long fileSize = 0L;
 
@@ -128,7 +125,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 			}
 
 			// Connect the shared connection
-			if (RootFW.connect()) {
+			/*if (RootFW.connect()) {
 				com.spazedog.lib.rootfw4.utils.File fileRooted = RootFW.getFile(uri.getFilePath());
 				if (fileRooted == null) {
 					Log.e(TAG, "Want to read with rootfw (got file) path:" + uri.getFilePath() + " but file == null");
@@ -144,7 +141,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 				lineReader = new LineReader(reader);
 				Log.e(TAG, "Want to read with rootfw (got stream reader)");
 				fileSize = fileRooted.size();
-			}
+			}*/
 		} else {
 			// Read with normal reader
 			if (textFile.encoding == null || textFile.encoding.isEmpty()) {
@@ -190,8 +187,8 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 			}
 			if (streamReader != null)
 				streamReader.close();
-			if (reader != null)
-				reader.close();
+			/*if (reader != null)
+				reader.close();*/
 			textFile.setupPageSystem(stringBuilder.toString(), splitIntoPages);
 			if (textFile.eol == null)
 				textFile.eol = lineReader.getLineEndings();
@@ -199,8 +196,8 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 
 		// Current file now read
 		publishProgress(fileSize, fileSize, currentFileIndex + 1, totalFiles);
-		if (isRootRequired)
-			RootFW.disconnect();
+		/*if (isRootRequired)
+			RootFW.disconnect();*/
 	}
 
 	/**

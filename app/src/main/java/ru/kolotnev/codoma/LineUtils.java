@@ -19,7 +19,7 @@ package ru.kolotnev.codoma;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.widget.ScrollView;

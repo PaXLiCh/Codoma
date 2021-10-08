@@ -2,7 +2,7 @@ package ru.kolotnev.codoma.SyntaxColor;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Color scheme for syntax highlight.
