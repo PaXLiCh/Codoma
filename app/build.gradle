@@ -2,16 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
-    compileSdkVersion 31
+    compileSdkVersion 33
     buildToolsVersion '31.0.0'
 
     defaultConfig {
         applicationId "ru.kolotnev.codoma"
         minSdkVersion 16
-        targetSdkVersion 31
+        targetSdk 33
         versionCode 1
         versionName "0.6"
     }
@@ -22,6 +22,7 @@ android {
         }
     }
     ndkVersion '19.0.5232133'
+    namespace 'ru.kolotnev.codoma'
 }
 
 dependencies {
@@ -29,8 +30,8 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.aar"])
     implementation files('libs\\rootfw-release.aar')
     testImplementation 'junit:junit:4.13.2'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.github.clans:fab:+'

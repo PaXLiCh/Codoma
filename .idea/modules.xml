@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Codoma.iml" filepath="$PROJECT_DIR$/.idea/modules/Codoma.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Codoma.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Codoma.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Codoma.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Codoma.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Codoma.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Codoma.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Codoma.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Codoma.app.unitTest.iml" />
     </modules>
   </component>
 </project>
