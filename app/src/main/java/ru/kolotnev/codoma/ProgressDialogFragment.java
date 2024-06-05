@@ -82,13 +82,7 @@ public class ProgressDialogFragment extends DialogFragment {
 		progressBar = v.findViewById(android.R.id.progress);
 		textProgress = v.findViewById(android.R.id.text1);
 		// Disable the back button
-		DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
-			@Override
-			public boolean onKey(DialogInterface dialog, int keyCode,
-					KeyEvent event) {
-				return keyCode == KeyEvent.KEYCODE_BACK;
-			}
-		};
+		DialogInterface.OnKeyListener keyListener = (dialog, keyCode, event) -> keyCode == KeyEvent.KEYCODE_BACK;
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		if (title > 0)
 			builder.setTitle(title);
@@ -162,7 +156,7 @@ public class ProgressDialogFragment extends DialogFragment {
 		Context context = getContext();
 		String formatted;
 		if (context == null) {
-			formatted = String.valueOf(bytesReadInt) + " / " + org.apache.commons.io.FileUtils.byteCountToDisplaySize(bytesTotalInt);
+			formatted = bytesReadInt + " / " + org.apache.commons.io.FileUtils.byteCountToDisplaySize(bytesTotalInt);
 		} else {
 			Resources resources = context.getResources();
 			formatted = getString(

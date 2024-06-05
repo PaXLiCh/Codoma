@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
@@ -111,24 +110,18 @@ public class SelectFileFragment extends Fragment implements
 		viewBreadcrumbs = scrollBreadcrumbs.findViewById(R.id.view_breadcrumbs);
 
 		FloatingActionButton mFab = view.findViewById(R.id.menu_item_create_file);
-		mFab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditTextDialog dialog = EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FILE);
-				dialog.setTargetFragment(SelectFileFragment.this, REQUEST_CODE_NAME_FILE);
-				dialog.show(getFragmentManager(), "dialog");
-			}
-		});
+		mFab.setOnClickListener(v -> {
+            EditTextDialog dialog = EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FILE);
+            dialog.setTargetFragment(SelectFileFragment.this, REQUEST_CODE_NAME_FILE);
+            dialog.show(getFragmentManager(), "dialog");
+        });
 
 		mFab = view.findViewById(R.id.menu_item_create_folder);
-		mFab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditTextDialog dialog = EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FOLDER);
-				dialog.setTargetFragment(SelectFileFragment.this, REQUEST_CODE_NAME_FOLDER);
-				dialog.show(getFragmentManager(), "dialog");
-			}
-		});
+		mFab.setOnClickListener(v -> {
+            EditTextDialog dialog = EditTextDialog.newInstance(EditTextDialog.Actions.NEW_FOLDER);
+            dialog.setTargetFragment(SelectFileFragment.this, REQUEST_CODE_NAME_FOLDER);
+            dialog.show(getFragmentManager(), "dialog");
+        });
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			checkPermissionReadStorage();
@@ -176,7 +169,6 @@ public class SelectFileFragment extends Fragment implements
 		return view;
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 	public void checkPermissionReadStorage() {
 		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
 				!= PackageManager.PERMISSION_GRANTED) {
@@ -201,7 +193,7 @@ public class SelectFileFragment extends Fragment implements
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		switch (requestCode) {
 			case MY_PERMISSIONS_REQUEST_READ_STORAGE: {
 				//permission to read storage
@@ -430,22 +422,14 @@ public class SelectFileFragment extends Fragment implements
 			Button b = (Button) buttonView;
 			b.setText(getString(R.string.activity_select_file_breadcrumbs_format, part.isEmpty() ? PATH_SEPARATOR : part));
 			b.setTag(dir);
-			b.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					String dir = (String) view.getTag();
-					updateList(dir);
-				}
-			});
+			b.setOnClickListener(view -> {
+                String dir1 = (String) view.getTag();
+                updateList(dir1);
+            });
 			viewBreadcrumbs.addView(b);
 		}
 
-		scrollBreadcrumbs.post(new Runnable() {
-			@Override
-			public void run() {
-				scrollBreadcrumbs.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
-			}
-		});
+		scrollBreadcrumbs.post(() -> scrollBreadcrumbs.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
 	}
 
 	@Override

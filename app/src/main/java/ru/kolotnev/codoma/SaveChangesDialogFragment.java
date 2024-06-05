@@ -45,32 +45,23 @@ public class SaveChangesDialogFragment extends DialogFragment {
 				.setTitle(R.string.menu_main_save)
 				.setMessage(getString(R.string.save_changes, fileName))
 				.setPositiveButton(R.string.menu_main_save,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								if (listener != null)
-									listener.userWantToSave();
-							}
-						}
-				)
+                        (dialog, which) -> {
+                            if (listener != null)
+                                listener.userWantToSave();
+                        }
+                )
 				.setNeutralButton(android.R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								if (listener != null)
-									listener.userDoesNotWantToDoAny();
-							}
-						}
-				)
+                        (dialog, which) -> {
+                            if (listener != null)
+                                listener.userDoesNotWantToDoAny();
+                        }
+                )
 				.setNegativeButton(R.string.no,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								if (listener != null)
-									listener.userDoesNotWantToSave();
-							}
-						}
-				)
+                        (dialog, which) -> {
+                            if (listener != null)
+                                listener.userDoesNotWantToSave();
+                        }
+                )
 				.create();
 	}
 

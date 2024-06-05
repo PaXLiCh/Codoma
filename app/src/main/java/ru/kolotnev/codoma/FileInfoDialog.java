@@ -22,7 +22,7 @@ public class FileInfoDialog extends DialogFragment implements CollectStatAsyncTa
 	public static final String TAG = "FileInfoDialog";
 	private ListView list;
 	private ProgressBar progressBar;
-	private List<Pair<String, String>> lines = new ArrayList<>();
+	private final List<Pair<String, String>> lines = new ArrayList<>();
 	private CollectStatAsyncTask task;
 
 	public static FileInfoDialog newInstance(@NonNull TextFile textFile, @NonNull Activity activity) {
@@ -75,7 +75,7 @@ public class FileInfoDialog extends DialogFragment implements CollectStatAsyncTa
 	}
 
 	private void updateStats() {
-		if (lines.size() == 0) return;
+		if (lines.isEmpty()) return;
 		progressBar.setVisibility(View.GONE);
 		list.setVisibility(View.VISIBLE);
 		list.setAdapter(new AdapterTwoItem(getActivity(), lines));

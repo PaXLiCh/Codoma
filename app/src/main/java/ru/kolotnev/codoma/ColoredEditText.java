@@ -75,12 +75,7 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 	private int updateDelay = 1000;
 	private final Handler updateHandler = new Handler();
 	private ColorUpdaterAsyncTask taskToUpdate = null;
-	private final Runnable colorUpdater = new Runnable() {
-		@Override
-		public void run() {
-			replaceTextKeepCursor(null);
-		}
-	};
+	private final Runnable colorUpdater = () -> replaceTextKeepCursor(null);
 	private boolean enabledChangeListener;
 	private int selectionStart = -1;
 	private int selectionEnd = -1;
@@ -112,17 +107,14 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 	@Nullable
 	public TextSyntax textSyntax;
 
-	private final GoodScrollView.ScrollInterface scrollListener = new GoodScrollView.ScrollInterface() {
-		@Override
-		public void onScrollChanged(int l, int t, int oldl, int oldt) {
-			// TODO: разобраться, можно ли выкинуть блокировку подсветки при выделенном тексте
-			if (hasSelection())
-				return;
+	private final GoodScrollView.ScrollInterface scrollListener = (l, t, oldl, oldt) -> {
+        // TODO: разобраться, можно ли выкинуть блокировку подсветки при выделенном тексте
+        if (hasSelection())
+            return;
 
-			cancelUpdate();
-			updateHandler.postDelayed(colorUpdater, SYNTAX_DELAY_MILLIS_SHORT);
-		}
-	};
+        cancelUpdate();
+        updateHandler.postDelayed(colorUpdater, SYNTAX_DELAY_MILLIS_SHORT);
+    };
 	private final TextWatcher textWatcher = new TextWatcher() {
 		private int start = 0;
 		private int count = 0;
@@ -282,75 +274,57 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 		}
 
 		setFocusable(true);
-		setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (!PreferenceHelper.getReadOnly(context)) {
-					verticalScroll.tempDisableListener(1000);
-					InputMethodManager iim = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-					if (iim != null) {
-						iim.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
-					}
-				}
+		setOnClickListener(v -> {
+            if (!PreferenceHelper.getReadOnly(context)) {
+                verticalScroll.tempDisableListener(1000);
+                InputMethodManager iim = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (iim != null) {
+                    iim.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
 
-			}
-		});
-		setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if (hasFocus && !PreferenceHelper.getReadOnly(context)) {
-					verticalScroll.tempDisableListener(1000);
-					InputMethodManager iim = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-					if (iim != null) {
-						iim.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
-					}
-				}
-			}
-		});
+        });
+		setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && !PreferenceHelper.getReadOnly(context)) {
+                verticalScroll.tempDisableListener(1000);
+                InputMethodManager iim = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (iim != null) {
+                    iim.showSoftInput(ColoredEditText.this, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
+        });
 
 		final boolean autoIndent = PreferenceHelper.getAutoIndent(context);
 		setFilters(new InputFilter[] {
-				new InputFilter() {
-					@Override
-					public CharSequence filter(
-							CharSequence source,
-							int start,
-							int end,
-							Spanned dest,
-							int dstart,
-							int dend) {
-						if (enabledChangeListener &&
-								end - start == 1 &&
-								start < source.length() &&
-								dstart < dest.length()) {
-							char c = source.charAt(start);
+                (source, start, end, dest, dstart, dend) -> {
+                    if (enabledChangeListener &&
+                            end - start == 1 &&
+                            start < source.length() &&
+                            dstart < dest.length()) {
+                        char c = source.charAt(start);
 
-							if (c == '\n' && autoIndent)
-								return autoIndent(
-										source,
-										dest,
-										dstart,
-										dend);
-						}
+                        if (c == '\n' && autoIndent)
+                            return autoIndent(
+                                    source,
+                                    dest,
+                                    dstart,
+                                    dend);
+                    }
 
-						return source;
-					}
-				} });
+                    return source;
+                }});
 
 		resetVariables();
 
 		ViewTreeObserver vto = getViewTreeObserver();
-		vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				if (!isNeedToUpdate) return;
-				Layout l = getLayout();
-				if (l != null) {
-					updateLines(l);
-					isNeedToUpdate = false;
-				}
-			}
-		});
+		vto.addOnGlobalLayoutListener(() -> {
+            if (!isNeedToUpdate) return;
+            Layout l = getLayout();
+            if (l != null) {
+                updateLines(l);
+                isNeedToUpdate = false;
+            }
+        });
 	}
 
 	private CharSequence autoIndent(
@@ -484,12 +458,7 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 	}
 
 	public void smoothScrollTo(final int x, final int y) {
-		verticalScroll.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				verticalScroll.smoothScrollTo(x, y);
-			}
-		}, 200);
+		verticalScroll.postDelayed(() -> verticalScroll.smoothScrollTo(x, y), 200);
 	}
 
 	/**
@@ -579,7 +548,7 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 
 			String lineNum;
 			if (!wrapContent || isGoodLineArray[i]) {
-				lineNum = "" + String.valueOf(realLine) + " \n";
+				lineNum = realLine + " \n";
 			} else {
 				lineNum = "\n";
 			}
@@ -624,19 +593,17 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 					return super.onKeyDown(keyCode, event);
 			}
 		} else {
-			switch (keyCode) {
-				case KeyEvent.KEYCODE_TAB:
-					String textToInsert = "  ";
-					int start, end;
-					start = Math.max(getSelectionStart(), 0);
-					end = Math.max(getSelectionEnd(), 0);
-					getText().replace(Math.min(start, end), Math.max(start, end),
-							textToInsert, 0, textToInsert.length());
-					return true;
-				default:
-					return super.onKeyDown(keyCode, event);
-			}
-		}
+            if (keyCode == KeyEvent.KEYCODE_TAB) {
+                String textToInsert = "  ";
+                int start, end;
+                start = Math.max(getSelectionStart(), 0);
+                end = Math.max(getSelectionEnd(), 0);
+                getText().replace(Math.min(start, end), Math.max(start, end),
+                        textToInsert, 0, textToInsert.length());
+                return true;
+            }
+            return super.onKeyDown(keyCode, event);
+        }
 	}
 
 	@Override
@@ -655,13 +622,8 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 					return false;
 			}
 		} else {
-			switch (keyCode) {
-				case KeyEvent.KEYCODE_TAB:
-					return true;
-				default:
-					return false;
-			}
-		}
+            return keyCode == KeyEvent.KEYCODE_TAB;
+        }
 	}
 
 	/**
@@ -1095,7 +1057,7 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 	private void clearSpans(@NonNull Editable e) {
 		// remove foreground color spans
 		{
-			ForegroundColorSpan spans[] = e.getSpans(
+			ForegroundColorSpan[] spans = e.getSpans(
 					0,
 					e.length(),
 					ForegroundColorSpan.class);
@@ -1106,7 +1068,7 @@ public class ColoredEditText extends androidx.appcompat.widget.AppCompatEditText
 
 		// remove background color spans
 		{
-			BackgroundColorSpan spans[] = e.getSpans(
+			BackgroundColorSpan[] spans = e.getSpans(
 					0,
 					e.length(),
 					BackgroundColorSpan.class);

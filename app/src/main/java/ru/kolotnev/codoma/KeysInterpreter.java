@@ -12,9 +12,9 @@ public final class KeysInterpreter {
 	public final static char NEWLINE = '\n';
 	public final static char BACKSPACE = '\b';
 	public final static char TAB = '\t';
-	public final static String GLYPH_NEWLINE = "\u21b5";
-	public final static String GLYPH_SPACE = "\u00b7";
-	public final static String GLYPH_TAB = "\u00bb";
+	public final static String GLYPH_NEWLINE = "↵";
+	public final static String GLYPH_SPACE = "·";
+	public final static String GLYPH_TAB = "»";
 
 	public boolean isWhitespace(char c) {
 		return (c == ' ' || c == '\n' || c == '\t' ||

@@ -68,11 +68,8 @@ public class NumberPickerDialog extends DialogFragment {
 				.setTitle(title)
 				.setView(view)
 				.setPositiveButton(android.R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) { returnData(); }
-						}
-				)
+                        (dialog, which) -> returnData()
+                )
 				.setNegativeButton(android.R.string.cancel, null)
 				.create();
 	}

@@ -249,7 +249,7 @@ public class EditorActivity extends AppCompatActivity implements
 					break;
 				case REQUEST_CODE_SELECT_FOLDER:
 					GreatUri greatUri = new GreatUri(uri, AccessStorageApi.getPath(this, uri));
-					Log.v(CodomaApplication.TAG, "result of selecting folder = " + greatUri.toString());
+					Log.v(CodomaApplication.TAG, "result of selecting folder = " + greatUri);
 					break;
 			}
 		}
@@ -306,6 +306,7 @@ public class EditorActivity extends AppCompatActivity implements
 //		} else {
 //			finish();
 //		}
+		super.onBackPressed();
 	}
 
 	@Override

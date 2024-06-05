@@ -172,13 +172,10 @@ class FileInfoAdapter extends RecyclerView.Adapter<FileInfoAdapter.ViewHolder> {
 			iconBack = (GradientDrawable) iconImage.getBackground();
 			textView1 = itemView.findViewById(android.R.id.text1);
 			textView2 = itemView.findViewById(android.R.id.text2);
-			itemView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (listener != null)
-						listener.onItemClick(fileDetail);
-				}
-			});
+			itemView.setOnClickListener(v -> {
+                if (listener != null)
+                    listener.onItemClick(fileDetail);
+            });
 		}
 
 		private void setInfo(@NonNull FileDetail fileDetail) {

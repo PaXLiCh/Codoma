@@ -34,7 +34,7 @@ public class RecentFilesDialogFragment extends DialogFragment {
 
 		ArrayList<FileInfoAdapter.FileDetail> iconifiedEntries = new ArrayList<>();
 
-		if (fileList.size() > 0) {
+		if (!fileList.isEmpty()) {
 			for (RecentFilesProvider.RecentFile recentFile : fileList) {
 				String uriString = recentFile.getFileName();
 
@@ -65,26 +65,23 @@ public class RecentFilesDialogFragment extends DialogFragment {
 			}
 		}
 
-		FileInfoAdapter.OnItemClickListener listener = new FileInfoAdapter.OnItemClickListener() {
-			@Override
-			public void onItemClick(@NonNull FileInfoAdapter.FileDetail fileDetail) {
-				if (context instanceof Callbacks) {
-					Callbacks callbacks = (Callbacks) getContext();
-					callbacks.onRecentFileSelected(fileDetail.getUri());
-				}
-				dismiss();
-			}
-		};
+		FileInfoAdapter.OnItemClickListener listener = fileDetail -> {
+            if (context instanceof Callbacks) {
+                Callbacks callbacks = (Callbacks) getContext();
+                callbacks.onRecentFileSelected(fileDetail.getUri());
+            }
+            dismiss();
+        };
 
 		View rootView = View.inflate(context, R.layout.dialog_recent_files, null);
 		RecyclerView fileListView = rootView.findViewById(android.R.id.list);
 		FileInfoAdapter adapter = new FileInfoAdapter(context, listener);
 		adapter.setFiles(iconifiedEntries);
 		fileListView.setAdapter(adapter);
-		fileListView.setVisibility(iconifiedEntries.size() > 0 ? View.VISIBLE : View.GONE);
+		fileListView.setVisibility(!iconifiedEntries.isEmpty() ? View.VISIBLE : View.GONE);
 
 		rootView.findViewById(android.R.id.empty)
-				.setVisibility(iconifiedEntries.size() == 0 ? View.VISIBLE : View.GONE);
+				.setVisibility(iconifiedEntries.isEmpty() ? View.VISIBLE : View.GONE);
 
 		return new AlertDialog.Builder(context)
 				.setTitle(R.string.dialog_recent_files)

@@ -26,6 +26,7 @@ public class SelectFileActivity extends AppCompatActivity
 
 	@Override
 	public void onBackPressed() {
+		super.onBackPressed();
 		if (onBackPressedListener != null) {
 			onBackPressedListener.onBackPressed();
 		}

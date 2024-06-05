@@ -52,12 +52,7 @@ public class GoodScrollView extends ScrollView {
 
 	public void tempDisableListener(int mills) {
 		listenerEnabled = false;
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				listenerEnabled = true;
-			}
-		}, mills);
+		new Handler().postDelayed(() -> listenerEnabled = true, mills);
 	}
 
 

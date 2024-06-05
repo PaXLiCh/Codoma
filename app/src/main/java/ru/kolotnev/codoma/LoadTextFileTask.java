@@ -211,7 +211,7 @@ class LoadTextFileTask extends AsyncTask<TextFile, Long, Void> {
 		if (!TextUtils.isEmpty(message)) {
 			listener.onFileLoadError(message);
 		} else {
-			listener.onFileLoaded(textFiles.toArray(new TextFile[textFiles.size()]));
+			listener.onFileLoaded(textFiles.toArray(new TextFile[0]));
 		}
 	}
 

@@ -86,7 +86,7 @@ public class TextFileFragment extends Fragment implements
 		try {
 			mListener = (OnFragmentInteractionListener) context;
 		} catch (ClassCastException e) {
-			throw new ClassCastException(context.toString()
+			throw new ClassCastException(context
 					+ " must implement OnFragmentInteractionListener");
 		}
 		this.activity = (EditorActivity) context;
@@ -156,7 +156,7 @@ public class TextFileFragment extends Fragment implements
 					case Activity.RESULT_OK:
 						final Uri uri = data.getData();
 						GreatUri greatUri = new GreatUri(uri, AccessStorageApi.getPath(activity, uri));
-						Log.e(TAG, "result of selecting new file to save = " + greatUri.toString());
+						Log.e(TAG, "result of selecting new file to save = " + greatUri);
 						textFile.greatUri = greatUri;
 						saveFile();
 						break;
@@ -359,26 +359,23 @@ public class TextFileFragment extends Fragment implements
 			if (selectionStart == selectionEnd) {
 				selectionEnd = editText.length();
 			}
-			SearchTask.OnSearchResultListener listener = new SearchTask.OnSearchResultListener() {
-				@Override
-				public void onResult(SearchResult result) {
-					editText.searchResult = result;
-					String msg;
-					if (result == null) {
-						msg = getContext().getString(R.string.search_occurrences_error);
-					} else {
-						int amount = result.getAmount();
-						if (amount > 0) {
-							doSearch();
-							msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
-						} else {
-							msg = getContext().getString(R.string.search_occurrences_found_zero);
-						}
-					}
-					Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-					editText.replaceTextKeepCursor(null);
-				}
-			};
+			SearchTask.OnSearchResultListener listener = result -> {
+                editText.searchResult = result;
+                String msg;
+                if (result == null) {
+                    msg = getContext().getString(R.string.search_occurrences_error);
+                } else {
+                    int amount = result.getAmount();
+                    if (amount > 0) {
+                        doSearch();
+                        msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+                    } else {
+                        msg = getContext().getString(R.string.search_occurrences_found_zero);
+                    }
+                }
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                editText.replaceTextKeepCursor(null);
+            };
 			if (taskSearch != null) {
 				taskSearch.cancel(true);
 			}
@@ -426,26 +423,23 @@ public class TextFileFragment extends Fragment implements
 			if (selectionStart == selectionEnd) {
 				selectionEnd = editText.length();
 			}
-			SearchTask.OnSearchResultListener listener = new SearchTask.OnSearchResultListener() {
-				@Override
-				public void onResult(SearchResult result) {
-					editText.searchResult = result;
-					String msg;
-					if (result == null) {
-						msg = getContext().getString(R.string.search_occurrences_error);
-					} else {
-						int amount = result.getAmount();
-						if (amount > 0) {
-							editText.doReplace(replacementText);
-							msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
-						} else {
-							msg = getContext().getString(R.string.search_occurrences_found_zero);
-						}
-					}
-					Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-					editText.replaceTextKeepCursor(null);
-				}
-			};
+			SearchTask.OnSearchResultListener listener = result -> {
+                editText.searchResult = result;
+                String msg;
+                if (result == null) {
+                    msg = getContext().getString(R.string.search_occurrences_error);
+                } else {
+                    int amount = result.getAmount();
+                    if (amount > 0) {
+                        editText.doReplace(replacementText);
+                        msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+                    } else {
+                        msg = getContext().getString(R.string.search_occurrences_found_zero);
+                    }
+                }
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                editText.replaceTextKeepCursor(null);
+            };
 			if (taskSearch != null) {
 				taskSearch.cancel(true);
 			}
@@ -482,26 +476,23 @@ public class TextFileFragment extends Fragment implements
 			if (selectionStart == selectionEnd) {
 				selectionEnd = editText.length();
 			}
-			SearchTask.OnSearchResultListener listener = new SearchTask.OnSearchResultListener() {
-				@Override
-				public void onResult(SearchResult result) {
-					editText.searchResult = result;
-					String msg;
-					if (result == null) {
-						msg = getContext().getString(R.string.search_occurrences_error);
-					} else {
-						int amount = result.getAmount();
-						if (amount > 0) {
-							editText.doReplaceAll(replacementText);
-							msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
-						} else {
-							msg = getContext().getString(R.string.search_occurrences_found_zero);
-						}
-					}
-					Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-					editText.replaceTextKeepCursor(null);
-				}
-			};
+			SearchTask.OnSearchResultListener listener = result -> {
+                editText.searchResult = result;
+                String msg;
+                if (result == null) {
+                    msg = getContext().getString(R.string.search_occurrences_error);
+                } else {
+                    int amount = result.getAmount();
+                    if (amount > 0) {
+                        editText.doReplaceAll(replacementText);
+                        msg = getResources().getQuantityString(R.plurals.search_occurrences_found, amount, amount);
+                    } else {
+                        msg = getContext().getString(R.string.search_occurrences_found_zero);
+                    }
+                }
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                editText.replaceTextKeepCursor(null);
+            };
 			if (taskSearch != null) {
 				taskSearch.cancel(true);
 			}
@@ -572,7 +563,7 @@ public class TextFileFragment extends Fragment implements
 	@Override
 	public void onSelectFileOptions(Uri uri, LineReader.LineEnding eol, String encoding) {
 		GreatUri greatUri = new GreatUri(uri, AccessStorageApi.getPath(activity, uri));
-		Log.e(TAG, "result of selecting new file to save = " + greatUri.toString());
+		Log.e(TAG, "result of selecting new file to save = " + greatUri);
 		textFile.greatUri = greatUri;
 		textFile.encoding = encoding;
 		textFile.eol = eol;

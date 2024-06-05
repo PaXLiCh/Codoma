@@ -181,10 +181,8 @@ final class RecentFilesProvider {
 
 		@Override
 		public int compareTo(@NonNull RecentFile another) {
-			if (_timestamp < another.getTimestamp()) { return -1; }
-			if (_timestamp > another.getTimestamp()) { return 1; }
-			return 0;
-		}
+            return Long.compare(_timestamp, another.getTimestamp());
+        }
 
 		/**
 		 * Sets the last-known viewport settings of a file

@@ -65,7 +65,7 @@ class CollectStatAsyncTask extends AsyncTask<TextFile, Void, List<Pair<Integer, 
 			linesInfo.add(new Pair<>(R.string.dialog_file_info_size, org.apache.commons.io.FileUtils.byteCountToDisplaySize(file.length())));
 
 			// Get the last modification information.
-			Long lastModified = file.lastModified();
+			long lastModified = file.lastModified();
 
 			// Create a new date object and pass last modified information to the date object
 			Date date = new Date(lastModified);

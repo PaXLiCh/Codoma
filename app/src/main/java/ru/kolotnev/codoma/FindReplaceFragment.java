@@ -42,33 +42,29 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 		v.findViewById(R.id.find_panel_settings).setOnClickListener(this);
 
 		editTextFind = v.findViewById(R.id.find_panel_search_text);
-		editTextFind.setOnKeyListener(new View.OnKeyListener() {
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_ENTER) {
-					if (event.getAction() == KeyEvent.ACTION_DOWN) {
-						callback.find(editTextFind.getText().toString(),
-								isCase, isWholeWord, isRegex);
-					}
-					return true;
-				}
-				return false;
-			}
-		});
+		editTextFind.setOnKeyListener((v12, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    callback.find(editTextFind.getText().toString(),
+                            isCase, isWholeWord, isRegex);
+                }
+                return true;
+            }
+            return false;
+        });
 
 		editTextReplace = v.findViewById(R.id.find_panel_replace_text);
-		editTextReplace.setOnKeyListener(new View.OnKeyListener() {
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_ENTER) {
-					if (event.getAction() == KeyEvent.ACTION_DOWN) {
-						callback.replace(editTextReplace.getText().toString(),
-								editTextReplace.getText().toString(),
-								isCase, isWholeWord, isRegex);
-					}
-					return true;
-				}
-				return false;
-			}
-		});
+		editTextReplace.setOnKeyListener((v1, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    callback.replace(editTextReplace.getText().toString(),
+                            editTextReplace.getText().toString(),
+                            isCase, isWholeWord, isRegex);
+                }
+                return true;
+            }
+            return false;
+        });
 
 		return v;
 	}
@@ -118,14 +114,11 @@ public class FindReplaceFragment extends Fragment implements View.OnClickListene
 		dialogOptions = new AlertDialog.Builder(context)
 				.setTitle(getString(R.string.find_panel_options))
 				.setView(v)
-				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						isCase = checkCase.isChecked();
-						isWholeWord = checkWholeWord.isChecked();
-						isRegex = checkRegex.isChecked();
-					}
-				})
+				.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    isCase = checkCase.isChecked();
+                    isWholeWord = checkWholeWord.isChecked();
+                    isRegex = checkRegex.isChecked();
+                })
 				.show();
 	}
 

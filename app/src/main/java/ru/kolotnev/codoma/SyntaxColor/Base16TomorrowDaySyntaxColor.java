@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Base16 Tomorrow
- * A color scheme by Chris Kempson (http://chriskempson.com)
+ * A color scheme by Chris Kempson (<a href="http://chriskempson.com">...</a>)
  * Created by Pavel Kolotnev on 09.08.16.
  */
 public class Base16TomorrowDaySyntaxColor extends SyntaxColor {

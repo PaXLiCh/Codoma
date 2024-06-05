@@ -70,20 +70,17 @@ public class CodomaApplication extends Application {
 		recoveryManager.recoverTextFiles();
 
 		final Thread.UncaughtExceptionHandler defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread thread, Throwable exception) {
-				// Save the fact we crashed out.
-				//getSharedPreferences(TAG , Context.MODE_PRIVATE).edit()
-				//		.putBoolean(KEY_APP_CRASHED, true).apply();
-				Log.e(TAG, "onException");
-				recoveryManager.backupTextFiles(textFiles);
-				// Chain default exception handler.
-				if (defaultHandler != null) {
-					defaultHandler.uncaughtException(thread, exception);
-				}
-			}
-		});
+		Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            // Save the fact we crashed out.
+            //getSharedPreferences(TAG , Context.MODE_PRIVATE).edit()
+            //		.putBoolean(KEY_APP_CRASHED, true).apply();
+            Log.e(TAG, "onException");
+            recoveryManager.backupTextFiles(textFiles);
+            // Chain default exception handler.
+            if (defaultHandler != null) {
+                defaultHandler.uncaughtException(thread, exception);
+            }
+        });
 	}
 
 	@Override

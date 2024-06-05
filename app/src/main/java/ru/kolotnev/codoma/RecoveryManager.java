@@ -135,7 +135,7 @@ class RecoveryManager {
 		SharedPreferences prefs = app.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 		int filesNumber = prefs.getInt(PREFS_KEY_AMOUNT, 0);
 		for (int i = 0; i < filesNumber; ++i) {
-			app.deleteFile(String.format(FILE_RECOVERED, String.valueOf(i)));
+			app.deleteFile(String.format(FILE_RECOVERED, i));
 		}
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.clear();
